@@ -1,4 +1,4 @@
-# PixelCog Website and Blog
+# PixelCog Website and Blog (This is just a fork, additional modification would be executed soon)
 
 You can view this website at [pixelcog.com](http://pixelcog.com/)
 
