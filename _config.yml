@@ -1,6 +1,6 @@
 name:   'libFeihu Blog'
 url:    'http://feihu.me'
-author: 'Feihu'
+author: 'feihu'
 
 include:  ['_pages']
 
