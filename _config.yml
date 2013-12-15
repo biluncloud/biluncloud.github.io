@@ -1,6 +1,6 @@
-name:   'PixelCog Blog'
-url:    'http://pixelcog.com'
-author: 'Mike Greiling'
+name:   'libFeihu Blog'
+url:    'http://feihu.me'
+author: 'Feihu'
 
 include:  ['_pages']
 
@@ -14,4 +14,4 @@ excerpt_separator: "{{ more }}"
 safe:     true
 pygments: false
 markdown: 'maruku'
-timezone: 'America/Chicago'
+timezone: 'Asia/Shanghai'
