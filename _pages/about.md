@@ -8,7 +8,7 @@ nobio:     true
 # About feihu
 ----------------
 
-![Me](http://www.gravatar.com/avatar/33f90637d77f8d4da67faafd3af6597e?s=200){: .profile .pull-right }
+![Me](http://www.gravatar.com/avatar/9ffd3273e6f33aaf9cfb1bdccb8f3010?s=200){: .profile .pull-right }
 
 Hi, I'm **feihu**, a programmer from Shenzhen, China. 
 
