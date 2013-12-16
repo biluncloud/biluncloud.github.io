@@ -1,10 +1,10 @@
 ---
 permalink: /contact/
 layout:    contact
-title:     Contact PixelCog
+title:     Contact feihu
 ---
 
-# Contact Us
+# Contact feihu
 ------------
 
-You can use the following contact form to send us an email, or you can message us on [twitter](http://twitter.com/pixelcog) or [facebook](http://facebook.com/pixelcog).
+You can send me an [email](mailto:biluncloud@gmail.com), or you can message me on [twitter](http://twitter.com/) or [facebook](http://facebook.com/).
