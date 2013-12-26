@@ -1,11 +1,14 @@
 ---
 layout: post
-title:  我这样学习VIM: THE LIFE CHANGING EDITOR
-tags:   VIM
+title:  我这样学习VIM - The Life Changing Editor
+description: 写给同事的简单VIM教程，个人学习VIM经历
+tags:   VIM, 教程, 编程, 入门
 image:  hello-world.gif
 ---
 
 前两天team leader让我在小组内部分享一下VIM，于是我花了半天时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我的第一篇Blog。
+
+{{ more }}
 
 搭完网站之后的第一篇文章有些兴奋，先化身话痨简单回顾一下我是如何接触到VIM的，不感兴趣的同学可以直接跳过这一部分:-)
 
@@ -151,7 +154,7 @@ There is another great tutor, a [game][5]. Yes, you didn't heart by mistake. It'
 - Fold
 - Run command: run `:! explorer`, `:r! set path`
 - Spell check: Heer is a worong worrd. 
-- Auto Pair: (), [], {}, ``
+- Auto Pair: (), \[\], {}
 
 
 ### Plugins
@@ -188,7 +191,7 @@ There is another great tutor, a [game][5]. Yes, you didn't heart by mistake. It'
 
 ### Help
 - google
-- :help xxx
+- help xxx
 
 
 ## REFERENCE
