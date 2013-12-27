@@ -6,29 +6,29 @@ tags:   VIM, 教程, 编程, 入门
 image:  hello-world.gif
 ---
 
-前两天team leader让我在小组内部分享一下VIM，于是我花了半天时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我的第一篇Blog。
+前两天同事让我在小组内部分享一下VIM，于是我花了一点时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我的第一篇Blog。
 
 {{ more }}
 
-搭完网站之后的第一篇文章有些兴奋，先化身话痨简单回顾一下我是如何接触到VIM的，不感兴趣的同学可以直接跳过这一部分:-)
+搭完网站之后的第一篇文章有些兴奋，先变身话痨简单回顾一下我是如何接触到VIM的，不感兴趣的同学可以直接跳过这一部分:-)
 
-## Life Changing Editor
+## 写在前面：Life Changing Editor
 
 我是一个非常**懒**的人，对于效率有着近乎执拗的追求。比如我会花2个小时来写一个脚本，然后使用这个脚本瞬间完成一个任务，而不愿意花一个小时来手工完成这项任务，从绝对时间上来说，写脚本花的时间更长，但我依然乐此不疲。
 
-**工欲善其事，必先利其器**，折腾各种各样的软件就成为了我的一大爱好，尤其是各种人称**神器**的工具类软件，而[善用佳软][1]是这类工具的聚集地，现在我使用的很多优秀的软件都是来自于这里，包括VIM，所以，如果你和我一样，希望拥有众多“神器”，可以关注此站。
+**工欲善其事，必先利其器**，折腾各种各样的软件就成为了我的一大爱好，尤其是各种人称**神器**的工具类软件，而[善用佳软][0]是这类工具的聚集地，现在我使用的很多优秀的软件都得知于此，包括VIM，所以，如果你和我一样，希望拥有众多“神器”，让工作事半功倍，可以关注此站。
 
-离开校园参加工作之后我才第一次听到VIM，那时部门内部都兴起了一股使用Source Insight代替Visual Studio编写代码之风，大家都被它的代码管理，自动完成，代码跳转等功能所折服，但一个领导说了一句很多Vimer经常会说，至今让我记忆尤新的一句话：
+第一次听说VIM已经是离开校园参加工作之后的事，那时部门内部大多使用Source Insight代替Visual Studio编写代码，大家都被它的代码管理，自动完成，代码跳转等功能所吸引，但一个领导说了句很多Vimer经常会说，至今仍让我记忆尤新的一句话：
 > 世界上只有三种编辑器，EMACS、VIM和其它
 
-我很反对这种极端的言论，使用何种工具是一个人自由，不应该加以约束，更不应该鄙视。但虽如此，我却阻挡不住好奇心的驱使，琢磨着到底是什么样的编辑器会有着这样高的评价。抱着这份好奇，我搜索到了[善用佳软][1]，看到《[普通人的编辑利器——Vim](http://blog.sina.com.cn/s/blog_46dac66f010005kw.html)》，Dieken的《[程序员的编辑器——VIM](http://blog.sina.com.cn/s/blog_46dac66f010005kw.html)》，以及王垠的《[Emacs是一种信仰！世界最强编辑器介绍](http://arch.pconline.com.cn//pcedu/soft/gj/photo/0609/865628.html)》BANG……想到不久前看到的[一段话](http://wufazhuce.org/discussion/2815/one-%E4%B8%80%E4%B8%AA-vol-435)：
+我很反对这种极端的言论，使用何种工具是一个人自由，只要能发挥一个工具最大的效率就行，不应该加以约束，更不应该鄙视。话虽如此，我却阻挡不住好奇心的驱使，琢磨着到底是什么样的编辑器会拥有这样高的评价。抱着这份好奇，我搜索到了[善用佳软][0]，看到《[普通人的编辑利器——Vim](http://blog.sina.com.cn/s/blog_46dac66f010005kw.html)》，Dieken的《[程序员的编辑器——VIM](http://blog.sina.com.cn/s/blog_46dac66f010005kw.html)》，以及王垠的《[Emacs是一种信仰！世界最强编辑器介绍](http://arch.pconline.com.cn//pcedu/soft/gj/photo/0609/865628.html)》BANG……想到不久前看到的[一段话](http://wufazhuce.org/discussion/2815/one-%E4%B8%80%E4%B8%AA-vol-435)：
 > 南中国的雷雨天有怒卷的压城云、低飞的鸟和小虫，有隐隐的轰隆声呜呜咽咽……还有一片肃穆里的电光一闪。那闪电几乎是一棵倒着生长的树，发光发亮的枝丫刚刚舒展，立马结出一枚爆炸的果实，那一声炸响从半空中跌落到窗前，炸得人一个激灵，杯中一圈涟漪。
 
-这种一个激灵的感觉不仅仅局限于雷雨天。在我读完上面几篇文章之后，简单的文字亦立刻击中儃中，炸的一个激灵。从此，我对编辑器的认识完全颠覆。
+这种一个激灵的感觉不仅仅局限于雷雨天。在我读完上面几篇文章之后，简单的文字亦立刻击中儃中，炸的一个激灵。从此，我对编辑器的认识被完全颠覆。
 
-很多孩子都有一个梦想：希望能够长大之后可以身着军装，腰插手枪，头戴警帽，遇到坏人之后迅速潇洒拔出枪，瞬间解决战斗，除暴安良，匡扶正义。我这样的程序员们也有一个梦想：希望学成之后可以像电影里黑客们一样，对着满屏幕闪烁的各种符号，双手不离键盘噼里啪啦一阵乱敲，屏幕上的符号不断滚动，就攻破了几百公里之外的某某银行的服务器，向帐户里面增加一笔天文数字，然后潇洒的离去，神不知鬼不觉，留下不知所措的孩子们的梦想——警察叔叔们。这简直构成了程序员们的终极幻想:-P。VIM的出现让我感觉离幻想更近了一步，呃，别想错了，我是指——双手不离键盘，黑客的范儿。不可否认，扮酷也是促使我学习VIM的一个重要原因，哈哈。
+很多孩子都有一个梦想：希望能够长大之后可以身着军装，腰插手枪，头戴警帽，遇到坏人之后潇洒拔出枪，瞬间解决战斗，除暴安良，匡扶正义。我这样的程序员们也有一个梦想：希望学成之后可以像电影里黑客们一样，对着满屏幕闪烁的各种符号，双手不离键盘噼里啪啦一阵乱敲，屏幕上的符号不断滚动，就攻破了几百公里之外的某某银行的服务器，向帐户里面增加一笔天文数字，然后潇洒的离去，神不知鬼不觉，留下不知所措的孩子们的梦想——警察叔叔们。这简直构成了程序员们的终极幻想:-P。VIM的出现让我感觉离幻想更近了一步，呃，别想错了，我是指——双手不离键盘，噼里啪啦，黑客的范儿。不可否认，扮酷也是促使我学习VIM的一个重要原因:-P。
 
-在一个激灵之后，接下来便是不可自拔的陷入VIM世界，于是网上搜索各种入门教程，\_vimrc的配置，折腾插件，研究奇巧淫技，将VIM打造成IDE。那感觉就像世界从此就只有VIM，写代码用VIM，Visual Studio用VIM，Source Insight用VIM，甚至写PDF，浏览网页都要用VIM，够折腾吧。可是我像Vimer们一样，依然折腾着，并快乐着。如今，折腾一圈之后，慢慢理解了Unix的KISS设计哲学：**把所有简单的事情做到极致，再用管道将它们组合成强大的功能**。所以在对待VIM的态度上也有了一定的转变，不再执著的将它打造成万能的IDE，而仅仅让它将编辑功能发挥到极致，其它的事情交给其它更擅长的工具去做。**K**eep **I**t **S**imple, **S**tupid. 
+在一个激灵之后，接下来便是不可自拔的陷入VIM世界，于是网上搜索各种入门教程，\_vimrc的配置，折腾插件，研究奇巧淫技，将VIM打造成IDE。那感觉就像世界从此就只有VIM，写代码用VIM，Visual Studio用VIM，Source Insight用VIM，甚至写PDF，浏览网页都要用VIM，够折腾吧。可是像Vimer们一样，我依然折腾着，并快乐着。如今，折腾一圈之后，随着对Unix的KISS设计哲学逐渐理解与认可：**把所有简单的事情做到极致**。所以在对待VIM的态度上也有了一定的转变，不再执著的将它打造成万能的IDE，而仅仅让它将编辑功能发挥到极致，其它的事情交给其它更擅长的工具去做。**K**eep **I**t **S**imple, **S**tupid. 
 
 在VIM的[官方网站](http://www.vim.org/)上，对每个插件的评价是这样[分类](http://www.vim.org/scripts/script.php?script_id=273)的：
 
@@ -38,126 +38,101 @@ image:  hello-world.gif
 
 而我想将这个分类应用到使用的软件上，对于VIM，它是毫无疑问的`Life Changing`。
 
-This is only a brief introduction to VIM, for more information please Google or refer to the *references* at the end of this introduction.
+## 什么是VIM
 
-## WHAT IS VIM
-
-### Philosophy
-
-- Use least key strokes to finish most functions. 
-
-### Reputation
+以下两句对编辑器的最高评价足矣：
 
 - VIM is the God of editors, EMACS is God's editor
 - EMACS is actually an OS which pretends to be an editor
 
-## WHY IS VIM
+## 为什么选VIM
 
-There are many splendid [editors][2] in our times, comparing to the old VIM and EMACS, they are called **modern** editors.
+我们所处的时代是非常幸运的，有越来越多的[编辑器][1]，相对于[古老的VIM][2]和EMACS，它们被称为**现代**编辑器。我们来看看这两个古董有多大年纪了：
 
-    **EMACS** : 1975 ~ 2013 = 38 years old
-    **VI**    : 1976 ~ 2013 = 37 years old
-    **VIM**   : 1991 ~ 2013 = 22 years old
+    **EMACS** : 1975 ~ 2013 = 38岁
+    **VI**    : 1976 ~ 2013 = 37岁
+    **VIM**   : 1991 ~ 2013 = 22岁
 
-They have plenty of modern features which make EDITING/PROGRAMMING a comfortable job. The learning curves of VIM is terribly [steep][0]. Since we already have so many great editors with such wonderful features, why should we spend so much time learning the [old][4] VIM. 
+看到这篇文章的人有几个是比它们大的:-)
 
-Because ...
+VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线对比。既然学习VIM如此之难，而**现代**编辑器又已经拥有了如此多的特性，我们为什么要花大量的时间来学习这个老古董呢？
 
-### Why Others (UtralEdit, Notepad++ || IDEs: Source Insight, VS, Eclipse)
+因为...
 
-- Light, fast (not for IDE)
-- Integrated (for IDE)
-- Features
- - Highlight
- - Alignment
- - Fold
- - Line number
- - Tab
- - Hex
- - Column editor
- - Comment
- - Space replaces tab
- - Search, replace and counts
- - Recover
- - Goto line
+### 为什么选其它
+
+先来看看为什么我们会选现在所使用的编辑器？(也许很多人直接用IDE自带的编辑器，我们暂且也把它们划到编辑器的范畴内。)这里我简单列举一些程序员期望使用的编辑拥有的功能：
+
+- 轻量级，迅速启动（相对于IDE）
+- 特性
+ - 语法高亮
+ - 自动对齐
+ - 代码折叠
+ - 显示行号
+ - 重定义Tab
+ - 十六进制编辑
+ - 列编辑模式
+ - 快速注释
+ - 高级搜索，替代
+ - 错误恢复
+ - 迅速跳转
  - Mark
-- Beautiful
+- 也许，美观也是一个诉求
 
-But...
+但是...
 
-### Why **HESITATE** Others (UtralEdit, Notepad++ || IDEs: Source Insight, VS, Eclipse)
+### 为什么**犹豫**选择它们
 
-There are always been some reason why we hesitate to use them. 
+总有一些理由让我们一再犹豫的选择它们，或者勉强使用它们：
 
-- Expansive
+- 太贵：虽然知道VS很贵，但看到价格时，还是被吓了一跳
+ - Visual Studio Profession 2012 : 11645元
+ - UtralEdit                     : 420元
+ - Source Insight                : 2500元
+ - $$
+ - $$
+ - $$
+- 不能跨平台
+ - VS, SI, UE，Notepad++这些只能在Windows上使用
+ - Mac上的TextMate只能运行于Mac上
+- 不容易扩展
 
-        MicroSoft Visual Studio 2010 Ultimate with MSDN : 110880 yuan
-        Utraledit                                       : 420 yuan
-        Source Insight                                  : 2500 yuan
-        $_$
-        $_$
-        $_$
+还有别的选择么？
 
-- Only Available On Windows
-- None Or Bad Extensible
+### VIM >= sum(现代编辑器)
 
-Other choice?
+首先，VIM包含了上面列的所有现代编辑器的优点，并且远远多于此...
 
-### VIM > Modern Editors
+并且，VIM拥有让你不再**犹豫**的其它特性
 
-VIM has all the advantages list above. But much more then that...
+- 无止尽的扩展：现在VIM的官方网站上已经有了[4704][5]个扩展，并且在不断增加...
+- 完美的跨平台：
+ - Windows : gVim
+ - Linux   : 内置默认 (e.g., man page)
+ - Mac     : MacVim
+- 开源
+- **用起来很酷**
+- 最关键的，$$$**免费**$$$
 
-- Perfect and Countless Extensions
-    There are [4704][3] scripts now on the official website, more and more
-- Cross Platform
-    Windows : gVim
-    Linux   : Build-in and Default Editor (e.g., man page)
-    Mac     : MacVim
-- Open Source
-- $$$**FREE**$$$
-- **COOL**
+废话结束，开始进入正题。
 
-## HOW
+## 如何学习VIM
 
-### Basic Operations
+### VIM的基本用法
 
-The best tutor of VIM is: [vimtutor][1]. It's integrated in the installation package. You only need to spend less then 30 minutes to get familiar with the frequently used features. Then **practice** + **help** + **Google**. 
+最好的入门教程非VIM自带的[vimtutor][6]莫属，它是VIM安装之后自带的简短教程，可以在安装目录下找到，只需半个小时左右的时间，就可以掌握VIM的绝大部分用法。这是迄今为止我见过的自带软件教程中最好的一个。
 
-There is another great tutor, a [game][5]. Yes, you didn't heart by mistake. It's a game. 
+网上的VIM教程也非常多，我之前看的是李果正的[大家来学VIM][7]，很适合入门。
+
+另外推荐陈皓的[简明VIM练级攻略][8]，或者创意十足的游戏[VIM大冒险][10]。
+
+[![VIM大冒险][9]][10]
+
+这游戏的创意实在是太赞了，打完游戏，你便掌握了VIM，这才是真正的**寓教于乐**，下面是摘自这个游戏的描述：
+
 > VIM Adventures is an online game based on VIM's keyboard shortcuts (commands, motions and operators). It's the "Zelda meets text editing" game. It's a puzzle game for practicing and memorizing VIM commands (good old VI is also covered, of course). It's an easy way to learn VIM without a steep learning curve.
 
-- Movement
-
-        h, j, k, l: [why?][5]
-        w, e, b, ge
-        0, $
-        gg, G
-        zt, zz, zb
-        exit
-
-- Different Modes
- - insert mode
-        a, o, i
- - normal mode
- - visual mode
-        v:
-            vixxx: {("hello world")}
-        CTRL+V
-        SHIFT+V
-            alignment
-- Copy
-        yank, paste
-        register
-- Search and replace
-- Split
-- Mark
-- Fold
-- Run command: run `:! explorer`, `:r! set path`
-- Spell check: Heer is a worong worrd. 
-- Auto Pair: (), \[\], {}
-
-
-### Plugins
+### VIM进阶：插件
 - Alignment `goto alignment.cpp`
 - Jump
     `goto TestCase.cpp`
@@ -179,34 +154,34 @@ There is another great tutor, a [game][5]. Yes, you didn't heart by mistake. It'
 - Autocompleter
     `goto autocompleter.cpp`
 
-### Ultimate Configuration: spf13
+### 终极配置: spf13
 
 
-### Integration
+### 与其它软件集成
 - firefox
 - visual studio
     viemu
 - source insight
 
-
-### Help
-- google
-- help xxx
-
+### 一些资源
+- 为什么VIM使用HJKL作为方向键？请看[这里][20]
+- 为什么VIM和EMACS被称为最好的编辑器？这看[这里][21]
+- VIM作者的演讲：《[高效编辑的7个习惯][22]》，视频请点[这里][23]
 
 ## REFERENCE
-[1]: http://xbeta.info
+[0]: http://xbeta.info
+[1]: http://zh.wikipedia.org/wiki/%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E6%AF%94%E8%BE%83
+[2]: http://arstechnica.com/information-technology/2011/11/two-decades-of-productivity-vims-20th-anniversary/
+[3]: http://coolshell.cn/articles/3125.html
+[4]: http://news.mydrivers.com/1/241/241042.htm
+[5]: http://www.vim.org/scripts/script_search_results.php
+[6]: C:\Program%20Files%20(x86)\Vim\vim74\vimtutor.bat
+[7]: http://www.study-area.org/tips/vim/
+[8]: http://coolshell.cn/articles/5426.html
+[9]: http://coolshell.cn//wp-content/uploads/2012/04/vimadventuresgamefun.jpg
+[10]: http://vim-adventures.com/
 
-
-[0]: http://coolshell.cn/articles/3125.html
-[1]: C:\Program%20Files%20(x86)\Vim\vim74\vimtutor.bat
-[2]: http://zh.wikipedia.org/wiki/%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E6%AF%94%E8%BE%83
-[3]: http://www.vim.org/scripts/script_search_results.php
-[4]: http://arstechnica.com/information-technology/2011/11/two-decades-of-productivity-vims-20th-anniversary/
-[5]: http://vim-adventures.com/
-[6]: http://news.cnblogs.com/n/141251/
-- why VIM and EMACS are called the best editors
-    http://blog.csdn.net/canlets/article/details/17307657
-- 7 habits for effective text editing
-    http://xbeta.info/7habits-edit.htm
-    http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html
+[20]: http://news.cnblogs.com/n/141251/
+[21]: http://blog.csdn.net/canlets/article/details/17307657
+[22]: http://xbeta.info/7habits-edit.htm
+[23]: http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html
