@@ -68,6 +68,7 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
  - 语法高亮
  - 自动对齐
  - 代码折叠
+ - 自动补全
  - 显示行号
  - 重定义Tab
  - 十六进制编辑
@@ -133,26 +134,66 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 > VIM Adventures is an online game based on VIM's keyboard shortcuts (commands, motions and operators). It's the "Zelda meets text editing" game. It's a puzzle game for practicing and memorizing VIM commands (good old VI is also covered, of course). It's an easy way to learn VIM without a steep learning curve.
 
 ### VIM进阶：插件
-- Alignment `goto alignment.cpp`
-- Jump
-    `goto TestCase.cpp`
-    CTRL+], CTRL+T
-    reference called, calling, definition...
-- Easymotion
-    run: ,,w
-- Explorer
-    run: ,e
-- Taglist
-    `goto taglist.cpp`
-- Comment
-    `goto comment.*`
+
+在学完了上面任何一个教程之后，通过一段时间的练习，你已经可以非常熟练的使用VIM。即使是“裸奔”，VIM已经足够强大，能够完成日常的绝大部分工作。但VIM更加强大的是它的扩展机制，就像Firefox和Chrome的各种插件，它们将令我们的工具更加完美。接下来我将介绍一些非常有用的插件，看完之后，看你有何感觉。
+
+在这开始之前，先介绍一小段VIM插件的管理方式。在我刚接触插件之时，安装一个插件需要：
+
+1. 去官网下载
+2. 解压
+3. 拷贝到VIM的安装目录
+4. 运行:help tags
+
+这些步骤已经足够复杂，更加无法想象的是要更新或者删除一个插件时，因为它的文件分布在各个目录下，除非你对VIM的插件机制和要删的插件了如直掌，否则你能难将它删除干净。所以一段时间之后，VIM的安装目录下简直就是一团乱麻，管理插件几乎成为了一项不可能完成的任务。想象一下，如果Windows上面没有软件管理工具，你如何安装，卸载一个软件吧。
+
+接下来，一个神器出现了——[Vundle][11]，再加上[GitHub][12]时代的到来，VIM插件的管理变得前所未有的简单。
+
+#### Vundle
+
+在按照官方的[教程][11]安装好Vundle之后，要安装一个插件时，你只需要：
+
+1. 选好插件
+2. 在VIM的配置文件中加一句 `Bundle 'you/script/name'`
+3. 在VIM中运行 `:BundleInstall`
+
+卸载时只需：
+
+1. 去除配置文件中的 `Bundle 'you/script/name'`
+2. 在VIM中运行 `:BundleClean`
+
+更新插件就更加简单，只需一句 `:BundleUpdate` 即可。
+
+#### ColorScheme
+##########################################################{
+
+- 整个截图
+
+导航：
+- NerdTree
 - Ctrl-P
-    run: CTRL+P
-- ,u
-- Session
-- Syntastic
-- Autocompleter
-    `goto autocompleter.cpp`
+- TagList
+- Tagbar
+
+移动：
+- EasyMotion
+
+自动补全与快速编辑：
+- YouCompleteMe
+- UltiSnips： 去它的网站看
+- tabular
+- NeoCommenter
+- 语法
+- python-mode
+- zenhtml
+
+其它：
+- undo
+- 保存会话
+- powerline
+参考这里：
+http://blog.csdn.net/wklken/article/details/9076621
+
+##########################################################}
 
 ### 终极配置: spf13
 
@@ -180,6 +221,8 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 [8]: http://coolshell.cn/articles/5426.html
 [9]: http://coolshell.cn//wp-content/uploads/2012/04/vimadventuresgamefun.jpg
 [10]: http://vim-adventures.com/
+[11]: https://github.com/gmarik/vundle
+[12]: https://github.com/
 
 [20]: http://news.cnblogs.com/n/141251/
 [21]: http://blog.csdn.net/canlets/article/details/17307657
