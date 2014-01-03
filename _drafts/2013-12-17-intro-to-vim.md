@@ -119,41 +119,53 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 
 ## 如何学习VIM
 
+### 一秒钟变记事本
+
+很多时候大家希望能够以最快的速度编辑文档，而不愿意花大量的时间在学习这一工具上，比如偶尔要去Linux改变一下配置。这时VIM有一种方法可以**一秒钟变记事本**，打开VIM之后，只需要一个键`i`，接下来所有的操作就和Windows上的记事本无异，你所喜爱与习惯的方向键也回来了。
+
+这也并没有多神奇，它只是VIM提供的一种特殊的模式：`Insert mode`，在按过`i`之后，你可以在编辑器的左下角看到`INSERT`字样。但是因为VIM无法使用`CTRL-S`来保留，那么，在编辑完之后，如何保存退出呢？也很简单，先按`ESC`，再输入`:wq`，前面一步是告诉VIM退出`INSERT`模式，后面一个命令是保存退出。
+
+我见过很多人这样用，虽然说这很容易，但是有种暴殄天物的感觉，和给了你一把AK47，你却把它当成棍子使一样。要发挥AK47的作用，还请向下看。
+
 ### VIM的基本用法
 
 最好的入门教程非VIM自带的[vimtutor][6]莫属，它是VIM安装之后自带的简短教程，可以在安装目录下找到，只需半个小时左右的时间，就可以掌握VIM的绝大部分用法。这是迄今为止我见过的自带软件教程中最好的一个。
 
-网上的VIM教程也非常多，我之前看的是李果正的[大家来学VIM][7]，很适合入门。
+当然，网上的VIM教程也非常多，我之前看的是李果正的[大家来学VIM][7]，很适合入门。
 
 另外推荐陈皓的[简明VIM练级攻略][8]，或者创意十足的游戏[VIM大冒险][10]。
 
-[![VIM大冒险][9]][10]
+[![VIM大冒险](/img/posts/vim-adventures.jpg)][10]
 
 这游戏的创意实在是太赞了，打完游戏，你便掌握了VIM，这才是真正的**寓教于乐**，下面是摘自这个游戏的描述：
 
 > VIM Adventures is an online game based on VIM's keyboard shortcuts (commands, motions and operators). It's the "Zelda meets text editing" game. It's a puzzle game for practicing and memorizing VIM commands (good old VI is also covered, of course). It's an easy way to learn VIM without a steep learning curve.
 
+最后在这里给大家分享一个vgod设计的[VIM命令图解][13]。这也是我看过的最好的命令图示，看完了前面的基本教程后，可以将它作为一个cheat sheet随时查看，相信用不了多久你也可以完全丢掉它。关于此图的详细解释可以参考[这里][13]。
+
+[![VIM命令图解](/img/posts/vim-cmd.png)][13]
+
 ### VIM进阶：插件
 
-在学完了上面任何一个教程之后，通过一段时间的练习，你已经可以非常熟练的使用VIM。即使是“裸奔”，VIM已经足够强大，能够完成日常的绝大部分工作。但VIM更加强大的是它的扩展机制，就像Firefox和Chrome的各种插件，它们将令我们的工具更加完美。接下来我将介绍一些非常有用的插件，看完之后，看你有何感觉。
+在学完了上面任何一个教程之后，通过一段时间的练习，你已经可以非常熟练的使用VIM。即使是“裸奔”，VIM已经足够强大，能够完成日常的绝大部分工作。但VIM更加强大的是它的扩展机制，就像Firefox和Chrome的各种插件，它们将令我们的工具更加完美。接下来我将介绍一些非常有用的插件，看完之后，相信你一定会觉得蠢蠢欲动。
 
-在这开始之前，先介绍一小段VIM插件的管理方式。在我刚接触插件之时，安装一个插件需要：
+#### 插件管理神器：Vundle
+
+在这开始之前，先简单介绍VIM插件的管理方式。在我刚接触插件之时，安装一个插件需要：
 
 1. 去官网下载
 2. 解压
 3. 拷贝到VIM的安装目录
 4. 运行:help tags
 
-这些步骤已经足够复杂，更加无法想象的是要更新或者删除一个插件时，因为它的文件分布在各个目录下，除非你对VIM的插件机制和要删的插件了如直掌，否则你能难将它删除干净。所以一段时间之后，VIM的安装目录下简直就是一团乱麻，管理插件几乎成为了一项不可能完成的任务。想象一下，如果Windows上面没有软件管理工具，你如何安装，卸载一个软件吧。
+这些步骤已经足够复杂，更加无法想象的是要**更新**或者**删除**一个插件时，因为它的文件分布在各个目录下，就比如Windows上的`安装路径`，`Application data`，`用户数据`，`注册表`等等，除非你对VIM的插件机制和要删的插件了如直掌，否则你能难将它删除干净。所以一段时间之后，VIM的安装目录下简直就是一团乱麻，管理插件几乎成为了一项不可能完成的任务。想象一下，如果Windows上面没有软件管理工具，你如何安装，卸载一个软件吧。
 
-接下来，一个神器出现了——[Vundle][11]，再加上[GitHub][12]时代的到来，VIM插件的管理变得前所未有的简单。
-
-#### Vundle
+但是这没有难倒聪明的VIMer们，他们利用VIM本身的特性，开发出了神器——[Vundle][11]，配合上[GitHub][12]，VIM插件的管理变得前所未有的简单。来对比一下使用Vundle如何管理插件：
 
 在按照官方的[教程][11]安装好Vundle之后，要安装一个插件时，你只需要：
 
 1. 选好插件
-2. 在VIM的配置文件中加一句 `Bundle 'you/script/name'`
+2. 在VIM的配置文件中加一句 `Bundle 'you/script/path'`
 3. 在VIM中运行 `:BundleInstall`
 
 卸载时只需：
@@ -161,36 +173,65 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 1. 去除配置文件中的 `Bundle 'you/script/name'`
 2. 在VIM中运行 `:BundleClean`
 
-更新插件就更加简单，只需一句 `:BundleUpdate` 即可。
+更新插件就更加简单，只需一句 `:BundleUpdate`。现在你已经完全从粗活累活中解放了出来，从此注意力只需放在挑选自己喜欢的插件上，还有比这更美好的么？下面介绍的所有的插件都以它来管理。
 
-#### ColorScheme
-##########################################################{
+#### 配色方案
 
-- 整个截图
+你是否觉得用了许多年的白底黑字有些刺眼，又或者你是否厌倦了那单调枯燥？如果是，那好，VIM提供了成百上千的[配色方案][14]，终有一款适合你。
 
-导航：
-- NerdTree
-- Ctrl-P
-- TagList
-- Tagbar
+[![阴阳八卦](/img/posts/vim-solarized-yinyang.png){: width=200 .pull-right}][15]
 
-移动：
-- EasyMotion
+在所有的配色当中，最受欢迎的是这款：[Solarized][15]，在Github上它有[4,930][16]个Star，仅靠一个`配色方案`就得到如此多的Star，可见它有多么的受欢迎。它有两种完全相反的颜色，一暗一亮，作者非常具有创意将它们设计成一个`阴阳八卦`。，赏心悦目。下面是采用这种配色的VIM截图:
 
-自动补全与快速编辑：
-- YouCompleteMe
-- UltiSnips： 去它的网站看
-- tabular
-- NeoCommenter
-- 语法
-- python-mode
-- zenhtml
+![Solarized截图](/img/posts/vim-solarized.png)
 
-其它：
-- undo
-- 保存会话
-- powerline
-参考这里：
+Solarized配色还有一个使它能够成为最受欢迎的配色方案的理由，除了VIM之外，它还提供了很多[其它软件][17]的配色方案，包括：`Emacs`，`Visual Studio`，`Xcode`，`NetBeans`，`Putty`，各种终端等等，应该是除了默认的黑白配色之外用途最为广泛的一种了。目前我采用的就是这种配色方案的dark background，它的对比度非常适合长期对着编辑器的程序员们。
+
+还有一种很受欢迎的配色方案：[Molokai][18]，它是Mac上TextMate编辑器的一种经典配色，也非常适合程序员：
+
+![Molokai截图](/img/posts/vim-molokai.png)
+
+#### 导航与搜索
+
+1. [NERDTree][19] file navigation
+![NERDTree](/img/posts/vim-the-nerd-tree.gif)
+2. [ctrlp][20] fast file finder
+![ctrlp](/img/posts/vim-ctrlp.gif)
+3. [Taglist][21] source code browser
+![Taglist](/img/posts/vim-taglist.gif)
+4. [Tagbar][22] tag generation and navigation
+![Tagbar](/img/posts/vim-tagbar.gif)
+5. [Tasklist](https://github.com/vim-scripts/TaskList.vim) eclipse task list
+![Tasklist](/img/posts/vim-tasklist.gif)
+
+#### 自动补全
+
+1. [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) visual assist for vim
+2. [UltiSnips](https://github.com/SirVer/ultisnips) ultimate snippets： 去它的网站看
+![UltiSnips](/img/posts/vim-ultisnips.gif)
+3. [Zen html](http://www.vim.org/scripts/script.php?script_id=2981) hi-speed coding for html/css
+
+#### 语法
+
+1. [Tabularize](https://github.com/godlygeek/tabular) align everything
+2. [Syntastic](https://github.com/scrooloose/syntastic) integrated syntax checking
+![Syntastic](/img/posts/vim-syntastic.png)
+3. [Python-mode](https://github.com/klen/python-mode)
+
+#### 其它
+
+1. [Easymotion](https://github.com/Lokaltog/vim-easymotion) jump anywhere
+![Easymotion](/img/posts/vim-easymotion.gif)
+2. [NERDCommenter](https://github.com/scrooloose/nerdcommenter) comment++
+![NERDCommenter](/img/posts/vim-nerdcomment.gif)
+3. [Surround](https://github.com/tpope/vim-surround) managing all the "'[{}]'" etc
+![Surround](/img/posts/vim-surround.gif)
+4. [Gundo](https://github.com/sjl/gundo.vim) time machine
+5. [Sessionman](http://www.vim.org/scripts/script.php?script_id=2010) session manager
+6. [Powerline](https://github.com/Lokaltog/vim-powerline) ultimate statusline utility
+![Powerline](/img/posts/vim-powerline.gif)
+
+上面的图可以参考这里：
 http://blog.csdn.net/wklken/article/details/9076621
 
 ##########################################################}
@@ -199,15 +240,15 @@ http://blog.csdn.net/wklken/article/details/9076621
 
 
 ### 与其它软件集成
-- firefox
-- visual studio
-    viemu
-- source insight
+- Firefox
+- Visual Studio
+    ViEmu
+- Source Insight
 
 ### 一些资源
-- 为什么VIM使用HJKL作为方向键？请看[这里][20]
-- 为什么VIM和EMACS被称为最好的编辑器？这看[这里][21]
-- VIM作者的演讲：《[高效编辑的7个习惯][22]》，视频请点[这里][23]
+- 为什么VIM使用HJKL作为方向键？请看[这里][50]
+- 为什么VIM和EMACS被称为最好的编辑器？这看[这里][51]
+- VIM作者的演讲：《[高效编辑的7个习惯][52]》，视频请点[这里][53]
 
 ## REFERENCE
 [0]: http://xbeta.info
@@ -219,12 +260,22 @@ http://blog.csdn.net/wklken/article/details/9076621
 [6]: C:\Program%20Files%20(x86)\Vim\vim74\vimtutor.bat
 [7]: http://www.study-area.org/tips/vim/
 [8]: http://coolshell.cn/articles/5426.html
-[9]: http://coolshell.cn//wp-content/uploads/2012/04/vimadventuresgamefun.jpg
 [10]: http://vim-adventures.com/
 [11]: https://github.com/gmarik/vundle
 [12]: https://github.com/
+[13]: http://blog.vgod.tw/2009/12/08/vim-cheat-sheet-for-programmers/
+[14]: http://vimcolorschemetest.googlecode.com/svn/html/index-c.html
+[15]: http://ethanschoonover.com/solarized
+[16]: https://github.com/altercation/solarized
+[17]: https://github.com/altercation/ethanschoonover.com/tree/master/projects/solarized#editors--ides
+[18]: https://github.com/tomasr/molokai
+[19]: https://github.com/vim-scripts/The-NERD-tree
+[20]: https://github.com/kien/ctrlp.vim
+[21]: https://github.com/vim-scripts/taglist.vim
+[22]: https://github.com/majutsushi/tagbar
 
-[20]: http://news.cnblogs.com/n/141251/
-[21]: http://blog.csdn.net/canlets/article/details/17307657
-[22]: http://xbeta.info/7habits-edit.htm
-[23]: http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html
+[50]: http://news.cnblogs.com/n/141251/
+[51]: http://blog.csdn.net/canlets/article/details/17307657
+[52]: http://xbeta.info/7habits-edit.htm
+[53]: http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html
+[54]: http://blog.csdn.net/wklken/article/details/9076621
