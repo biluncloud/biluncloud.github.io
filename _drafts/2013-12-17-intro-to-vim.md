@@ -10,6 +10,11 @@ image:  hello-world.gif
 
 {{ more }}
 
+# Table of Contents
+
+* Table of Contents Placeholder
+{:toc}
+
 搭完网站之后的第一篇文章有些兴奋，先变身话痨简单回顾一下我是如何接触到VIM的，不感兴趣的同学可以直接跳过这一部分:-)
 
 ## 写在前面：Life Changing Editor
@@ -179,13 +184,15 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 
 你是否觉得用了许多年的白底黑字有些刺眼，又或者你是否厌倦了那单调枯燥？如果是，那好，VIM提供了成百上千的[配色方案][14]，终有一款适合你。
 
-[![阴阳八卦](/img/posts/vim-solarized-yinyang.png){: width=200 .pull-right}][15]
+在所有的配色当中，最受欢迎的是这款[Solarized][15]：
 
-在所有的配色当中，最受欢迎的是这款：[Solarized][15]，在Github上它有[4,930][16]个Star，仅靠一个`配色方案`就得到如此多的Star，可见它有多么的受欢迎。它有两种完全相反的颜色，一暗一亮，作者非常具有创意将它们设计成一个`阴阳八卦`。，赏心悦目。下面是采用这种配色的VIM截图:
+[![阴阳八卦](/img/posts/vim-solarized-yinyang.png)][15]
+
+在Github上它有[4,930][16]个Star，仅靠一个`配色方案`就得到如此多的Star，可见它有多么的受欢迎。它有两种完全相反的颜色，一暗一亮，作者非常具有创意将它们设计成一个`阴阳八卦`，赏心悦目。下面是采用这种配色的VIM截图:
 
 ![Solarized截图](/img/posts/vim-solarized.png)
 
-Solarized配色还有一个使它能够成为最受欢迎的配色方案的理由，除了VIM之外，它还提供了很多[其它软件][17]的配色方案，包括：`Emacs`，`Visual Studio`，`Xcode`，`NetBeans`，`Putty`，各种终端等等，应该是除了默认的黑白配色之外用途最为广泛的一种了。目前我采用的就是这种配色方案的dark background，它的对比度非常适合长期对着编辑器的程序员们。
+Solarized配色还有一个使它能够成为最受欢迎的配色方案的理由，除了VIM之外，它还提供了很多[其它软件][17]的配色方案，包括：`Emacs`, `Visual Studio`, `Xcode`, `NetBeans`, `Putty`，各种终端等等，应该是除了默认的黑白配色之外用途最为广泛的一种了。目前我采用的就是这种配色方案的dark background，它的对比度非常适合长期对着编辑器的程序员们。
 
 还有一种很受欢迎的配色方案：[Molokai][18]，它是Mac上TextMate编辑器的一种经典配色，也非常适合程序员：
 
@@ -193,43 +200,55 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
 #### 导航与搜索
 
-1. [NERDTree][19] file navigation
+1. [NERDTree][19] - file navigation
 ![NERDTree](/img/posts/vim-the-nerd-tree.gif)
-2. [ctrlp][20] fast file finder
-![ctrlp](/img/posts/vim-ctrlp.gif)
-3. [Taglist][21] source code browser
-![Taglist](/img/posts/vim-taglist.gif)
-4. [Tagbar][22] tag generation and navigation
+
+    代码资源管理器现在已经成为了各种各样IDE的标配，这可以大大提高管理源代码的效率。这样的功能VIM自然不能少，NERD Tree提供了非常丰富的功能，不仅可以以VIM的方式用键盘来操作目录树，同时也可以像Windows资源管理器一样用鼠标来操作。
+
+    `Tips:` 可以将打开目录树的功能绑定到你所喜欢的快捷键上，比如：`map <leader>e :NERDTreeToggle<CR>`
+
+2. [CtrlP][20] - fast file finder
+![CtrlP](/img/posts/vim-ctrlp.gif)
+
+    如果说上面介绍的NERD Tree极大的方便了源代码的管理方式，那CtrlP可以称的上是革命性的，杀手级的VIM查找文件插件。它以简单符合直觉的输入方式，极快的响应速度，精确的准备度，带你在项目中自由穿越。它可以模糊查询定位，包括工程下的所有文件，已经打开的buffer，buffer中的tag以及最近访问的文件。在这之前，我用的是[lookupfiles](http://www.vim.org/scripts/script.php?script_id=1581)，因为依赖了其它的插件和应用程序，这个上古时代的插件逐渐被抛弃了。自从有了它，NERD Tree也已经被我束之高阁。
+    
+    据说它模仿了Sublime的名字和功能，我没用过Sublime，但是听说CtrlP这个功能是Sublime最性感的功能之一。可以去它的[官网](http://www.sublimetext.com/)看看。
+
+    `Tips:` 这个插件另一个令人称赞的一点在于无比简单直观的使用方式，正如其名：`Ctrl+P`，然后享受它带来的快感吧。
+
+3. [Taglist][21] - source code browser
+![Taglist](/img/posts/vim-taglist.png)
+4. [Tagbar][22] - tag generation and navigation
 ![Tagbar](/img/posts/vim-tagbar.gif)
-5. [Tasklist](https://github.com/vim-scripts/TaskList.vim) eclipse task list
+5. [Tasklist](https://github.com/vim-scripts/TaskList.vim) - eclipse task list
 ![Tasklist](/img/posts/vim-tasklist.gif)
 
 #### 自动补全
 
-1. [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) visual assist for vim
-2. [UltiSnips](https://github.com/SirVer/ultisnips) ultimate snippets： 去它的网站看
+1. [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) - visual assist for vim
+2. [UltiSnips](https://github.com/SirVer/ultisnips) - ultimate snippets： 去它的网站看
 ![UltiSnips](/img/posts/vim-ultisnips.gif)
-3. [Zen html](http://www.vim.org/scripts/script.php?script_id=2981) hi-speed coding for html/css
+3. [Zen html](http://www.vim.org/scripts/script.php?script_id=2981) - hi-speed coding for html/css
 
 #### 语法
 
-1. [Tabularize](https://github.com/godlygeek/tabular) align everything
-2. [Syntastic](https://github.com/scrooloose/syntastic) integrated syntax checking
+1. [Tabularize](https://github.com/godlygeek/tabular) - align everything
+2. [Syntastic](https://github.com/scrooloose/syntastic) - integrated syntax checking
 ![Syntastic](/img/posts/vim-syntastic.png)
-3. [Python-mode](https://github.com/klen/python-mode)
+3. [Python-mode](https://github.com/klen/python-mode) - 
 
 #### 其它
 
-1. [Easymotion](https://github.com/Lokaltog/vim-easymotion) jump anywhere
+1. [Easymotion](https://github.com/Lokaltog/vim-easymotion) - jump anywhere
 ![Easymotion](/img/posts/vim-easymotion.gif)
-2. [NERDCommenter](https://github.com/scrooloose/nerdcommenter) comment++
+2. [NERDCommenter](https://github.com/scrooloose/nerdcommenter) - comment++
 ![NERDCommenter](/img/posts/vim-nerdcomment.gif)
-3. [Surround](https://github.com/tpope/vim-surround) managing all the "'[{}]'" etc
+3. [Surround](https://github.com/tpope/vim-surround) - managing all the "'[{}]'" etc
 ![Surround](/img/posts/vim-surround.gif)
-4. [Gundo](https://github.com/sjl/gundo.vim) time machine
-5. [Sessionman](http://www.vim.org/scripts/script.php?script_id=2010) session manager
-6. [Powerline](https://github.com/Lokaltog/vim-powerline) ultimate statusline utility
-![Powerline](/img/posts/vim-powerline.gif)
+4. [Gundo](https://github.com/sjl/gundo.vim) - time machine
+5. [Sessionman](http://www.vim.org/scripts/script.php?script_id=2010) - session manager
+6. [Powerline](https://github.com/Lokaltog/vim-powerline) - ultimate statusline utility
+![Powerline](/img/posts/vim-powerline.png)
 
 上面的图可以参考这里：
 http://blog.csdn.net/wklken/article/details/9076621
@@ -269,7 +288,7 @@ http://blog.csdn.net/wklken/article/details/9076621
 [16]: https://github.com/altercation/solarized
 [17]: https://github.com/altercation/ethanschoonover.com/tree/master/projects/solarized#editors--ides
 [18]: https://github.com/tomasr/molokai
-[19]: https://github.com/vim-scripts/The-NERD-tree
+[19]: https://github.com/scrooloose/nerdtree
 [20]: https://github.com/kien/ctrlp.vim
 [21]: https://github.com/vim-scripts/taglist.vim
 [22]: https://github.com/majutsushi/tagbar
