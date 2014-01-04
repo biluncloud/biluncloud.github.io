@@ -205,27 +205,57 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
     代码资源管理器现在已经成为了各种各样IDE的标配，这可以大大提高管理源代码的效率。这样的功能VIM自然不能少，NERD Tree提供了非常丰富的功能，不仅可以以VIM的方式用键盘来操作目录树，同时也可以像Windows资源管理器一样用鼠标来操作。
 
-    `Tips:` 可以将打开目录树的功能绑定到你所喜欢的快捷键上，比如：`map <leader>e :NERDTreeToggle<CR>`
+    `--help:` 可以将打开目录树的功能绑定到你所喜欢的快捷键上，比如：`map <leader>e :NERDTreeToggle<CR>`
 
 2. [CtrlP][20] - fast file finder
 ![CtrlP](/img/posts/vim-ctrlp.gif)
 
-    如果说上面介绍的NERD Tree极大的方便了源代码的管理方式，那CtrlP可以称的上是革命性的，杀手级的VIM查找文件插件。它以简单符合直觉的输入方式，极快的响应速度，精确的准备度，带你在项目中自由穿越。它可以模糊查询定位，包括工程下的所有文件，已经打开的buffer，buffer中的tag以及最近访问的文件。在这之前，我用的是[lookupfiles](http://www.vim.org/scripts/script.php?script_id=1581)，因为依赖了其它的插件和应用程序，这个上古时代的插件逐渐被抛弃了。自从有了它，NERD Tree也已经被我束之高阁。
+    如果说上面介绍的NERD Tree极大的方便了源代码的管理方式，那CtrlP可以称的上是革命性的，杀手级的VIM查找文件插件。它以简单符合直觉的输入方式，极快的响应速度，精确的准备度，带你在项目中自由穿越。它可以模糊查询定位，包括工程下的所有文件，已经打开的buffer，buffer中的tag以及最近访问的文件。在这之前，我用的是[lookupfiles](http://www.vim.org/scripts/script.php?script_id=1581)，因为依赖了其它的插件和应用程序，这个上古时代的插件逐渐被抛弃了。自从有了它，NERD Tree也常常被我束之高阁。
     
     据说它模仿了Sublime的名字和功能，我没用过Sublime，但是听说CtrlP这个功能是Sublime最性感的功能之一。可以去它的[官网](http://www.sublimetext.com/)看看。
 
-    `Tips:` 这个插件另一个令人称赞的一点在于无比简单直观的使用方式，正如其名：`Ctrl+P`，然后享受它带来的快感吧。
+    `--help:` 这个插件另一个令人称赞的一点在于无比简单直观的使用方式，正如其名：`Ctrl+P`，然后享受它带来的快感吧。
 
 3. [Taglist][21] - source code browser
 ![Taglist](/img/posts/vim-taglist.png)
+
+    想必使用过Visual Studio和Source Insight的人都非常喜爱这样一个功能：左边有一个Symbol窗口，它列出了当前文件中的宏、全局变量、函数、类等信息，鼠标点击时就会跳到相应的源代码所在的位置，非常便捷。Taglist就是实现这个功能的插件。可以说symbol窗口是程序员不可缺少的功能，当年有很多人热衷于借助taglist、ctags和cscope，将VIM打造成一个非常强大的Linux下的IDE，所以一直以来，taglist在VIM官方网站的scripts排列榜中一直高居[榜首](http://www.vim.org/scripts/script_search_results.php?keywords=&script_type=&order_by=rating&direction=descending&search=search)，成为VIM使用者的必备插件。
+
+    `--help:` 最常见的做法也是将它绑定到一个快捷键上，比如：`map <silent> <F9> :TlistToggle<CR>`
+
 4. [Tagbar][22] - tag generation and navigation
 ![Tagbar](/img/posts/vim-tagbar.gif)
+
+    看起来Tagbar和上面介绍的Taglist很相似，它们都是展示当前文件Symbol的插件，但是两者有一定的区别，大家可以从上图的对比中得知，两者的关注点不同。总的来说Tagbar对面向对象的支持更好，它会自动根据文件修改的时间来重新排列Symbol的列表。它们以不同的纬度展示了当前文件的Symbol。
+
+    `--help:` 同Taglist一样，可以这样绑定它的快捷键，`nmap <silent> <F4> :TagbarToggle<CR>`
+
 5. [Tasklist](https://github.com/vim-scripts/TaskList.vim) - eclipse task list
 ![Tasklist](/img/posts/vim-tasklist.gif)
+
+    这是一个非常有用的插件，它能够标记文件中的`FIXME`、`TODO`等信息，并将它们存放到一个任务列表当中，后面随时可以通过Tasklist跳转到这些标记的地方再来修改这些代码，十分方便实用。
+
+    `--help:` 通常只需添加一个映射：`map <leader>td <Plug>TaskList`
 
 #### 自动补全
 
 1. [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) - visual assist for vim
+![YouCompleteMe](/img/posts/vim-youcompleteme.gif)
+
+    这是迄今为止，我认为VIM历史上最好的插件，没有之一。为什么这么说？因为作为一个程序员，这个功能必不可少。从它的名字可以推断出，它的作用是代码补全。不管是在Source Insight，还是安装了Visual Assist的Visual Studio中，代码补全功能可以极大的提高生产力。大学第一次遇到Visual Assist时带给我的震撼至今记忆犹新，那感觉就似百兽之王有了翅膀，如虎添翼，从此只要安装有Visual Studio的地方就一定会有Visual Assist。
+
+    而VIM上一直以来都没有一个能够达到Visual Assist一成功力的插件，不管是自带的补全，`omnicppcomplete`，`neocompletecache`，完全和Visual Assist不在一个数量级上。Visual Assist是语义层面的，它完全能够理解程序语言，而VIM的这些插件只是基于文本来匹配，自然准确率非常低。所以在写代码时，即使VIM用得再顺手，绝大部分情况下我还是倾向于Visual Studio + Visual Assist。
+
+    但是YouCompleteMe的出现彻底的改变了这一现状，它对代码的补全完全达到了编译器级别，绝不弱于Visual Assist，遇到它是我使用VIM之后最兴奋的一件事。它是基于[LLVM/clang](http://clang.llvm.org/)，一个Apple公司为了代替GNU/GCC而支持的编译器，正因如此，YouCompleteMe的准确率才如此之高。
+
+    YouCompleteMe也是所有的插件当中安装最为复杂的一个，需要用clang来编译相应的库。因为clang在Linux和Mac平台上支持的非常好，所以在这两个平台上安装相对简单。但是clang并没有官方支持Windows，所以YouCompleteMe插件也没有官方支持Windows。可这么好的东西，Windows上聪明的VIMer们怎么可能容忍这种事情呢，有人就提供了[Windows Installation Guide](https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide)，已经编译好了各种版本的YCM插件，可以参考这个来安装。我并没有采用它，而是参考了[这里](http://weichong78.blogspot.com/2013/11/building-llvmclang-youcompleteme-etc-in.html)，自己编译了YCM，其实也不难，一步一步按照介绍的步骤，相信你也可以。
+
+    YouCompleteMe除了补全以外，还有一个非常重要的作用：`代码跳转`，同样可以达到编译器级别的准确度，媲美Visual Assist与Source Insight。
+
+    有了YouCompleteMe之后，是时候抛弃昂贵的Visual Assist与Source Insight了。赶快去试试吧。
+
+    `--help:` 只要设置好项目的`.ycm_extra_conf.py`，自动补全功能就可以完美的使用了。通常一个全局的`.ycm_extra_conf.py`足矣。代码跳转可以绑定一个快捷键：`nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>`，很好理解，先跳到定义，如果没找到，则跳到声明处。
+
 2. [UltiSnips](https://github.com/SirVer/ultisnips) - ultimate snippets： 去它的网站看
 ![UltiSnips](/img/posts/vim-ultisnips.gif)
 3. [Zen html](http://www.vim.org/scripts/script.php?script_id=2981) - hi-speed coding for html/css
