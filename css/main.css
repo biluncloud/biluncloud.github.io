@@ -6,8 +6,9 @@
 body {
 	margin: 0;
 	padding:50px;
-	font:16px/1.5 Helvetica, "微软雅黑", "Helvetica Neue", Lato, Arial, sans-serif;
+	font:15px/1.5 Helvetica, "微软雅黑", "Helvetica Neue", Lato, Arial, sans-serif;
 	color:#333;
+    line-height:1.8em;
 	font-weight:300;
 }
 

@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  我这样学习VIM - The Life Changing Editor
-description: 写给同事的简单VIM教程，个人学习VIM经历
-tags:   VIM, 教程, 编程, 入门
+description: 写给同事的简单VIM教程，个人学习VIM经历，优秀插件介绍
+tags:   VIM, 教程, 编程, 入门，插件，YouCompleteMe，自动补全
 image:  hello-world.gif
 ---
 
@@ -261,14 +261,14 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
     这是什么？相信大家经常在写代码时需要在文件开头加一个版权声明之类的注释，又或者在头文件中要需要：`#ifndef... #def... #endif`这样的宏，亦或者写一个`for`、`switch`等很固定的代码片段，这是一个非常机械的重复过程，但又十分频繁。我十分厌倦这种重复，为什么不能有一种快速输入这种代码片段的方法呢？于是，各种snippets插件出现了，而它们之中，UltiSnips是最好的一个。比如上面的一长串`#ifndef... #def... #endif`，你只需要输入`ifn<TAB>`，怎么样，方便吧。更为重要的一点是它支持扩展，你可以随心所欲的编辑你自己的snippets。
 
-    现在它可以和上面介绍的YouCompleteMe插件一块使用，比如在敲完`ifn`时，YouCompleteMe会将这个snippet也放在下拉框中让你选择，这样你就不用去记何时按<TAB>来展开snippets，YouCompleteMe已经帮你完成。
+    现在它可以和上面介绍的YouCompleteMe插件一块使用，比如在敲完`ifn`时，YouCompleteMe会将这个snippet也放在下拉框中让你选择，这样你就不用去记何时按`<TAB>`来展开snippets，YouCompleteMe已经帮你完成。
 
     去它的[网站](https://github.com/SirVer/ultisnips#screencasts)看看，有几个视频，绝对亮瞎你的双眼(需要翻墙)。
 
     '--help:' 它和YouCompleteMe一块使用时会有一定的冲突，因为两者都默认绑定了`<TAB>`键，可以参考各自的`help`文档，将其中一个绑定到其它的快捷键，或者借助[其它的插件](http://www.tuicool.com/articles/eU7BNf)让它们兼容。
 
 3. [Zen Coding](http://www.vim.org/scripts/script.php?script_id=2981) - hi-speed coding for html/css
-![Zen Coding](/ima/posts/vim-zen-coding.gif)
+![Zen Coding](/img/posts/vim-zen-coding.gif)
 
     比一般的`C/C++/Java`等更多重复劳动的语言估计要算HTML/CSS这类前端语言了吧，为此前端大牛发明了Zen Coding，去[这里](http://vimeo.com/7405114)(需翻墙)看看演示视频，相当令人震撼。如果是写前端的话，强烈推荐此插件。
 
@@ -277,19 +277,22 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 #### 语法
 
 1. [Tabularize](https://github.com/godlygeek/tabular) - align everything
-![Tabularize](/ima/posts/vim-easy-align.gif)
+![Tabularize](/img/posts/vim-easy-align.gif)
 
     这个插件的作用是用于按等号、冒号、表格等来对齐文本，参考下面这个初始化变量的例子：
+
         int var1 = 10;
         float var2 = 10.0;
         char *var_ptr = "hello";
 
-    运行`'<,'>Tabularize /=`可得：
+    运行`Tabularize /=`可得：
+
         int var1      = 10;
         float var2    = 10.0;
         char *var_ptr = "hello";
 
     另一个常见的用法是格式化文件头：
+
         file: main.cpp
         author: feihu
         date: 2013-12-17
@@ -297,7 +300,8 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
         license: 
         TODO:
 
-    运行`'<,'>Tabularize /:/r0`可得：
+    运行`Tabularize /:/r0`可得：
+
         file        : main.cpp
         author      : feihu
         date        : 2013-12-17
@@ -305,7 +309,8 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
         license     :
         TODO        :
 
-    另一种对齐方式，运行`'<,'>Tabularize /:/r1c1l0`：
+    另一种对齐方式，运行`Tabularize /:/r1c1l0`：
+
                file : main.cpp
              author : feihu
                date : 2013-12-17
@@ -316,6 +321,7 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
     对于写代码的人来说，还是非常有用的。因为没有找到对应的图，所以这里就用[另外一个插件](https://github.com/junegunn/vim-easy-align)的动画来代替了，Tabular的功能比它更为强大。
 
     `--help:` 通常会绑定这样一些快捷键：
+
         nmap <Leader>a& :Tabularize /&<CR>
         vmap <Leader>a& :Tabularize /&<CR>
         nmap <Leader>a= :Tabularize /=<CR>
@@ -339,33 +345,109 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
     `--help:` 这是一个后台运行的插件，不需要手动的任何命令来激活它。
 
 3. [Python-mode](https://github.com/klen/python-mode) - Python in VIM
+    <iframe width="480" height="405" src="http://www.56.com/iframe/NjQ2OTEyODA" frameborder="0" allowfullscreen=""> </iframe>
 
-    如果你需要写Python，那么Python-mode是你一定不能错过的插件，仅靠它就可以把你的VIM打造成一个强大的Python IDE，因为它可以做到一个现代IDE能做的一切：
+    如果你需要写Python，那么Python-mode是你一定不能错过的插件，靠它就可以把你的VIM打造成一个强大的Python IDE，因为它可以做到一个现代IDE能做的一切：
+
     - 查询Python文档
     - 语法及代码风格检查
     - 运行调试
     - 代码重构
     - ……
 
+    所以，有了它，你就等于有了一个现代的Python IDE，各位Pythoner们，还等什么呢？
+
+    `--help:` 默认情况下该插件已经绑定了几个快捷键：
+    
+        K         -> 跳到Python doc处
+        <leader>r -> 运行当前代码
+        <leader>b -> 增加/删除断点
+
 #### 其它
 
 1. [Easymotion](https://github.com/Lokaltog/vim-easymotion) - jump anywhere
 ![Easymotion](/img/posts/vim-easymotion.gif)
+
+    VIM本身的移动方式已经是极其高效快速，它在编辑器的世界中独树一帜，算是一个极大的创新。而如果说它的移动方式是一个创新的话，那么Easy Motion的移动方式就是一个划时代的革命。利用VIM的`#w`、`#b`、`:#`等操作，移动到一个位置就像是大炮瞄准一个目标，它可以精确到一个大致的范围内。而Easy Motion可以比作是精确制导，它可以准备无误的定位到一个字母上。
+
+    这种移动方式我曾在Firefox和Chrome的VIM插件中看到过，跳转到一个超链时就采用了同样的方式，但是由于浏览网页的特殊性与随意性，当时我没有适应。在编辑的时候就不一样了，编辑更加专注，更带有目的性，所以它能够极大的提高移动速度。享受这种光标指间跳跃，指随意动，移动如飞的感觉:-P
+
+    '--help:' 插件默认的快捷键是：`<leader><leader>w`，效果如上图所示。
+
 2. [NERDCommenter](https://github.com/scrooloose/nerdcommenter) - comment++
 ![NERDCommenter](/img/posts/vim-nerdcomment.gif)
+
+    又是一个写代码必备的插件，用于快速，批量注释与反注释。它适用于任何你能想到的语言，会根据不同的语言选择不同的注释方式，方便快捷。
+
+    `--help:` 十分简单的用法，默认配置情况下选择好要注释的行后，运行`<leader>cc`注释，`<leader>cu`反注释，也可以都调用`<leader>c<SPACE>`，它会根据是否有注释而选择来注释还是取消注释。
+
 3. [Surround](https://github.com/tpope/vim-surround) - managing all the "'[{}]'" etc
 ![Surround](/img/posts/vim-surround.gif)
+
+    在写代码时经常会遇到配对的符号，比如`{}[]()''""<>`等，尤其是标记类语言，比如html, xml，它们完全依赖这种语法。现代的各种编辑器一般都可以在输入一半符号的时候帮你自动补全另外一半。可有的时候你想修改、删除或者是增加一个块的配对符号时，它们就无能为力了。
+
+    Surround就是一个专门用来处理这种配对符号的插件，它可以非常高效快速的修改、删除及增加一个配对符号。如果你经常和这些配对符号打交道，比如你是一个前端工程师，那么请一定不要错过这样一个神级插件。
+
+    `--help:`：部分常用快捷键如下：
+
+        Normal mode
+        -----------
+        ds  - delete a surrounding
+        cs  - change a surrounding
+        ys  - add a surrounding
+        yS  - add a surrounding and place the surrounded text on a new line + indent it
+        yss - add a surrounding to the whole line
+        ySs - add a surrounding to the whole line, place it on a new line + indent it
+        ySS - same as ySs
+
+        Visual mode
+        -----------
+        s   - in visual mode, add a surrounding
+        S   - in visual mode, add a surrounding but place text on new line + indent it
+
+        Insert mode
+        -----------
+        <CTRL-s> - in insert mode, add a surrounding
+        <CTRL-s><CTRL-s> - in insert mode, add a new line + surrounding + indent
+        <CTRL-g>s - same as <CTRL-s>
+        <CTRL-g>S - same as <CTRL-s><CTRL-s>
+
 4. [Gundo](https://github.com/sjl/gundo.vim) - time machine
+![Gundo](/img/posts/vim-gundo.png)
+
+    现代编辑器都提供了多次的撤消和重做功能，这样你就可以很放心的修改文档或者恢复文档。可是假如你操作了5次，然后撤消2次，再重新编辑后，你肯定是无法回到最开始的3次编辑了，因为在你复杂的操作后，编辑器维护的Undo Tree实际上出现了分支，而一般的`CTRL+Z`和`CTRL+R`无法实现这么复杂的操作。
+
+    这时VIM的优势又体现了出来，它不仅提供无限撤消，VIM 7.3之后还有永久撤消功能，即使文件关闭后再次打开，之前的修改仍然可以撤消。而Gundo提供了一个树状图形的撤消列表，下方还有每次修改的差异对比，分支一目了然，相当于一个面向撤消与编辑操作的版本控制工具。有了它，你的文件编辑就像是有了一台时光时，可以随心所欲的回到任何时间，乘着你的时光机，放心大胆的去穿梭时空吧:-P
+
+    `--help:` 通常会将这句加入`_vimrc`：`nnoremap <Leader>u :GundoToggle<CR>`
+
 5. [Sessionman](http://www.vim.org/scripts/script.php?script_id=2010) - session manager
+
+    这是VIM的Session Manager，作用很简单，管理VIM的会话，可以让你在重新打开VIM之后立刻进行之前的编辑状态，就像Windows的休眠一样，相信它一定是工作的伴侣。
+
+    `--help:` 我的配置如下：
+
+        set sessionoptions=blank,buffers,curdir,folds,tabpages,winsize
+        nmap <leader>sl :SessionList<CR>
+        nmap <leader>ss :SessionSave<CR>
+        nmap <leader>sc :SessionClose<CR>
+
 6. [Powerline](https://github.com/Lokaltog/vim-powerline) - ultimate statusline utility
 ![Powerline](/img/posts/vim-powerline.png)
 
-上面的图可以参考这里：
-http://blog.csdn.net/wklken/article/details/9076621
+    增强型的状态栏插件，可以以各种漂亮的颜色展示状态栏，显示文件编码，类型，光标位置，甚至可以显示版本控制信息。不仅功能强大，写着代码时看着下面赏心悦目的状态状，心情也因此大好。像我一样的外观控一定无法抗拒它:-)
 
-##########################################################}
+    `--help:` 简单实用，无需多余的配置。
 
 ### 终极配置: spf13
+
+至此，我经常用到的所有插件都介绍完了，如果你也都安装尝试一下的话，相信很容易就配置出来符合你个人习惯的强大的IDE。也许有人会想，这么多的主题、个性化设置、插件，配置太麻烦，有没有已经配置好的，可以直接拿来使用呢？其实我当时也是这么想的，在我折腾了很久之后，发现`_vimrc`已经非常庞大，亟需整理。再后来就发现了`spf13`：
+
+![spf13](/img/posts/vim-spf13.png)
+
+它是[Steve Francia's Vim Distribution](https://github.com/spf13/spf13-vim)，但是组织的非常整洁，容易扩展，并且跨平台，易于安装维护。在看到的所有`_vimrc`中，这是写的最漂亮的一个。只需要一个简单的脚本就可以[安装](http://vim.spf13.com/#install)，这里面利用了方便的`Vundle`集成了绝大部分前面介绍的插件，并且还有大量其它的插件，具体可以看它的`.vimrc.bundles`。
+
+因为它完美的结构组织，你完全可以在不修改它任何文件的基础上，增加几个自己的文件来增加自己的个性化配置，或者增加删除插件，可扩展性强。在我的`_vimrc`乱成一团的情况，我果断`fork`并安装了这个Distribution，增加了自己的一些配置
 
 
 ### 与其它软件集成
