@@ -333,7 +333,19 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
 2. [Syntastic](https://github.com/scrooloose/syntastic) - integrated syntax checking
 ![Syntastic](/img/posts/vim-syntastic.png)
-3. [Python-mode](https://github.com/klen/python-mode) - 
+
+    这是一个非常有用的插件，它能够实时的进行语法和编码风格的检查，利用它几乎可以做到编码完成后无编译错误。并且它还集成了静态检查工具：`lint`，可以让你的代码更加完美。更强大的它支持近百种编程语言，像是一个集大成的实时编译器。出现错误之后，可以非常方便的跳转到出错处。**强烈推荐**。
+
+    `--help:` 这是一个后台运行的插件，不需要手动的任何命令来激活它。
+
+3. [Python-mode](https://github.com/klen/python-mode) - Python in VIM
+
+    如果你需要写Python，那么Python-mode是你一定不能错过的插件，仅靠它就可以把你的VIM打造成一个强大的Python IDE，因为它可以做到一个现代IDE能做的一切：
+    - 查询Python文档
+    - 语法及代码风格检查
+    - 运行调试
+    - 代码重构
+    - ……
 
 #### 其它
 
