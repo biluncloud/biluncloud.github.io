@@ -242,23 +242,37 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 1. [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) - visual assist for vim
 ![YouCompleteMe](/img/posts/vim-youcompleteme.gif)
 
-    这是迄今为止，我认为VIM历史上最好的插件，没有之一。为什么这么说？因为作为一个程序员，这个功能必不可少。从它的名字可以推断出，它的作用是代码补全。不管是在Source Insight，还是安装了Visual Assist的Visual Studio中，代码补全功能可以极大的提高生产力。大学第一次遇到Visual Assist时带给我的震撼至今记忆犹新，那感觉就似百兽之王有了翅膀，如虎添翼，从此只要安装有Visual Studio的地方就一定会有Visual Assist。
+    这是迄今为止，我认为VIM历史上最好的插件，没有之一。为什么这么说？因为作为一个程序员，这个功能必不可少，而它是迄今为止完成的最好的。从名字可以推断出，它的作用是代码补全。不管是在Source Insight，还是安装了Visual Assist的Visual Studio中，代码补全功能可以极大的提高生产力，增加编码的乐趣。大学第一次遇到Visual Assist时带给我的震撼至今记忆犹新，那感觉就似百兽之王有了翅膀，如虎添翼，从此只要安装有Visual Studio的地方我第一时间就会安装Visual Assist。
 
-    而VIM上一直以来都没有一个能够达到Visual Assist一成功力的插件，不管是自带的补全，`omnicppcomplete`，`neocompletecache`，完全和Visual Assist不在一个数量级上。Visual Assist是语义层面的，它完全能够理解程序语言，而VIM的这些插件只是基于文本来匹配，自然准确率非常低。所以在写代码时，即使VIM用得再顺手，绝大部分情况下我还是倾向于Visual Studio + Visual Assist。
+    而作为编辑器的VIM，上一直以来都没有一个能够达到Visual Assist哪怕一成功力的插件，不管是自带的补全，`omnicppcomplete`，`neocompletecache`，完全和Visual Assist不在一个数量级上。Visual Assist借助于Visual Studio，它的补全是语义层面的，它完全能够理解程序语言，而VIM的这些插件仅仅是基于文本匹配，虽然最近的`neocompletecache`已经好了很多，但准确率非常低。所以在写代码时，即使VIM用得再顺手，绝大部分情况下我还是倾向于`Visual Studio + Visual Assist`。
 
-    但是YouCompleteMe的出现彻底的改变了这一现状，它对代码的补全完全达到了编译器级别，绝不弱于Visual Assist，遇到它是我使用VIM之后最兴奋的一件事。它是基于[LLVM/clang](http://clang.llvm.org/)，一个Apple公司为了代替GNU/GCC而支持的编译器，正因如此，YouCompleteMe的准确率才如此之高。
+    但是YouCompleteMe的出现彻底的改变了这一现状，它对代码的补全完全终于也达到了编译器级别，绝不弱于Visual Assist，遇到它是我使用VIM之后最兴奋的一件事。为什么一个编辑器的插件可以做到如此的神奇，原因就在于它基于[LLVM/clang](http://clang.llvm.org/)，一个Apple公司为了代替GNU/GCC而支持的编译器，正因YouCompleteMe有了编译器的支持，而不再像以往的插件一样基于文本来进行匹配，所以准确率才如此之高。其次，由于它是C/S架构，会在本机创建一个服务器端，利用clang来解析代码，然后将结果返回给客户端，所以也就解决了VIM是单线程而造成的各种补全插件速度奇慢的诟病，在使用时，几乎感觉不到任何的延时，体验达到了Visual Assist的级别。
 
-    YouCompleteMe也是所有的插件当中安装最为复杂的一个，需要用clang来编译相应的库。因为clang在Linux和Mac平台上支持的非常好，所以在这两个平台上安装相对简单。但是clang并没有官方支持Windows，所以YouCompleteMe插件也没有官方支持Windows。可这么好的东西，Windows上聪明的VIMer们怎么可能容忍这种事情呢，有人就提供了[Windows Installation Guide](https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide)，已经编译好了各种版本的YCM插件，可以参考这个来安装。我并没有采用它，而是参考了[这里](http://weichong78.blogspot.com/2013/11/building-llvmclang-youcompleteme-etc-in.html)，自己编译了YCM，其实也不难，一步一步按照介绍的步骤，相信你也可以。
+    YouCompleteMe也是所有的插件当中安装最为复杂的一个，这是因为需要用clang来编译相应的库。因为clang在Linux和Mac平台上支持的非常好，所以在这两个平台上安装相对简单。但是clang并没有官方支持Windows，所以YouCompleteMe插件也没有官方支持Windows。可这么好的东西，活跃在Windows上聪明的VIMer们怎么可能容忍这种事情呢，有人就提供了[Windows Installation Guide](https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide)，已经编译好了各种版本的YouCompleteMe插件，可以参考这个Guide来安装。我并没有采用它，而是参考了[这里](http://weichong78.blogspot.com/2013/11/building-llvmclang-youcompleteme-etc-in.html)，自己编译了YouCompleteMe，其实也不难，一步一步按照介绍的步骤，相信你也可以。
 
     YouCompleteMe除了补全以外，还有一个非常重要的作用：`代码跳转`，同样可以达到编译器级别的准确度，媲美Visual Assist与Source Insight。
 
-    有了YouCompleteMe之后，是时候抛弃昂贵的Visual Assist与Source Insight了。赶快去试试吧。
+    有了YouCompleteMe之后，是时候抛弃昂贵的Visual Assist与Source Insight了。赶快安装尝试吧:-)
 
     `--help:` 只要设置好项目的`.ycm_extra_conf.py`，自动补全功能就可以完美的使用了。通常一个全局的`.ycm_extra_conf.py`足矣。代码跳转可以绑定一个快捷键：`nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>`，很好理解，先跳到定义，如果没找到，则跳到声明处。
 
-2. [UltiSnips](https://github.com/SirVer/ultisnips) - ultimate snippets： 去它的网站看
+2. [UltiSnips](https://github.com/SirVer/ultisnips) - ultimate snippets
 ![UltiSnips](/img/posts/vim-ultisnips.gif)
-3. [Zen html](http://www.vim.org/scripts/script.php?script_id=2981) - hi-speed coding for html/css
+
+    这是什么？相信大家经常在写代码时需要在文件开头加一个版权声明之类的注释，又或者在头文件中要需要：`#ifndef... #def... #endif`这样的宏，亦或者写一个`for`、`switch`等很固定的代码片段，这是一个非常机械的重复过程，但又十分频繁。我十分厌倦这种重复，为什么不能有一种快速输入这种代码片段的方法呢？于是，各种snippets插件出现了，而它们之中，UltiSnips是最好的一个。比如上面的一长串`#ifndef... #def... #endif`，你只需要输入`ifn<TAB>`，怎么样，方便吧。更为重要的一点是它支持扩展，你可以随心所欲的编辑你自己的snippets。
+
+    现在它可以和上面介绍的YouCompleteMe插件一块使用，比如在敲完`ifn`时，YouCompleteMe会将这个snippet也放在下拉框中让你选择，这样你就不用去记何时按<TAB>来展开snippets，YouCompleteMe已经帮你完成。
+
+    去它的[网站](https://github.com/SirVer/ultisnips#screencasts)看看，有几个视频，绝对亮瞎你的双眼(需要翻墙)。
+
+    '--help:' 它和YouCompleteMe一块使用时会有一定的冲突，因为两者都默认绑定了`<TAB>`键，可以参考各自的`help`文档，将其中一个绑定到其它的快捷键，或者借助[其它的插件](http://www.tuicool.com/articles/eU7BNf)让它们兼容。
+
+3. [Zen Coding](http://www.vim.org/scripts/script.php?script_id=2981) - hi-speed coding for html/css
+![Zen Coding](/ima/posts/vim-zen-coding.gif)
+
+    比一般的`C/C++/Java`等更多重复劳动的语言估计要算HTML/CSS这类前端语言了吧，为此前端大牛发明了Zen Coding，去[这里](http://vimeo.com/7405114)(需翻墙)看看演示视频，相当令人震撼。如果是写前端的话，强烈推荐此插件。
+
+    `--help:` 可以去这里参考前端工程师们写的中文教程[1](http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html)，[2](http://www.qianduan.net/zen-coding-a-new-way-to-write-html-code.html)
 
 #### 语法
 
