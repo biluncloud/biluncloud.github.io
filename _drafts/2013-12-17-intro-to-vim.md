@@ -87,7 +87,7 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 
 但是...
 
-### 为什么**犹豫**选择它们
+### 为什么犹豫选择它们
 
 总有一些理由让我们一再犹豫的选择它们，或者勉强使用它们：
 
@@ -152,7 +152,7 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 
 ### VIM进阶：插件
 
-在学完了上面任何一个教程之后，通过一段时间的练习，你已经可以非常熟练的使用VIM。即使是“裸奔”，VIM已经足够强大，能够完成日常的绝大部分工作。但VIM更加强大的是它的扩展机制，就像Firefox和Chrome的各种插件，它们将令我们的工具更加完美。接下来我将介绍一些非常有用的插件，看完之后，相信你一定会觉得蠢蠢欲动。
+在学完了上面任何一个教程之后，通过一段时间的练习，你已经可以非常熟练的使用VIM。即使是“裸奔”，VIM已经足够强大，能够完成日常的绝大部分工作。但VIM更加强大的是它的扩展机制，就像Firefox和Chrome的各种插件，它们将令我们的工具更加完美。网上有很多教程里写的插件已经过时，接下来我将介绍一些比较新的，非常有用的插件，看完之后，相信你一定会觉得蠢蠢欲动。
 
 #### 插件管理神器：Vundle
 
@@ -441,52 +441,61 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
 ### 终极配置: spf13
 
-至此，我经常用到的所有插件都介绍完了，如果你也都安装尝试一下的话，相信很容易就配置出来符合你个人习惯的强大的IDE。也许有人会想，这么多的主题、个性化设置、插件，配置太麻烦，有没有已经配置好的，可以直接拿来使用呢？其实我当时也是这么想的，在我折腾了很久之后，发现`_vimrc`已经非常庞大，亟需整理。再后来就发现了`spf13`：
+至此，我经常用到的所有插件都介绍完了，如果你也都安装尝试一下的话，相信很容易就配置出来符合你个人习惯的强大的IDE。也许有人会想，这么多的主题、个性化设置、插件，配置太麻烦，有没有已经配置好的，可以直接拿来使用呢？其实我当时也有一样的想法，在折腾了很久之后，发现`_vimrc`已经非常庞大且混乱，亟需整理。再后来就发现了它，`spf13`：
 
 ![spf13](/img/posts/vim-spf13.png)
 
 它是[Steve Francia's Vim Distribution](https://github.com/spf13/spf13-vim)，但是组织的非常整洁，容易扩展，并且跨平台，易于安装维护。在看到的所有`_vimrc`中，这是写的最漂亮的一个。只需要一个简单的脚本就可以[安装](http://vim.spf13.com/#install)，这里面利用了方便的`Vundle`集成了绝大部分前面介绍的插件，并且还有大量其它的插件，具体可以看它的`.vimrc.bundles`。
 
-因为它完美的结构组织，你完全可以在不修改它任何文件的基础上，增加几个自己的文件来增加自己的个性化配置，或者增加删除插件，可扩展性强。在我的`_vimrc`乱成一团的情况，我果断`fork`并安装了这个Distribution，增加了自己的一些配置
-
+因为它完美的结构组织，你完全可以在不修改它任何文件的基础上，对应增加几个自己的`~/.vimrc.local`，`~/.vimrc.bundles.local`，`~/.vimrc.before.local`文件来增加自己的个性化配置，或者增加删除插件，可扩展性极强。在我的`_vimrc`乱成一团的情况，果断fork并安装了这个Distribution，增加了自己的一些配置，最终形成了现在的VIM。如果你也不愿折腾配置，那么完全可以直接安装它，省事方便的同时还可以学习一下它的组织结构，一举两得。
 
 ### 与其它软件集成
-- Firefox
+
+因为VIM的操作方式广泛为人们所逐渐接受，尤其是经常工作在Linux下的人们，所以它越来越多的被集成到其它一些常用的工具上，我用过的就包括：
+
 - Visual Studio
-    ViEmu
+
+    本身Windows下的gVim安装包在安装时会提供一个集成到Visual Studio中的插件`VsVim`，可以选择安装，但它是另开一个VIM的窗口来编辑当前的文件，我并不习惯这种方式，所以又找到了[`ViEmu`](http://www.viemu.com/)，它完美的将VIM的操作方式集成到了Visual Studio中，让你根本感觉不到这是在使用Visual Studio。更加强大的是，它可以完美的和[Visual Assist集成]：
+    	Build 1854 contains a workaround for case=58034. Create a binary registry value named TrackCaretVisibility under HKCU\Software\Whole Tomato\Visual Assist X\VANet10 and set its value to 00 for compatibility with ViEmu. (The value defaults to 01 and is created for you upon exiting VS the first time you run 1854 or higher.)
+    	Note you need to close all IDEs before editing this registry key, to avoid Visual Assist X overwriting your change when it exits.
+
+    在遇到YouCompleteMe之前，这就是我所采用的编程环境。但这是一个商业版的插件，只有30天的试用期，如果你真的喜欢它的，完全可以买下它，绝对物超所值。更为强大的是它还支持`Xcode`、`Word`、`Outlook`、`SQL Server`，这一定是一个极端的VIMer的项目:-)，来看看它的动画：
+    ![ViEmu](/img/posts/vim-viemu.gif)
+
 - Source Insight
 
+    VIM也可以集成到Source Insight中，不过我没有去找相应的插件，只找一种和前面介绍的`VsVim`一样的方法：
+
+    - 在Source Insight菜单中，Options-Custom Commands
+    - Run: "C:\Program Files\Vim\vim74\gvim.exe" --remote-silent +%l %f
+    - Dir: %d
+    - Add之后再Options-Key Assignments，将它绑定到一个快捷键中，比如`F11`
+
+    这样编辑一个文件时，如果你想打开VIM时，直接按`F11`，它就会跳到当前行，编辑完之后关闭VIM，又回到Source Insight中。这种方法我用过一段时间，后来由于很少用Source Insight写代码，也逐渐淡忘了。
+
+- Firefox/Chrome
+
+    在狂热于VIM的年代，我曾想把一切操作都变成VIM的方式，包括上网。所以就找到了[Vimperator](https://addons.mozilla.org/en-US/firefox/addon/vimperator/)，但终究由于上网是一种更加随性、无目的的行为，拿着鼠标随便点点完全可以了，所以也就放弃它，回归到正常的操作方式下，有兴趣的可以把玩一下，很有意思，之前谈到的`Easy Motion`我就在这里见识过。Chrome下也有相应的[插件](https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)。
+
 ### 一些资源
-- 为什么VIM使用HJKL作为方向键？请看[这里][50]
-- 为什么VIM和EMACS被称为最好的编辑器？这看[这里][51]
-- VIM作者的演讲：《[高效编辑的7个习惯][52]》，视频请点[这里][53]
 
-## REFERENCE
-[0]: http://xbeta.info
-[1]: http://zh.wikipedia.org/wiki/%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E6%AF%94%E8%BE%83
-[2]: http://arstechnica.com/information-technology/2011/11/two-decades-of-productivity-vims-20th-anniversary/
-[3]: http://coolshell.cn/articles/3125.html
-[4]: http://news.mydrivers.com/1/241/241042.htm
-[5]: http://www.vim.org/scripts/script_search_results.php
-[6]: C:\Program%20Files%20(x86)\Vim\vim74\vimtutor.bat
-[7]: http://www.study-area.org/tips/vim/
-[8]: http://coolshell.cn/articles/5426.html
-[10]: http://vim-adventures.com/
-[11]: https://github.com/gmarik/vundle
-[12]: https://github.com/
-[13]: http://blog.vgod.tw/2009/12/08/vim-cheat-sheet-for-programmers/
-[14]: http://vimcolorschemetest.googlecode.com/svn/html/index-c.html
-[15]: http://ethanschoonover.com/solarized
-[16]: https://github.com/altercation/solarized
-[17]: https://github.com/altercation/ethanschoonover.com/tree/master/projects/solarized#editors--ides
-[18]: https://github.com/tomasr/molokai
-[19]: https://github.com/scrooloose/nerdtree
-[20]: https://github.com/kien/ctrlp.vim
-[21]: https://github.com/vim-scripts/taglist.vim
-[22]: https://github.com/majutsushi/tagbar
+最后附上一些有趣有用的资源：
 
-[50]: http://news.cnblogs.com/n/141251/
-[51]: http://blog.csdn.net/canlets/article/details/17307657
-[52]: http://xbeta.info/7habits-edit.htm
-[53]: http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html
-[54]: http://blog.csdn.net/wklken/article/details/9076621
+- 为什么VIM使用HJKL作为方向键？请看[这里](http://news.cnblogs.com/n/141251/)
+- 为什么VIM和EMACS被称为最好的编辑器？这看[这里](http://blog.csdn.net/canlets/article/details/17307657)
+- VIM作者的演讲：《[高效编辑的7个习惯](http://xbeta.info/7habits-edit.htm)》，视频请点[这里](http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html)
+
+## 写在最后
+
+网上可能有很多人像我之前一样，过于关于工具本身，而忽略了一个非常重要的问题：工具之所以称为工具，仅仅在于它是被人们拿来使用，只要顺手就好，用它来做的事情才是关键。对于我们开发人员来说，专业知识永远比工具更为重要。自打VIM出生以来，就有几个亘古不变的话题：
+    VIM vs Emasc
+    VIM vs 其它编辑器
+    VIM vs IDE
+争论从来没有平息过，从远古时期的大牛们，到刚刚踏入VIM阵营的我们，也从来没有一个结论。也许很多人争吵已经不再是单单的编辑器之争，而是出于维护心目中最好的工作方式，甚至哲学之争。但对于大部分人来说，只要你的工具足够称手，那么多写几行代码，多看些书，远比这些无休止的争吵强得多。但如果你更深一步，开发出更好的编辑器，或者插件，那又另当别论了。
+
+这篇教程至此也该结束了，说是教程，本文却并没有详细的介绍如何入门，反而回忆了一大段个人学习VIM的经历，然后介绍了常用的优秀插件。也许看完本文，你并不一定能够学会VIM，但是它提供了很多比本文更有价值去学习的资源，给了你一个整体的认识，让你看到VIM可以强大到什么程度，避免走很多弯路。看完本文之后，你能够知道如何入门，如何去选插件，我想，这就够了。
+
+feihu
+2014.01.07 于 Shenzhen
+
+---全文完---
