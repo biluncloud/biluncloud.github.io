@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  我这样学习VIM - The Life Changing Editor
+title:  跟我一起学习VIM - The Life Changing Editor
 description: 写给同事的简单VIM教程，个人学习VIM经历，优秀插件介绍
 tags:   VIM, 教程, 编程, 入门，插件，YouCompleteMe，自动补全
 image:  hello-world.gif
@@ -500,3 +500,26 @@ feihu
 2014.01.07 于 Shenzhen
 
 ---全文完---
+
+[0]: http://xbeta.info
+[1]: http://zh.wikipedia.org/wiki/%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E6%AF%94%E8%BE%83
+[2]: http://arstechnica.com/information-technology/2011/11/two-decades-of-productivity-vims-20th-anniversary/
+[3]: http://coolshell.cn/articles/3125.html
+[4]: http://news.mydrivers.com/1/241/241042.htm
+[5]: http://www.vim.org/scripts/script_search_results.php
+[6]: C:\Program%20Files%20(x86)\Vim\vim74\vimtutor.bat
+[7]: http://www.study-area.org/tips/vim/
+[8]: http://coolshell.cn/articles/5426.html
+[10]: http://vim-adventures.com/
+[11]: https://github.com/gmarik/vundle
+[12]: https://github.com/
+[13]: http://blog.vgod.tw/2009/12/08/vim-cheat-sheet-for-programmers/
+[14]: http://vimcolorschemetest.googlecode.com/svn/html/index-c.html
+[15]: http://ethanschoonover.com/solarized
+[16]: https://github.com/altercation/solarized
+[17]: https://github.com/altercation/ethanschoonover.com/tree/master/projects/solarized#editors--ides
+[18]: https://github.com/tomasr/molokai
+[19]: https://github.com/scrooloose/nerdtree
+[20]: https://github.com/kien/ctrlp.vim
+[21]: https://github.com/vim-scripts/taglist.vim
+[22]: https://github.com/majutsushi/tagbar
