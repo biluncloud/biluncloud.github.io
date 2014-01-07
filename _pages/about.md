@@ -15,4 +15,4 @@ Hi, I'm **feihu**, a programmer from Shenzhen, China.
 ### Network
 
 Follow feihu:  
-↪ [github](http://github.com/biluncloud) | [twitter](http://twitter.com/) | [facebook](http://facebook.com/)  
+↪ [github](http://github.com/biluncloud) | [douban](http://www.douban.com/people/47964840/)

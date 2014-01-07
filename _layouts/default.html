@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="chrome=1" />
-		<title>{% if page.title %}{{ page.title }}{% else %}libFeihu{% endif %}</title>
+		<title>{% if page.title %}{{ page.title }}{% else %}libfeihu{% endif %}</title>
 		
 		<link rel="canonical" href="{{ site.url }}{{ page.url }}" />
 {% if page.blogfeed %}
@@ -20,7 +20,7 @@
 	<body>
 		<div class="wrapper{% if location == '' %} home{% endif %}">
 			<header>
-				<h1><a href="/"><img src="/img/pixelcog-logo.png" alt="{{ site.name }}" width="300" /></a></h1>
+				<h1><a href="/"><img src="/img/libfeihu-logo.png" alt="{{ site.name }}" width="300" /></a></h1>
 				<nav><ul>
 					<li><a {% if location == 'about' %}class="active" {% endif %}href="/about/">About</a></li>
 					<li><a {% if location == 'projects' %}class="active" {% endif %}href="/projects/">Projects</a></li>
@@ -35,11 +35,11 @@
 {% if page.nobio != true %}{% if location != '' %}
 				<img class="avatar" src="http://www.gravatar.com/avatar/9ffd3273e6f33aaf9cfb1bdccb8f3010?s=144" alt="Me" />
 {% endif %}
-				<p>libFeihu is the home of <a href="/about/">feihu</a>, a programmer from Shenzhen, China.</p>
+				<p>libfeihu is the home of <a href="/about/">feihu</a>, a programmer from Shenzhen, China.</p>
 				<p><a href="http://github.com/biluncloud">github</a> | <a href="http://twitter.com/">twitter</a> | <a href="http://facebook.com/">facebook</a></p>
 {% endif %}
 				<p>
-					<small>© {{ site.time | date: '%Y' }} libFeihu</small><br />
+					<small>© {{ site.time | date: '%Y' }} libfeihu</small><br />
 					<small>Made with <a href="http://jekyllrb.com/">Jekyll</a> &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small>
 				</p>
 			</footer>
