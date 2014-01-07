@@ -450,7 +450,7 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
 - Visual Studio
 
-    本身Windows下的gVim安装包在安装时会提供一个集成到Visual Studio中的插件`VsVim`，可以选择安装，但它是另开一个VIM的窗口来编辑当前的文件，我并不习惯这种方式，所以又找到了[`ViEmu`](http://www.viemu.com/)，它完美的将VIM的操作方式集成到了Visual Studio中，让你根本感觉不到这是在使用Visual Studio。更加强大的是，它可以完美的和[Visual Assist集成]：
+    本身Windows下的gVim安装包在安装时会提供一个集成到Visual Studio中的插件`VsVim`，可以选择安装，但它是另开一个VIM的窗口来编辑当前的文件，我并不习惯这种方式，所以又找到了[`ViEmu`](http://www.viemu.com/)，它完美的将VIM的操作方式集成到了Visual Studio中，让你根本感觉不到这是在使用Visual Studio。更加强大的是，它可以完美的和Visual Assist集成：
 
     <blockquote>
     <p>
