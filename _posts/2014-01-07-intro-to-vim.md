@@ -453,6 +453,7 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
     本身Windows下的gVim安装包在安装时会提供一个集成到Visual Studio中的插件`VsVim`，可以选择安装，但它是另开一个VIM的窗口来编辑当前的文件，我并不习惯这种方式，所以又找到了[`ViEmu`](http://www.viemu.com/)，它完美的将VIM的操作方式集成到了Visual Studio中，让你根本感觉不到这是在使用Visual Studio。更加强大的是，它可以完美的和[Visual Assist集成]：
 
     > Build 1854 contains a workaround for case=58034. Create a binary registry value named TrackCaretVisibility under HKCU\Software\Whole Tomato\Visual Assist X\VANet10 and set its value to 00 for compatibility with ViEmu. (The value defaults to 01 and is created for you upon exiting VS the first time you run 1854 or higher.)
+    >     
     > Note you need to close all IDEs before editing this registry key, to avoid Visual Assist X overwriting your change when it exits.
 
     在遇到YouCompleteMe之前，这就是我所采用的编程环境。但这是一个商业版的插件，只有30天的试用期，如果你真的喜欢它的，完全可以买下它，绝对物超所值。更为强大的是它还支持`Xcode`、`Word`、`Outlook`、`SQL Server`，这一定是一个极端的Vimer的项目:-)，来看看它的动画：
