@@ -482,6 +482,7 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
 
 最后附上一些有趣有用的资源：
 
+- 一篇非常好的为什么使用VIM的文章，请看[这里](http://www.viemu.com/a-why-vi-vim.html)
 - 为什么VIM使用HJKL作为方向键？请看[这里](http://news.cnblogs.com/n/141251/)
 - 为什么VIM和EMACS被称为最好的编辑器？这看[这里](http://blog.csdn.net/canlets/article/details/17307657)
 - VIM作者的演讲：《[高效编辑的7个习惯](http://xbeta.info/7habits-edit.htm)》，视频请点[这里](http://v.youku.com/v_show/id_XMTIwNDY5MjY4.html)
