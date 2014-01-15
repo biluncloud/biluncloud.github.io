@@ -30,11 +30,36 @@ image:  hello-world.gif
 - C语言标准库
 - GDB命令
 
-我想出了一种可行的但是不可移值的解决方案，它依赖于x86指令集和Linux的系统调用[write(2)](http://linux.die.net/man/2/write)。
+我想出了一种可行的但是不可移值的解决方案，它依赖于x86指令集和Linux的系统调用[write(2)](http://linux.die.net/man/2/write)，所以本文的讨论限制在特定操作系统内核上的特定架构。
 
 ## 例子
 
+我们使用使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入标准输出时中断。(feihu注：代码作了一定的修改以更好的演示)
+
+    #include <stdio.h>
+
+    void test()
+    {
+        printf("Test\n");
+    }
+
+    int main()
+    {
+        printf("Hello World!\n");
+        return 0;
+    }
+
+用下面的命令编译链接：
+
+    # gcc -g -o hello hello.c
+
+用下面的命令调试：
+
+    # gdb hello
+
 ## 在write中设置断点
+
+第一步，我们需要找出如何在有数据被写到标准输出时中断，
 
 ## 针对标准输出设置断点
 
@@ -46,6 +71,8 @@ image:  hello-world.gif
 
 ## 变体
 
+printf，std::cout
+strstr子字符串：No symbol "fd" in current context.
 ------------------------------------------------
 前两天同事让我在小组内部分享一下VIM，于是我花了一点时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我2014年的第一篇Blog。
 
