@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  谁打印了这个字符串
-description: 如何在一个很大的程序中找到谁打印了这个字符串，调试标准输出
-tags:   GDB，调试，标准输出，断点，Linux
+description: 如何在一个很大的程序中找到谁打印了这个字符串，调试stdout
+tags:   GDB，调试，标准输出，stdout，断点，Linux
 image:  hello-world.gif
 ---
 
@@ -19,9 +19,9 @@ image:  hello-world.gif
 
 -----
 
-# 调试标准输出
+# 调试STDOUT
 
-前几天我遇到一个很有趣的[Stack Overflow 问题](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，提问者希望[GDB](http://www.gnu.org/s/gdb/)能够在一个特定的字符串写到标准输出时中断程序。
+前几天我遇到一个很有趣的[Stack Overflow 问题](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，提问者希望[GDB](http://www.gnu.org/s/gdb/)能够在一个特定的字符串写到stdout时中断程序。
 
 除非你至少掌握了一些下面的知识，否则并不容易得到这个问题的答案：
 
@@ -34,7 +34,7 @@ image:  hello-world.gif
 
 ## 例子
 
-我们使用使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入标准输出时中断。(feihu注：代码作了一定的修改以更好的演示)
+我们使用使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改以更好的演示)
 
     #include <stdio.h>
 
@@ -59,16 +59,95 @@ image:  hello-world.gif
 
 ## 在write中设置断点
 
-第一步，我们需要找出如何在有数据被写到标准输出时中断，
+第一步，我们需要找出如何在有数据被写到stdout时中断程序。我们假设你调试代码的作者没有疯，他们采用了所选语言的标准用法来向stdout写数据(比如C语言中的[printf(3)](http://linux.die.net/man/3/printf))，或者他们直接调用系统调用[write(2)](http://linux.die.net/man/2/write)。
 
-## 针对标准输出设置断点
+事际上**最终`printf(3)`也调用的是`write(2)`**，所以不管采用上面哪种方式都可以。
 
-## 获得系统调用参数
+因此你可以在[write(2)](http://linux.die.net/man/2/write)系统调用中设置一个断点：
 
-## 针对特定字符串设置断点
+    $gdb break write
 
-## x86 64位系统的解决方案
+GDB也许会抱怨它并不知道`write`函数，但是它可以在将来这个函数有效时再在其中设置这一断点：
 
+    Function "write" not defined.
+    Make breakpoint pending on future shared library load? (y or [n])
+
+这完全没问题，直接输入`y`即可。
+
+## 在write中写到STDOUT时设置断点
+
+一旦你能够在`write`函数中设置断点后，你需要设置一个条件，只有在写到stdout时才中断，这里有一点复杂。看看`write(2)`的[帮助页面](http://linux.die.net/man/2/write)：第一个参数`fd`是要写的文件描述符，在Linux中，stdout的文件描述符是[1](http://linux.die.net/man/3/stdout)(也许你使用的平台有所不同)。
+
+于是你的第一反应是这样：
+
+    $gdb condition 1 fd == 1
+
+**但是很遗憾，这不起作用。**除非你非常幸运，否则不可能已经加载了`write(2)`系统调用的调试`symbols`，这意味着你不能以参数名来访问传给系统调用的参数。
+
+## 获取系统调用参数
+
+当然，还有其它的方法可以获取传给系统调用的参数，GDB提供了非常完善的手段让你来访问各种汇编寄存器，在这个问题中，我们感兴趣的是[Extended Stack Pointer](http://wiki.osdev.org/Stack#Stack_example_on_the_X86_architecture)，也就是`esp`寄存器。(feihu注：这里仅适用于x86 32位系统，x86 64位系统的解决方案请向下看。)
+
+当一个函数调用发生时，栈中储存了：
+
+- 函数的返回地址
+- 指向函数参数的指针
+
+这意味着当调用`write`函数时，栈的结构可能像下面一样：
+
+TODO: 这里换成一个截图好了
+<table border=1>
+<tr>
+<th>ESP Offset (bytes)</th>
+<th>Points to Argument</th>
+<th>Value</th>
+</tr>
+<tr>
+<td>0</td>
+<td>N/A</td>
+<td>Return address</td>
+</tr>
+<tr>
+<td>4</td>
+<td><em>fd</em></td>
+<td>File descriptor</td>
+</tr>
+<tr>
+<td>8</td>
+<td><em>buf</em></td>
+<td>Pointer to the buffer to write</td>
+</tr>
+<tr>
+<td>12</td>
+<td><em>count</em></td>
+<td>The number of bytes to write</td>
+</tr>
+</table>
+
+_这是假设地址占4个字节，根据你自己的机器作相应的调整_
+
+所以现在你可以像这样设置条件断点：
+
+    $gdb break write if *(int *)($esp + 4) == 1
+
+_再一次声明，假设地址占4个字节_
+
+注意，`$esp`能够访问`ESP`寄存器，它将所有的数据都看成是`void *`。因为GDB不允许直接将`void *`转换成`int`型(这么做是对的)，所以你需要先将`($esp + 4)`转换成`int *`，然后再对其指针取值以获得文件描述符参数的值。
+
+## 限定到特定字符串
+
+接下来更加复杂一点，它是上一步的扩展，而且，它并不适用于所有的情况。传给`printf(3)`的字符串并不一定会完整的传给`write(2)`，它可能会被分成更小的块然后一次性的写到文件中，调试stdout时请记住这一点，当然如果用短字符串的话应该没问题。(feihu注：调用`printf`时并不会每次都调用`write`，而是会先把数据放到缓冲区，等缓冲区积累到一定量时才会一次性的写到文件中。如果想到立即写到文件中的话，需要调用[fflush](http://www.cplusplus.com/reference/cstdio/fflush/)。)
+
+现在你必须再将这个断点加上一定的限制，当且仅当一个特定的字符串传给`write(2)`时才中断程序。为了做到这一点，你可以对`write`的第二个参数`buf`调用[strcmp(3)](http://linux.die.net/man/3/strcmp)。从前面的表中可知，`$esp + 8`指向的就是`buf`，所以再给断点增加一个条件就变得很简单了：
+
+    $gdb break write if *(int *)($esp + 4) == 1 && strcmp("Hello World!\n", *(char **)($esp + 8)) == 0
+
+请记住，`$esp + n / sizeof(void *)`就代表了函数第n个参数的指针，这表明`$esp + 8`指向的是一个指向字符串的指针，为了让它能够正确的运行，你需要做一些转换和取值操作。
+
+## 64位系统的解决方案
+
+虽然上面的方案看起来可以很好的工作了，但是
+http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI
 ## 变体
 
 printf，std::cout
