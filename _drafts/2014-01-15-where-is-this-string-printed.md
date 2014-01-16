@@ -201,7 +201,13 @@ _再一次声明，假设地址占4个字节_
 2. 设置条件：
         fh == 1 && strstr((char *)buf, "Hello World") != 0
 
+但是这里有一个问题，我测试了`printf`和`std::cout`，对于前者，所有的字符串一次都写到了`_write_nolock`中，然而`std::cout`是一次传一个字符，这样也就无法使用后面比较字符串这个条件了。
+
 ## 只适用Win32的方案
+
+当然，这里我们也可以采用前面介绍的方法，通过寄存器来增加条件。同样由于平台的差异，这里分Win32和x64来讨论。
+
+
 ## 只适用x64的方案
 
 *(int *)($ebp+8)==1
@@ -212,7 +218,7 @@ rdx
 r8
 http://msdn.microsoft.com/en-us/library/ms235286.aspx
 http://msdn.microsoft.com/en-us/library/zthk2dkh.aspx
-C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\crt\src\write.c
+
 ------------------------------------------------
 前两天同事让我在小组内部分享一下VIM，于是我花了一点时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我2014年的第一篇Blog。
 
