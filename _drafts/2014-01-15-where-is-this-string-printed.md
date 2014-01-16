@@ -30,7 +30,7 @@ image:  hello-world.gif
 - C语言标准库
 - GDB命令
 
-我想出了一种可行的但是不可移值的解决方案，它依赖于x86指令集和Linux的系统调用[write(2)](http://linux.die.net/man/2/write)，所以本文的讨论限制在特定操作系统内核上的特定架构。
+我想出了一种可行的但是不可移植的解决方案，它依赖于x86指令集和Linux的系统调用[write(2)](http://linux.die.net/man/2/write)，所以本文的讨论限制在特定操作系统内核上的特定架构。
 
 ## 例子
 
@@ -82,7 +82,7 @@ GDB也许会抱怨它并不知道`write`函数，但是它可以在将来这个�
 
     $gdb condition 1 fd == 1
 
-**但是很遗憾，这不起作用。**除非你非常幸运，否则不可能已经加载了`write(2)`系统调用的调试`symbols`，这意味着你不能以参数名来访问传给系统调用的参数。
+**但是很遗憾，这不起作用。**(feihu注：会出现这样的错误`No symbol "fd" in current context.`)除非你非常幸运，否则不可能已经加载了`write(2)`系统调用的调试`symbols`，这意味着你不能以参数名来访问传给系统调用的参数。
 
 ## 获取系统调用参数
 
@@ -146,12 +146,73 @@ _再一次声明，假设地址占4个字节_
 
 ## 64位系统的解决方案
 
-虽然上面的方案看起来可以很好的工作了，但是
-http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI
-## 变体
+64位系统需要采用`RDI`和`RSI`寄存器。(feihu注：对于32位系统，所有的函数参数是写在栈里面的，所以可以用前面介绍的办法。但是64位系统中函数的参数别未存放在栈中，它提供了更多的寄存器用于存放参数，请戳[这里](http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI)。)
 
-printf，std::cout
-strstr子字符串：No symbol "fd" in current context.
+    $gdb break write if 1 == $rdi && strcmp((char *)($rsi), "Hello World!\n") == 0
+
+注意这里没有了指针的转换操作，因为寄存器里面存的不是指向栈中元素的指针，它们存的是值本身。
+
+## 总结
+
+经过上面的一系列步骤之后，你可以得到一个移植性不好的解决方案，在一些特定的平台和架构下，可以使用GDB在一个特定的字符串写到stdout时中断程序。
+
+如果你有一个更好的解决方案，或者仅仅是另外一个替代方案，请在下面留言，并且/或者直接在Stack Overflow上[回答](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)这个问题。还有，如果你有一种方案可以工作在其它平台或者架构下，请一定也给我留言。
+
+----
+
+## 再进一步
+
+原文的翻译就到上面，但是这里还可以再做一些改进。比如上面的`strcmp`函数可以用下面的函数来代替：
+
+- [strncmp](http://en.cppreference.com/w/cpp/string/byte/strncmp)对于你只想匹配前`n`个字符的情况非常有用
+- [strstr](http://en.cppreference.com/w/cpp/string/byte/strstr)可以用来查找子字符串，这个非常有用，因为你不能确定你要查找的字符串到底是完整的一次由`write`输出的，还是经过几次`printf`在缓存区合并之后才写到控制台的，因为我更加倾向这个方法
+
+# Windows上的解决方案
+
+我尝试过在Windows平台上使用类似的方法，最终也成功的解决了(x86-64位操作系统下的Win32和64位程序)。
+
+对于所有的写文件操作来说，Linux最终都会调用到它的POSIX API `write`函数，Windows和Linux不一样，它提供的API是[WriteFile](http://msdn.microsoft.com/en-us/library/windows/desktop/aa365747%28v=vs.85%29.aspx)，最终Windows上的调用都会用到它。但是，不像开源的Linux可以调试write，Windows无法调试WriteFile函数，所以也无法在WriteFile处设置断点。
+
+但微软公开了部分VC的源码，所以我们可以在给出的源代码部分找到最终调用WriteFile的地方，在那一层设置断点即可。经过调试，我发现最后是`_write_nolock`调用了WriteFile，这个函数位于`your\VS\Folder\VC\crt\src\write.c`，函数原型如下：
+
+
+    /* now define version that doesn't lock/unlock, validate fh */
+    int __cdecl _write_nolock (
+            int fh,
+            const void *buf,
+            unsigned cnt
+            )
+
+对比Linux的write系统调用：
+
+    #include <unistd.h>
+    
+    ssize_t write(int fd, const void *buf, size_t count); 
+
+每个参数都可以对应的起来，所以完全可以参照上面的方法来处理，在`_write_nolock`中设置一个条件断点即可，只有一些细节不一样。
+
+## 可移植方案
+
+很神奇的是Windows下面，在设置条件断点时可以直接使用变量名，而且在Win32和x64下面都可以。这样的话调试就变得简单了很多：
+
+1. 在`_write_nolock`处增加一个断点
+
+    **注意**：Win32和x64在这里有些许不同，Win32可以直接将函数名作为断点的位置，而x64如果直接设置在函数名处是无法中断的，我调试了一下发现原因在于x64的函数入口处会给这些参数赋值，所以在赋完值之前这些参数名还是无法使用的。我们这里可以有一个work around：不在函数的入口处设置断点，设置在函数的第一行，此时参数已经初始化，所以可以正常使用了。(即不用函数名作为断点的位置，而是用文件名+行号；或者直接打开这个文件，在相应的位置设置断点即可。)。
+2. 设置条件：
+        fh == 1 && strstr((char *)buf, "Hello World") != 0
+
+## 只适用Win32的方案
+## 只适用x64的方案
+
+*(int *)($ebp+8)==1
+strstr(*(char **)($ebp+12), "main")!=0
+
+rcx
+rdx
+r8
+http://msdn.microsoft.com/en-us/library/ms235286.aspx
+http://msdn.microsoft.com/en-us/library/zthk2dkh.aspx
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\crt\src\write.c
 ------------------------------------------------
 前两天同事让我在小组内部分享一下VIM，于是我花了一点时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我2014年的第一篇Blog。
 
