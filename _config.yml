@@ -12,6 +12,6 @@ relative_permalinks: false
 excerpt_separator: "{{ more }}"
 
 safe:     true
-pygments: false
+pygments: true
 markdown: 'maruku'
 timezone: 'Asia/Shanghai'

@@ -36,6 +36,7 @@ image:  hello-world.gif
 
 我们使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改，增加了另外一个输出字符串的函数，以更好的演示捕获特定字符串)
 
+{% highlight cpp linenos %}
     #include <stdio.h>
 
     void test()
@@ -49,6 +50,7 @@ image:  hello-world.gif
         test();
         return 0;
     }
+{% endhighlight %}
 
 用下面的命令编译链接：
 
@@ -150,18 +152,22 @@ _再一次声明，假设地址占4个字节_
 但微软公开了部分VC的源码，所以我们可以在给出的源代码部分找到最终调用WriteFile的地方，在那一层设置断点即可。经过调试，我发现最后是`_write_nolock`调用了WriteFile，这个函数位于`your\VS\Folder\VC\crt\src\write.c`，函数原型如下：
 
 
+{% highlight cpp %}
     /* now define version that doesn't lock/unlock, validate fh */
     int __cdecl _write_nolock (
             int fh,
             const void *buf,
             unsigned cnt
             )
+{% endhighlight %}
 
 对比Linux的write系统调用：
 
+{% highlight cpp %}
     #include <unistd.h>
     
     ssize_t write(int fd, const void *buf, size_t count); 
+{% endhighlight %}
 
 每个参数都可以对应的起来，所以完全可以参照上面的方法来处理，在`_write_nolock`中设置一个条件断点即可，只有一些细节不一样。
 
