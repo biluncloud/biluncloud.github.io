@@ -10,7 +10,7 @@ image:  hello-world.gif
 
 {{ more }}
 
-经过大量的搜索之后，在stackoverflow上找到了[答案](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，并且成功的解决了我的问题。被采用答案的作者`Anthony Arnold`由于十分喜欢这个问题，所以写了一篇关于它的[博文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)。我也特别喜欢这个问题，之前数次遇到过此类问题，但都采用别的方式解决，而只有这个答案最完美。同时它综合运用了很多知识，能够给我们的调试带来不少启发。因为网上也没有再找到其它的解决方案，所以我决定翻译此文，离开学校之后第一次翻译，不好之处欢迎指正。
+经过大量的搜索之后，在Stack Overflow上找到了[答案](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，并且成功的解决了我的问题。被采用答案的作者`Anthony Arnold`由于十分喜欢这个问题，所以写了一篇关于它的[博文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)。我也特别喜欢这个问题，之前遇到过多次，但都采用别的方式解决，而只有这个答案最完美。同时它综合运用了很多知识，能够给我们的调试带来不少启发。因为网上也没有再找到其它的解决方案，所以我决定翻译此文，后面对原文再进行其它平台的补充。离开学校之后第一次翻译，不好之处欢迎指正。
 
 ## Table of Contents
 
@@ -34,7 +34,7 @@ image:  hello-world.gif
 
 ### 例子
 
-我们使用使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改以更好的演示)
+我们使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改，增加了另外一个输出字符串的函数，以更好的演示捕获特定字符串)
 
     #include <stdio.h>
 
@@ -46,6 +46,7 @@ image:  hello-world.gif
     int main()
     {
         printf("Hello World!\n");
+        test();
         return 0;
     }
 
@@ -61,7 +62,7 @@ image:  hello-world.gif
 
 第一步，我们需要找出如何在有数据被写到stdout时中断程序。我们假设你调试代码的作者没有疯，他们采用了所选语言的标准用法来向stdout写数据(比如C语言中的[printf(3)](http://linux.die.net/man/3/printf))，或者他们直接调用系统调用[write(2)](http://linux.die.net/man/2/write)。
 
-事际上**最终`printf(3)`也调用的是`write(2)`**，所以不管采用上面哪种方式都可以。
+实际上**最终`printf(3)`也调用的是`write(2)`**，所以不管采用上面哪种方式都可以。
 
 因此你可以在[write(2)](http://linux.die.net/man/2/write)系统调用中设置一个断点：
 
@@ -119,7 +120,7 @@ _再一次声明，假设地址占4个字节_
 
 ### 64位系统的解决方案
 
-64位系统需要采用`RDI`和`RSI`寄存器。(feihu注：对于32位系统，所有的函数参数是写在栈里面的，所以可以用前面介绍的办法。但是64位系统中函数的参数别未存放在栈中，它提供了更多的寄存器用于存放参数，请戳[这里](http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI)。)
+64位系统需要采用`RDI`和`RSI`寄存器。(feihu注：对于32位系统，所有的函数参数是写在栈里面的，所以可以用前面介绍的办法。但是64位系统中函数的参数并未存放在栈中，它提供了更多的寄存器用于存放参数，请戳[这里](http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI)。)
 
     $gdb break write if 1 == $rdi && strcmp((char *)($rsi), "Hello World!\n") == 0
 
@@ -133,16 +134,16 @@ _再一次声明，假设地址占4个字节_
 
 ----
 
-### 再进一步
+## 再进一步
 
 原文的翻译就到上面，但是这里还可以再做一些改进。比如上面的`strcmp`函数可以用下面的函数来代替：
 
 - [strncmp](http://en.cppreference.com/w/cpp/string/byte/strncmp)对于你只想匹配前`n`个字符的情况非常有用
-- [strstr](http://en.cppreference.com/w/cpp/string/byte/strstr)可以用来查找子字符串，这个非常有用，因为你不能确定你要查找的字符串到底是完整的一次由`write`输出的，还是经过几次`printf`在缓存区合并之后才写到控制台的，因为我更加倾向这个方法
+- [strstr](http://en.cppreference.com/w/cpp/string/byte/strstr)可以用来查找子字符串，这个非常有用，因为你不能确定你要查找的字符串到底是完整的一次由`write`输出的，还是经过几次`printf`在缓存区合并之后才写到控制台的，因此我更加倾向这个方法
 
 ## Windows上的解决方案
 
-我尝试过在Windows平台上使用类似的方法，最终也成功的解决了(x86-64位操作系统下的Win32和64位程序)。
+随后我想，能不能在Windows平台上也使用类似的方法，最终也成功了(x86-64位操作系统下的Win32和64位程序)。
 
 对于所有的写文件操作来说，Linux最终都会调用到它的POSIX API `write`函数，Windows和Linux不一样，它提供的API是[WriteFile](http://msdn.microsoft.com/en-us/library/windows/desktop/aa365747%28v=vs.85%29.aspx)，最终Windows上的调用都会用到它。但是，不像开源的Linux可以调试write，Windows无法调试WriteFile函数，所以也无法在WriteFile处设置断点。
 
@@ -170,12 +171,12 @@ _再一次声明，假设地址占4个字节_
 
 1. 在`_write_nolock`处增加一个断点
 
-    **注意**：Win32和x64在这里有些许不同，Win32可以直接将函数名作为断点的位置，而x64如果直接设置在函数名处是无法中断的，我调试了一下发现原因在于x64的函数入口处会给这些参数赋值，所以在赋完值之前这些参数名还是无法使用的。我们这里可以有一个work around：不在函数的入口处设置断点，设置在函数的第一行，此时参数已经初始化，所以可以正常使用了。(即不用函数名作为断点的位置，而是用文件名+行号；或者直接打开这个文件，在相应的位置设置断点即可。)。
+    **注意**：Win32和x64在这里有些许不同，Win32可以直接将函数名作为断点的位置，而x64如果直接设置在函数名处是无法中断的，我调试了一下发现原因在于x64的函数入口处会给这些参数赋值，所以在赋完值之前这些参数名还是无法使用的。我们这里可以有一个work around：不在函数的入口处设置断点，设置在函数的第一行，此时参数已经初始化，所以可以正常使用了。(即不用函数名作为断点的位置，而是用文件名+行号；或者直接打开这个文件，在相应的位置设置断点即可。)
 2. 设置条件：
 
         fh == 1 && strstr((char *)buf, "Hello World") != 0
 
-但是这里有一个问题，我测试了`printf`和`std::cout`，对于前者，所有的字符串一次都写到了`_write_nolock`中，然而`std::cout`是一次传一个字符，这样也就无法使用后面比较字符串这个条件了。
+**注意**：但是这里有一个问题，我测试了`printf`和`std::cout`，对于前者，所有的字符串一次都写到了`_write_nolock`中，然而`std::cout`是一次传一个字符，这样也就无法使用后面比较字符串这个条件了。
 
 ### 只适用Win32的方案
 
@@ -216,7 +217,11 @@ _再一次声明，假设地址占4个字节_
 
 ### 写在结尾
 
-我也将这后面Windows上的方法发到[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a)和[原文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)的评论中，算是给这个问题的一个完善吧。
+同样，这个方法也有一定的局限性，比如对于`std::cout`，我还没有找到好的解决办法。
+
+我也将这后面Windows上的方法发到[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a)和[原文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)的评论中，算是给这个问题的一个扩展吧。
+
+如果你有更好的解决方案，请给我们留言或者直接在[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a)回答。
 
 (全文完)
 
