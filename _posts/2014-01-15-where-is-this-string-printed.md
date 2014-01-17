@@ -12,14 +12,14 @@ image:  hello-world.gif
 
 经过大量的搜索之后，在stackoverflow上找到了[答案](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，并且成功的解决了我的问题。被采用答案的作者`Anthony Arnold`由于十分喜欢这个问题，所以写了一篇关于它的[博文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)。我也特别喜欢这个问题，之前数次遇到过此类问题，但都采用别的方式解决，而只有这个答案最完美。同时它综合运用了很多知识，能够给我们的调试带来不少启发。因为网上也没有再找到其它的解决方案，所以我决定翻译此文，离开学校之后第一次翻译，不好之处欢迎指正。
 
-# Table of Contents
+## Table of Contents
 
 * Table of Contents Placeholder
 {:toc}
 
 -----
 
-# 调试STDOUT
+## 调试STDOUT
 
 前几天我遇到一个很有趣的[Stack Overflow 问题](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，提问者希望[GDB](http://www.gnu.org/s/gdb/)能够在一个特定的字符串写到stdout时中断程序。
 
@@ -32,7 +32,7 @@ image:  hello-world.gif
 
 我想出了一种可行的但是不可移植的解决方案，它依赖于x86指令集和Linux的系统调用[write(2)](http://linux.die.net/man/2/write)，所以本文的讨论限制在特定操作系统内核上的特定架构。
 
-## 例子
+### 例子
 
 我们使用使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改以更好的演示)
 
@@ -57,7 +57,7 @@ image:  hello-world.gif
 
     # gdb hello
 
-## 在write中设置断点
+### 在write中设置断点
 
 第一步，我们需要找出如何在有数据被写到stdout时中断程序。我们假设你调试代码的作者没有疯，他们采用了所选语言的标准用法来向stdout写数据(比如C语言中的[printf(3)](http://linux.die.net/man/3/printf))，或者他们直接调用系统调用[write(2)](http://linux.die.net/man/2/write)。
 
@@ -74,7 +74,7 @@ GDB也许会抱怨它并不知道`write`函数，但是它可以在将来这个�
 
 这完全没问题，直接输入`y`即可。
 
-## 在write中写到STDOUT时设置断点
+### 在write中写到STDOUT时设置断点
 
 一旦你能够在`write`函数中设置断点后，你需要设置一个条件，只有在写到stdout时才中断，这里有一点复杂。看看`write(2)`的[帮助页面](http://linux.die.net/man/2/write)：第一个参数`fd`是要写的文件描述符，在Linux中，stdout的文件描述符是[1](http://linux.die.net/man/3/stdout)(也许你使用的平台有所不同)。
 
@@ -84,7 +84,7 @@ GDB也许会抱怨它并不知道`write`函数，但是它可以在将来这个�
 
 **但是很遗憾，这不起作用。**(feihu注：会出现这样的错误`No symbol "fd" in current context.`)除非你非常幸运，否则不可能已经加载了`write(2)`系统调用的调试`symbols`，这意味着你不能以参数名来访问传给系统调用的参数。
 
-## 获取系统调用参数
+### 获取系统调用参数
 
 当然，还有其它的方法可以获取传给系统调用的参数，GDB提供了非常完善的手段让你来访问各种汇编寄存器，在这个问题中，我们感兴趣的是[Extended Stack Pointer](http://wiki.osdev.org/Stack#Stack_example_on_the_X86_architecture)，也就是`esp`寄存器。(feihu注：这里仅适用于x86 32位系统，x86 64位系统的解决方案请向下看。)
 
@@ -107,7 +107,7 @@ _再一次声明，假设地址占4个字节_
 
 注意，`$esp`能够访问`ESP`寄存器，它将所有的数据都看成是`void *`。因为GDB不允许直接将`void *`转换成`int`型(这么做是对的)，所以你需要先将`($esp + 4)`转换成`int *`，然后再对其指针取值以获得文件描述符参数的值。
 
-## 限定到特定字符串
+### 限定到特定字符串
 
 接下来更加复杂一点，它是上一步的扩展，而且，它并不适用于所有的情况。传给`printf(3)`的字符串并不一定会完整的传给`write(2)`，它可能会被分成更小的块然后一次性的写到文件中，调试stdout时请记住这一点，当然如果用短字符串的话应该没问题。(feihu注：调用`printf`时并不会每次都调用`write`，而是会先把数据放到缓冲区，等缓冲区积累到一定量时才会一次性的写到文件中。如果想到立即写到文件中的话，需要调用[fflush](http://www.cplusplus.com/reference/cstdio/fflush/)。)
 
@@ -117,7 +117,7 @@ _再一次声明，假设地址占4个字节_
 
 请记住，`$esp + n / sizeof(void *)`就代表了函数第n个参数的指针，这表明`$esp + 8`指向的是一个指向字符串的指针，为了让它能够正确的运行，你需要做一些转换和取值操作。
 
-## 64位系统的解决方案
+### 64位系统的解决方案
 
 64位系统需要采用`RDI`和`RSI`寄存器。(feihu注：对于32位系统，所有的函数参数是写在栈里面的，所以可以用前面介绍的办法。但是64位系统中函数的参数别未存放在栈中，它提供了更多的寄存器用于存放参数，请戳[这里](http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI)。)
 
@@ -125,7 +125,7 @@ _再一次声明，假设地址占4个字节_
 
 注意这里没有了指针的转换操作，因为寄存器里面存的不是指向栈中元素的指针，它们存的是值本身。
 
-## 总结
+### 总结
 
 经过上面的一系列步骤之后，你可以得到一个移植性不好的解决方案，在一些特定的平台和架构下，可以使用GDB在一个特定的字符串写到stdout时中断程序。
 
@@ -133,14 +133,14 @@ _再一次声明，假设地址占4个字节_
 
 ----
 
-## 再进一步
+### 再进一步
 
 原文的翻译就到上面，但是这里还可以再做一些改进。比如上面的`strcmp`函数可以用下面的函数来代替：
 
 - [strncmp](http://en.cppreference.com/w/cpp/string/byte/strncmp)对于你只想匹配前`n`个字符的情况非常有用
 - [strstr](http://en.cppreference.com/w/cpp/string/byte/strstr)可以用来查找子字符串，这个非常有用，因为你不能确定你要查找的字符串到底是完整的一次由`write`输出的，还是经过几次`printf`在缓存区合并之后才写到控制台的，因为我更加倾向这个方法
 
-# Windows上的解决方案
+## Windows上的解决方案
 
 我尝试过在Windows平台上使用类似的方法，最终也成功的解决了(x86-64位操作系统下的Win32和64位程序)。
 
@@ -164,7 +164,7 @@ _再一次声明，假设地址占4个字节_
 
 每个参数都可以对应的起来，所以完全可以参照上面的方法来处理，在`_write_nolock`中设置一个条件断点即可，只有一些细节不一样。
 
-## 可移植方案
+### 可移植方案
 
 很神奇的是Windows下面，在设置条件断点时可以直接使用变量名，而且在Win32和x64下面都可以。这样的话调试就变得简单了很多：
 
@@ -177,7 +177,7 @@ _再一次声明，假设地址占4个字节_
 
 但是这里有一个问题，我测试了`printf`和`std::cout`，对于前者，所有的字符串一次都写到了`_write_nolock`中，然而`std::cout`是一次传一个字符，这样也就无法使用后面比较字符串这个条件了。
 
-## 只适用Win32的方案
+### 只适用Win32的方案
 
 当然，这里我们也可以采用前面介绍的方法，通过寄存器来设置断点的条件。同样由于平台的差异，这里分Win32和x64来讨论。
 
@@ -199,7 +199,7 @@ _再一次声明，假设地址占4个字节_
 
 同前面介绍的Linux下的方法一样，条件的第一部分是对`fh`，只有当向`stdout`写数据时才中断。第二部分是针对`buf`，当其中含有特定的字符串时满足中断条件。
 
-## 只适用x64的方案
+### 只适用x64的方案
 
 从x86到x64有两个重要的[改变](http://msdn.microsoft.com/en-us/library/ms235286.aspx)，一是地址容量从32位变成了64位，二是增加了一些64位寄存器。因为这些寄存器的增加，x64就只使用[`__fastcall`](http://msdn.microsoft.com/en-us/library/6xa169sk.aspx)这种方式作为调用约定，这种方式会将前四个参数放到寄存器中，如果有更多参数的话，会存到栈中。
 
@@ -214,7 +214,7 @@ _再一次声明，假设地址占4个字节_
 
 由于`esp`是将所有的数据都看成是`void *`，所以需要做一定的转换才可以使用。而这里的寄存器存的是参数的值，所以不需要这个转换。所以`rcx`本身就是`fh`的值，而`rdx`中存的是一个指针，将它转成`char *`之后即可表示字符串。
 
-## 写在结尾
+### 写在结尾
 
 我也将这后面Windows上的方法发到[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a)和[原文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)的评论中，算是给这个问题的一个完善吧。
 
