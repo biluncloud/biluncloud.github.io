@@ -179,17 +179,47 @@ _再一次声明，假设地址占4个字节_
 
 ## 只适用Win32的方案
 
-当然，这里我们也可以采用前面介绍的方法，通过寄存器来增加条件。同样由于平台的差异，这里分Win32和x64来讨论。
+当然，这里我们也可以采用前面介绍的方法，通过寄存器来设置断点的条件。同样由于平台的差异，这里分Win32和x64来讨论。
 
+对于Win32程序，和前面介绍的Linux下使用GDB的方法基本一致。注意到函数前面的`__cdecl`，这种调用约定表明：
+
+- 参数由右至左传递
+- 调用方负责清理栈
+- 非特殊情况下，会在函数名前加下划线来修饰
+- 不执行任何大小写转换
+
+可以参考[这里](http://msdn.microsoft.com/en-us/library/zkwh89ks.aspx)。微软的网站上还有一个[例子](http://msdn.microsoft.com/en-us/library/a5s9345t.aspx)来展示函数调用时参数在栈中的情况，结果请看[这里](http://msdn.microsoft.com/en-us/library/25687bhx.aspx)，它给出的每一种调用约定下寄存器和栈的使用情况。
+
+知道这些之后，设置一个条件断点就变得非常容易了：
+
+1. 在`_write_nolock`处设置一个断点
+2. 增加条件：
+
+        *(int *)($esp + 4) == 1 && strstr(*(char **)($esp + 8), "Hello") != 0
+
+同前面介绍的Linux下的方法一样，条件的第一部分是对`fh`，只有当向`stdout`写数据时才中断。第二部分是针对`buf`，当其中含有特定的字符串时满足中断条件。
 
 ## 只适用x64的方案
 
-    *(int *)($ebp+8)==1
-    strstr(*(char **)($ebp+12), "main")!=0
+从x86到x64有两个重要的[改变](http://msdn.microsoft.com/en-us/library/ms235286.aspx)，一是地址容量从32位变成了64位，二是增加了一些64位寄存器。因为这些寄存器的增加，x64就只使用[`__fastcall`](http://msdn.microsoft.com/en-us/library/6xa169sk.aspx)这种方式作为调用约定，这种方式会将前四个参数放到寄存器中，如果有更多参数的话，会存到栈中。
 
-    rcx
-    rdx
-    r8
-    http://msdn.microsoft.com/en-us/library/ms235286.aspx
-    http://msdn.microsoft.com/en-us/library/zthk2dkh.aspx
+关于参数传递可以参考[这里](http://msdn.microsoft.com/en-us/library/zthk2dkh.aspx)，函数调用时前四个参数会依次放到：`RCX`、`RDX`、`R8`和`R9`当中，因此增加条件断点也变得很容易：
 
+1. 在`_write_nolock`处设置一个断点：
+
+    **注意**：这里直接在入口设置即可，不需要像前面可移植方案中介绍的那样设置到函数的第一行，因为寄存器在入口处已经有了正确的值。
+2. 设置条件：
+
+    $rcx == 1 && strstr((char *)$rdx, "Hello") != 0
+
+由于`esp`是将所有的数据都看成是`void *`，所以需要做一定的转换才可以使用。而这里的寄存器存的是参数的值，所以不需要这个转换。所以`rcx`本身就是`fh`的值，而`rdx`中存的是一个指针，将它转成`char *`之后即可表示字符串。
+
+## 写在结尾
+
+我也将这后面Windows上的方法发到[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a)和[原文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)的评论中，算是给这个问题的一个完善吧。
+
+(全文完)
+
+feihu
+
+2014.01.16 于 Shenzhen
