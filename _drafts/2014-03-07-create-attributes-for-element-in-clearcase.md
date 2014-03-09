@@ -3,7 +3,7 @@ layout: post
 title:  记一次当前工作目录问题的排查经历
 description: 一个由当前工作目录引起的问题，问题最终很简单，但是却困扰大家很久
 tags:   ClearCase，clearvtree，sendto，git，gitk，当前工作目录，脚本，batch，debug，快捷方式
-image:  debug-stdout.png
+image:  version-ctrl.png
 ---
 
 最近在使用ClearCase的时候遇到一个问题，当从命令行里启动版本树，并想给一个节点打上review属性时，经常会出现一个命令窗口一闪而过，刷新版本树之后却没能找到想要打的review属性，只有再次尝试才会正确打上。大家忍受了这个问题很久，但一直都没时间去深入分析它。在连续几次遇到这情况之后，我觉得忍无可忍，下定决心解决它，最终找到了问题的根源并给出了解决方案，在这里详细记录一下这次排查的经历。
