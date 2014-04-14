@@ -19,26 +19,28 @@ image:  version-ctrl.png
 
 ## 写在前面
 
-log如今已经成为了我们日常开发时所必不可少的工具，它同debug一起构成了开发者手中分析问题最有力的两个武器。两者各有优劣，相辅相成，配合起来使用将变得无往不利。通常相比于debug来说，log在很大程度上可以更方便、更迅速的让开发者分析程序的问题，尤其是对于非常庞大的系统、或者已经发布的程序，又或者一些非必现的问题，当我们无法方便的debug问题程序时，log文件可以提供非常多有用的信息，大多数情况下根据log就分析出问题所在。因此，log深受开发者的喜爱。
+log如今已经成为了我们日常开发时所必不可少的工具，它同debug一起构成了开发者手中分析问题最有力的两个武器。两者各有优劣，相辅相成，配合起来使用将变得无往不利。通常相比于debug来说，log在很大程度上可以更方便、更迅速的让开发者分析程序的问题，尤其是对于非常庞大的系统、或者已经发布的程序，又或者一些非必现的问题，当我们无法方便的debug问题程序时，log文件可以提供非常多有用的信息，如果开发者log写得比较合适，大多数情况下根据log就可以分析出问题所在。因此，log分析法深受开发者的喜爱。
 
-记得初学编程，第一次听到这样一个观点时那种难以接受心情，怎么可能还有比debug更加容易分析程序问题的方法？好一个无知无畏！当然这一切都是源于当时写的程序规模都比较小吧，非常适合debug。而实际上当时在不知不觉中已经或多或少使用了简单的log，那一条条控制台的cout与printf就是最好的证明。后来随着程序规模越来越大，才明白debug的局限性，逐渐的喜欢上了log。
+记得初学编程，第一次听到这样一个观点时那种难以接受心情，怎么可能还有比debug更加容易分析程序问题的方法？好一个无知无畏！当然这一切都是源于当时写的程序规模都比较小，非常适合debug的缘故吧。而实际上当时在不知不觉中已经或多或少使用了简单的log，那一条条控制台的cout与printf就是最好的证明。后来随着程序规模越来越大，才明白debug的局限性，逐渐的喜欢上了log。
 
 ## 勿在浮沙筑高台
 
 现如今对于每一种开发语言都有非常多的库来帮我们处理log，比如：log4j(log for Java)，log4cpp(log for C++)，log4net(log for .NET)等等。最早处理log的库是[Log4j](http://logging.apache.org/log4j/)，它是Apache为Java发布的一个开源log库，后来基于这个库衍生了很多具有相似API的库。我们这里介绍的库是基于[log4cpp](http://log4cpp.sourceforge.net/)发展而来。
 
-_后面就用`log4me`作为我们使用的库的名称_
+_后面就用**log4me**作为我们使用的库的名称_
 
 让我们先从无到有，从一个个简单的使用场景一步一步分析log库中各种概念如何发展而来。当然，我没有去真正追究它的历史，只是从个人需求角度分析得来。
 
-### 增加有用信息
+### 最简单的log
 
-代码中经常会需要打印一些提示信息用于提示程序工作流程，或者反馈错误信息，这就是所谓的log，就像船员的航海日志一样，我想`log`也是由此得名吧。为了输出这些信息，在C/C++中最简单的方法是用`printf`或者`std::cout`：
+代码中经常会需要打印一些提示信息用于显示程序工作流程，或者反馈错误信息，这就是所谓的log，就像船员的航海日志一样，我想`log`也是由此得名吧。为了输出这些信息，在C/C++中最简单的方法是用`printf`或者`std::cout`：
 
 {% highlight cpp linenos %}
     // I want to print a log:
     printf("I'm a message\n");
 {% endhighlight %}
+
+### 增加有用信息
 
 我们本可在每处需要打印log信息时都采用这种方式，但不妨先停下来试想一下，如果在一个log文件中你看到满屏幕的这种信息，但是却无法知道是谁，在什么时候，什么位置输出这条信息，那这种log的价值便大大折扣。于是，你会需要在每条log中增加一些额外有用的信息：
 
@@ -49,7 +51,9 @@ _后面就用`log4me`作为我们使用的库的名称_
 
 这样，每条log就有了时间，文件和行号这些额外有用的信息，非常有利于分析问题。
 
-但是，这样会不会太麻烦？每次在写代码时，打印一条简单的log你需要写这么多无关的内容，万一忘了写怎么办，这简直无法接受。你想要把所有的注意力都放在log本身上，不想关注其它的细技末节，怎么办？注意看，上面的函数调用中，后三个参数都是固定的，于是你可以对它进行这样简单的封装：
+### 简化调用：封装
+
+但是，这样会不会太麻烦？每次在写代码时，打印一条简单的log你需要加这么多无关的内容，万一忘了怎么办，这简直无法接受。你想要把所有的注意力都放在log本身上，不想关注其它的细技末节，怎么办？注意看，上面的函数调用中，后三个参数都是固定的，于是你可以对它进行这样简单的封装：
 
 {% highlight cpp linenos %}
     // Too complicated:
@@ -63,7 +67,7 @@ _后面就用`log4me`作为我们使用的库的名称_
 
 ### 设定等级：TraceLevel
 
-log信息并不是千篇一律只起一种作用，有的是纪录程序的流程，有的是错误信息，还有的是一些警告信息。为了让log更有可读性，你可能想要把不同的信息区分开来，比如这样：
+log信息并不是千篇一律只起一种作用，有的是纪录程序的流程，有的是错误信息，还有一些是警告信息。为了让log更有可读性，你可能想要把不同的信息区分开来，比如这样：
 
 {% highlight cpp linenos %}
     // I want to distinguish different kinds of message:
@@ -123,7 +127,7 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
 根据这一思路，代码可以这样改变：
 
 {% highlight cpp linenos %}
-    // I want add a control which level should be printed:
+    // I want to add a control which level should be printed:
     TraceLevel getLevel1();
     void printf2(TraceLevel level, const char *message) {
         if (level >= getLevel1())
@@ -174,10 +178,10 @@ _这里暂时没有采用前面简化的方法。_
 
 到目前为止，所有的log都写到控制台。如果你想log写到文件中怎么办？如果不是控制台应用程序，比如，Win32或者MFC程序，log又该写到哪里去？也许你想到可以使用`fwrite`代替前面的`printf`，但是如果你想同时能够将log写到控制台，又写到文件中或者其它地方怎么办？
 
-放弃这种硬编码的方法吧，你可以想到一种更加灵活，可以像前面`TraceLevel`和`Marker`一样容易配置的方法，能够更加优雅的控制log输出的目的地，但不需要这些是硬编码在代码中，而是可以配置的。一起来看下面这段代码：
+放弃这种硬编码的方法吧，你可以想到一种更加灵活，可以像前面`TraceLevel`和`Marker`一样容易配置的方法，能够更加优雅的控制log输出的目的地，但不需要硬编码在代码中，而是可以配置的。一起来看下面这段代码：
 
 {% highlight cpp linenos %}
-    // I want my logs go to console, files, eventlog
+    // I want my logs to go to console, files, eventlog
     class Appender {
         void printf(TraceLevel level, const char *message) = 0;
     };
@@ -203,14 +207,14 @@ _这里暂时没有采用前面简化的方法。_
 
 接下来定义了三个子类，分别代表输出目的地为控制台、文件和Windows的EventLog。它们都覆写了基类的`printf`方法，按照各自的目的地处理log的流向，比如`ConsoleAppender`调用前面的`printf2`函数，而`FileAppender`可能调用类似的`fwrite`。这样一来，只要我们为一个程序配置用哪些`Appender`，log就可以根据这些配置交给对应的`Appender`子类处理，从而无需在代码中硬编码。
 
-这每一种目的地我们称之为`Appender`。
+这处理每一种目的地的类我们称之为`Appender`。
 
 ### 模块独立控制：Category
 
-现在我们的log机制已经足够的完善。但是，随着程序规模越来越大，一个程序所包含的模块也越来越多，有时你并不想要一个全局的配置，而是需要每一个模块可以独立的进行配置：
+现在我们的log机制已经足够的完善。但是，随着程序规模越来越大，一个程序所包含的模块也越来越多，有时你并不想要一个全局的配置，而是需要每一个模块可以独立的进行配置，有了前面的介绍，这个需求就变得很简单了：
 
 {% highlight cpp linenos %}
-    // There are too many component, I want different component
+    // There are too many components, I want different components
     // could be configured separately
     TraceLevel getLevel2(const char *cat);
     int getMarker2(const char *cat);
@@ -229,52 +233,52 @@ _这里暂时没有采用前面简化的方法。_
     printf5("Library1", TRACE_2, Normal, "I'm a normal message\n");
 {% endhighlight %}
 
-对比前一节的代码，可以发现这里除了增加一个参数`const char *cat`以外，其它完全一样。但正是这个参数的出现，才让每一个组件可以独立的配置。这种模块间独立进行配置的方法我们称为`Category`。
+对比前一节的代码，可以发现这里除了增加一个参数`const char *cat`以外，其它完全一样。但正是这个参数的出现，才让每一个模块可以独立的配置。这种模块间独立进行配置的方法我们称为`Category`。
 
-### 配置
+### 配置文件
 
-前面提到过很多次**配置**，为了达到可以灵活配置的目的，通常会将这些配置保存成一个文件，比如`logConfig`：
+前面多次提到**配置**，为了达到可以灵活配置的目的，通常会将这些配置保存成一个文件，比如`logConfig.ini`：
 
-    Category: "Library1"        -> for Library1 category
-        TraceLevel : "Warning"  -> only Warning and Error messages are allowed
+    Category: Library1          -> for Library1 category
+        TraceLevel : Warning    -> only Warning and Error messages are allowed
         Markers    : TRACE_1    -> only TRACE_1 is allowed
         Appenders  :
-            "ConsoleAppender"   -> write to console
-            "FileAppender":     -> write to file
+            ConsoleAppender     -> write to console
+            FileAppender:       -> write to file
                 filePath: C:\temp\log\trace_lib1.log
 
-    Category: "Library2"        -> for Library2 category
+    Category: Library2          -> for Library2 category
     ...
 
 那么在什么时机读取这个配置文件？一般有这样几种方式：
 
-- 程序刚启动时载入`logConfig`，如果配置改变的不多时可以采用这种方式，最为简单。
-- 创建一个新线程，间隔一段时间检查一下`logConfig`是否已经改变，如果改变则重新读取。这种方法比较复杂，可能会影响效率，而且间隔的时间也不好设置。
-- 处理每一个log之前先检测`logConfig`，如果有改变则重新读取。
+- 程序启动时载入`logConfig.ini`，如果配置不常改变时可以采用这种方式，最简单。
+- 创建一个新线程，间隔一段时间检查`logConfig.ini`是否已经改变，如果改变则重新读取。这种方法比较复杂，可能会影响效率，而且间隔的时间也不好设置。
+- 处理每一个log之前先检测`logConfig.ini`，如果有改变则重新读取。
 - 最后一种方法结合了前两种方法的优点，还是在处理每个log之前检测，但不同的是再加上一个时间间隔，如果超过时间间隔才会真的去检测，而如果在间隔内，则直接忽略。这种方法更加高效且消耗资源最少。
 
-对于后面三种方式，每次配置文件有了更新之后，log输出可以几乎实时的作出改变。
+对于后面三种方式，每次配置文件有了更新之后，log输出几乎可以实时的作出应变。
 
-至此，一个简单灵活的log原形建立了，虽然它还是非常简陋，但已经有了现代log库的雏形，包含了其中重要的几个概念。下面我将以我们所使用的log4me库进行分析。
+至此，一个简单灵活的log原型建立了，虽然它还是非常简陋，但已经有了现代log库的雏形，包含了其中几个重要的概念。下面我将以我们所使用的log4me库进行分析。
 
 ## log库常见用法
 
 前面介绍的log雏形完全是小儿科式的代码，只是起一个演示作用，实际上我们无需重新发明轮子。如本文开始所介绍，已经有非常多专业的库来处理log，这些库以最简单的接口提供了最大化的log信息。我们这里采用的log4me库就有这样几个优点：
 
-- 更细的粒度来控制log
 - 跨平台，在Windows和Linux上有着完全一样的接口与行为
+- 更细的粒度来控制log
 - 线程安全
 - 高性能
 
 我们定义了下面几个宏，专门用于Library1下的log输出，这里会取配置中Library1这个Category的配置，分别输出不同TraceLevel的log。
 
 {% highlight cpp linenos %}
-    #define LIB1_OUT(MESSAGE)            LOG_OUT  (Library1, DLL, Notice) << MESSAGE
-    #define LIB1_WARN(MESSAGE)           LOG_OUT  (Library1, DLL, Warn)   << MESSAGE
-    #define LIB1_ERR(MESSAGE)            LOG_OUT  (Library1, DLL, Error)  << MESSAGE
+    #define LIB1_OUT(MESSAGE)            LOG_OUT(Library1, DLL, Notice) << MESSAGE
+    #define LIB1_WARN(MESSAGE)           LOG_OUT(Library1, DLL, Warn)   << MESSAGE
+    #define LIB1_ERR(MESSAGE)            LOG_OUT(Library1, DLL, Error)  << MESSAGE
 {% endhighlight %}
 
-使用时可以像这样：
+使用时像这样：
 
 {% highlight cpp linenos %}
     LIB1_OUT("I'm a message.");
@@ -286,11 +290,15 @@ _这里暂时没有采用前面简化的方法。_
 
 ## 配置
 
-在我们前面的演示代码中，提供了一种非常简单的配置文件，常见的存储配置文件的格式有xml，Windows的ini。log4me中使用的是前者，并且提供了专门的工具来简化其操作。我们进一步来看看一些概念。
+在我们前面的演示代码中，提供了一种非常简单的配置文件，常见的存储配置文件的格式有xml，Windows的ini。log4me中使用的是前者，并且提供了专门的工具来简化其操作，如下图所示：
+
+![配置界面](/img/posts/log-configui.png)
+
+根据上图我们进一步来看一些概念：
 
 ### TraceLevel
 
-TraceLevel用来控制输出的log等级，通常会包含这些：
+TraceLevel用来控制输出的log等级，下面这些比较常用：
 
     INOUT    : 进入和离开函数
     DEBUG    : 调试信息，通常用于诊断问题
@@ -300,7 +308,7 @@ TraceLevel用来控制输出的log等级，通常会包含这些：
     CRITICAL : 严重错误，表示程序可能无法继续运行
     ALWAYS   : 始终输出log
 
-这些等级按从上到下依次增加的顺序排列，如果配置TraceLevel为其中一个，那么只有上表中位于该level之下的才能够输出。
+这些等级按从上到下依次增加的顺序排列，配置TraceLevel后，那么只有上表中位于该level之下的才能够输出。
 
 ### Marker
 
@@ -312,7 +320,7 @@ Marker用来进一步控制log的分类，不像前面的演示代码只定义�
 
 ![Appenders](/img/posts/log-appenders.png)
 
-注意：最后一个Appender是`TraceSrv`，它写到memfile中。什么是memfile？这是Linux上的一种处理文件的方法，它将文件映射到内存，通过直接读写内存来操作文件，从而使文件操作变得极其高效便捷，可以参考这里：[Linux内存管理之mmap详解](http://blog.chinaunix.net/uid-26669729-id-3077015.html)。
+注意：最后一个Appender是`TraceSrv`，它写到memfile中。什么是memfile？这是Linux上的一种内存管理的方法，它将文件映射到内存，通过直接读写内存来操作文件，从而使文件操作变得极其高效便捷，可以参考这里：[Linux内存管理之mmap详解](http://blog.chinaunix.net/uid-26669729-id-3077015.html)。
 
 在Appender中还有一些常用的属性可以配置：
 
@@ -331,7 +339,7 @@ Marker用来进一步控制log的分类，不像前面的演示代码只定义�
 
 那么log的输出会像这样：
 
-    2014/04/07-16:03:35.251560|5560|Notice|SUB|COMP1|main.cpp|78|test|I'm a message
+    2014/04/07-16:03:35.251560|5560|Notice|SUB|COMP1|main.cpp|78|test|I'm a message|
 
 每一项都和前面formatter中设置的一一对应。
 
@@ -350,19 +358,19 @@ Marker用来进一步控制log的分类，不像前面的演示代码只定义�
 Name, TraceLevel, Marker和Appender这里就不再赘述。上图中有一个Flag，这是什么？它的存在和前面的树型结构息息相关。前面讲到，因为Category被组织成了树型关系，子节点可以继承父节点的配置，那么何时可以继承，如何继承？这就是Flag的作用了，它包含了两个选项：
 
 - Process Parent: 如果勾选这一项，就表示一个子节点的log可以传给它的父节点处理。这也是为什么很多情况下只需要配置Root节点，其它的子节点设置这个Flag，就可以默认使用Root的全部配置。
-- Use All Parent Appenders: 如果只有上面的Flag，那么每次传到父节点时，父节点都必须根据自身的TraceLevel及Marker进行匹配，只有匹配时才会处理。而如果此Flag打开，那么在传输过程中，只要有一个节点匹配，再向上传的所有节点都不再匹配而直接处理。
+- Use All Parent Appenders: 如果只有上面的Flag，那么每次信息传到父节点时，父节点都必须根据自身的TraceLevel及Marker进行匹配，只有匹配时才会处理。而如果此Flag打开，那么在传输过程中，只要传输路径上有一个节点匹配，再向上传的所有节点都不再匹配而直接处理。
 
 ## 处理流程
 
-log的基本概念以及用法已经介绍完，接下来我们更进一步，来看看log内部是如何工作的。
+至此你已经完全了解了log的基本概念以及用法，接下来我们更进一步，来看看log内部是如何工作的。
 
-有了前面的演示代码之后再来看log内部处理流程将变得十分简单，大致可以分为两步，第一步过滤：
+有了前面的演示代码之后再来看log内部处理流程将变得十分简单，大致可以分为两步，第一步**过滤**：
 
 ![处理流程1](/img/posts/log-workflow-step1.png)
 
 它在log的调用线程中发生，有些线程可能会对实时性有一定的要求，那么log就不能够在这种线程中去直接执行，而是将创建的log对象加入到队列中，由专门的log工作线程处理，这样就完全不会阻塞住主线程，保证主线程畅通无阻。
 
-流程的第二步是处理消息：
+流程的第二步是**处理消息**：
 
 ![处理流程2](/img/posts/log-workflow-step2.png)
 
@@ -370,12 +378,11 @@ log的基本概念以及用法已经介绍完，接下来我们更进一步，�
 
 ## log在系统中的部署
 
-也许你会想，一个简单的库有什么好部署的，直接拿来用不就得了。可有时因为性能，或者系统过于庞大，配置起来会相当复杂，如果log组织的不好的话，你就会见到log文件满天飞，散落各处的情况。有时你可能会需要一个总的log文件包含所有的信息，一些特定目的的log还要存于不同的文件中。如何保证不同进程，甚至不同的机器上的不同进程能够无冲突的写到同一个log文件中呢？假设一个系统包含一台Windows机器，一台Linux，如何收集散落各个机器的log？如何方便的在Windows上查看本应出现在Linux上的log？如果你有疑问，那么恭喜你，请看下面的解决方案：
+也许你会想，一个简单的库有什么好部署的，直接拿来用不就得了。可有时因为性能，或者系统过于庞大，配置起来会相当复杂，如果log组织的不好的话，你就会见到log文件满天飞，散落各处的情况。有时你可能会需要一个总的log文件包含所有的信息，一些特定目的的log还要存于不同的文件中。如何保证不同进程，甚至不同的机器上的不同进程能够无冲突的写到同一个log文件中呢？假设一个系统包含一台Windows，一台Linux，如何收集散落各个机器的log？如何方便的在Windows上查看本应出现在Linux上的log？如果你有疑问，那么恭喜你，请看下面的解决方案：
 
 ![部署log](/img/posts/log-deployment.png)
 
-在``
-这个系统足够庞大，包含了两台机器，左边是Windows，右边是Linux。每台机器除各自保存log之外，还通过Windows上的TraceSrv这个Service的中轴作用，将所有的log都最终交给它来处理，最终会有一份完整的log存在于TraceSrv.log中，还有各种不同模块的log文件。同时，还能够通过远程调用TraceOnlReader来实时从TraceSrv中读取log信息。
+这个系统足够庞大，包含了两台机器，左边是Windows，右边是Linux。每台机器除各自保存log之外，还将所有的log都最终交给Windows上的`TraceSrv`来处理，最终会有一份完整的log存在于TraceSrv.log中，还有各种不同模块的log文件。同时，还能够通过远程调用TraceOnlReader来实时从TraceSrv中读取log信息。如上图所示，两侧绿色的Log图例中，红色的信息沿着箭头先全部汇聚到`TraceSrv`，然后再分发到不同的文件中。
 
 这样，开发者就可以通过配置一次，便可以非常方便的组织好所有的log文件，调用端完全剔除了这些复杂的细节，只需要关注log本身。
 
