@@ -6,7 +6,7 @@ tags:   log, log4cpp, tracing，debug, 日志
 image:  version-ctrl.png
 ---
 
-最近在部门内部做了一个关于log机制的知识分享，非常深入的探讨了log机制中各种概念的来源、库的用法、内部处理流程，以及如何在一个涉及多台主机的复杂系统中部署log等问题。本文是对这次分享的总结，将对这些问题一一展开介绍。
+最近在部门内部做了一个关于log机制的知识分享，深入的探讨了log机制中各种概念的来源、常用log库的用法、内部处理流程，以及如何在一个涉及多台主机的复杂系统中部署log等问题。本文是对这次分享的总结，将对这些问题一一展开介绍。
 
 {{ more }}
 
@@ -19,9 +19,9 @@ image:  version-ctrl.png
 
 ## 写在前面
 
-log如今已经成为了我们日常开发时所必不可少的工具，它同debug一起构成了开发者手中分析问题最有力的两个武器。两者各有优劣，相比于debug来说，log在很大程度上可以更方便、更迅速的让开发者分析程序的问题，尤其是对于非常庞大的系统、或者已经发布的程序，又或者一些非必现的问题，当我们无法方便的debug问题程序时，log文件可以提供非常多有用的信息，大多数情况下根据log就分析出问题所在。因此，log的在问题分析中有着不可替代的地位。
+log如今已经成为了我们日常开发时所必不可少的工具，它同debug一起构成了开发者手中分析问题最有力的两个武器。两者各有优劣，相辅相成，配合起来使用将变得无往不利。通常相比于debug来说，log在很大程度上可以更方便、更迅速的让开发者分析程序的问题，尤其是对于非常庞大的系统、或者已经发布的程序，又或者一些非必现的问题，当我们无法方便的debug问题程序时，log文件可以提供非常多有用的信息，大多数情况下根据log就分析出问题所在。因此，log深受开发者的喜爱。
 
-记得初学编程时，第一次听到这样一个观点时那种难以接受心情，怎么可能还有比debug更加容易分析程序问题的方法？好一个无知无畏！当然这一切都是源于当时写的程序规模都比较小吧。而实际上当时在不知不觉中已经或多或少使用了简单的log，那一条条控制台的cout与printf就是最好的证明。后来随着程序规模越来越大，才明白debug的局限性，逐渐的喜欢上了log。
+记得初学编程，第一次听到这样一个观点时那种难以接受心情，怎么可能还有比debug更加容易分析程序问题的方法？好一个无知无畏！当然这一切都是源于当时写的程序规模都比较小吧，非常适合debug。而实际上当时在不知不觉中已经或多或少使用了简单的log，那一条条控制台的cout与printf就是最好的证明。后来随着程序规模越来越大，才明白debug的局限性，逐渐的喜欢上了log。
 
 ## 勿在浮沙筑高台
 
@@ -29,39 +29,39 @@ log如今已经成为了我们日常开发时所必不可少的工具，它同de
 
 _后面就用`log4me`作为我们使用的库的名称_
 
-让我们先从无到有，用一个简单的使用场景一步一步分析log库中各种概念如何发展而来。
+让我们先从无到有，从一个个简单的使用场景一步一步分析log库中各种概念如何发展而来。当然，我没有去真正追究它的历史，只是从个人需求角度分析得来。
 
-### 初始封装
+### 增加有用信息
 
-代码中经常会需要打印一些提示信息，这就是所谓的log，就像船员的航海日志一样。在C/C++中最简单的方法是用`printf`或者`std::cout`：
+代码中经常会需要打印一些提示信息用于提示程序工作流程，或者反馈错误信息，这就是所谓的log，就像船员的航海日志一样，我想`log`也是由此得名吧。为了输出这些信息，在C/C++中最简单的方法是用`printf`或者`std::cout`：
 
 {% highlight cpp linenos %}
     // I want to print a log:
     printf("I'm a message\n");
 {% endhighlight %}
 
-试想，如果在一个log文件中你看到满屏幕的这种信息，但是却无法知道是谁，在什么时候，什么位置输出这条信息，那这种log的价值便大大折扣。于是，你想要在每条log中增加一些有用的信息：
+我们本可在每处需要打印log信息时都采用这种方式，但不妨先停下来试想一下，如果在一个log文件中你看到满屏幕的这种信息，但是却无法知道是谁，在什么时候，什么位置输出这条信息，那这种log的价值便大大折扣。于是，你会需要在每条log中增加一些额外有用的信息：
 
 {% highlight cpp linenos %}
     // I want to add more information:
-    printf("%s %s %s: I'm a message\n", time, __FILE__, __LINE__);
+    printf("%s %s %d: I'm a message\n", time, __FILE__, __LINE__);
 {% endhighlight %}
 
-这样，每条log就有了时间，文件和行号这些额外有用的信息。
+这样，每条log就有了时间，文件和行号这些额外有用的信息，非常有利于分析问题。
 
-但是，这样会不会太麻烦？每次在写代码时，打印一条简单的log我需要写这么多无关的内容，这简直无法接受。我想要把所有的注意力都放在log本身上，不想关注其它的细技末节，怎么办？注意看，上面的函数调用中，后三个参数都是固定的，于是你可能会想到这样简单封装一下：
+但是，这样会不会太麻烦？每次在写代码时，打印一条简单的log你需要写这么多无关的内容，万一忘了写怎么办，这简直无法接受。你想要把所有的注意力都放在log本身上，不想关注其它的细技末节，怎么办？注意看，上面的函数调用中，后三个参数都是固定的，于是你可以对它进行这样简单的封装：
 
 {% highlight cpp linenos %}
     // Too complicated:
     void printf0(const char *message) {
-        printf("%s %s %s %s", time, __FILE__, __LINE__, message);
+        printf("%s %s %d %s", time, __FILE__, __LINE__, message);
     }
     printf0("I'm a message\n");
 {% endhighlight %}
 
 还是一样简单的调用，不需要你再去输入一些无关的内容，因为这个封装的函数已经替你做好了。
 
-### TraceLevel
+### 设定等级：TraceLevel
 
 log信息并不是千篇一律只起一种作用，有的是纪录程序的流程，有的是错误信息，还有的是一些警告信息。为了让log更有可读性，你可能想要把不同的信息区分开来，比如这样：
 
@@ -72,9 +72,9 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf0("Error: I'm an error message\n");
 {% endhighlight %}
 
-那么，你就可以通过在log文件中搜索Normal、Warning或者Error这些关键字就能够找到特定的log了。
+那么，你就可以通过在log文件中搜索Normal、Warning或者Error这些关键字就能够找到特定的log。这对于排错帮助非常大，比如你只需要搜索Error关键字就能够得出程序的出错信息。
 
-但是，这些Normal、Warning或者Error关键字混在了我们要输出的log中，同前面一样，我想log与其它的信息独立开来。你可以这样做：
+但是，这些Normal、Warning以及Error关键字需要你每次都加在要输出的字符串中，同前面一样，你还是只想关注log本身，不愿意log和其它的信息混在一起。于是可以这样做：
 
 {% highlight cpp linenos %}
     // It's too complicated, I want something like this:
@@ -96,9 +96,9 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf1(Error, "I'm an error message\n");
 {% endhighlight %}
 
-现在你只需要指定一种类型，就可以全心全意的处理log信息本身了。我们把上面的Normal, Warning和Error叫做`TraceLevel`。
+现在你只需要指定一种log类型，就可以全心全意的处理log信息本身了。我们把上面的Normal, Warning和Error叫做`TraceLevel`，故名思义，它表示log的等级。
 
-可以再简化一下上面的函数：
+可以进一步简化：
 
 {% highlight cpp linenos %}
     // To be more convenient:
@@ -116,9 +116,11 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf_error("I'm an error message\n");
 {% endhighlight %}
 
-在代码中，通常最多的log是Normal类型，即显示程序流程。如果将这些信息全部输出的话，有的时候，log文件中会有太多的干扰信息，log文件也会变得很大。于是，你可能会想，如果我可以动态的选择哪些信息要输出，那么log文件就变得像是根据我的需求定制一般。
+如此一来，对于特定等级的log只需调用各自的log输出函数即可，除此之外，注意力全部放在log信息本身上。
 
-那么代码可以这样改变：
+在代码中，通常最多的log是Normal类型，即显示程序流程。有时你可能只想log文件中存储Warning和Error类型的信息，Normal对你来相当于干扰信息，而且log文件也会因此变得很大。有时你又会想让log中包含所有类型。如何协调？如果可以动态的选择哪些等级的信息输出，那岂不是log文件就变得像是根据我的需求定制一般，可以随意控制log包含哪些级别的信息么？
+
+根据这一思路，代码可以这样改变：
 
 {% highlight cpp linenos %}
     // I want add a control which level should be printed:
@@ -132,11 +134,13 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf2(Error, "I'm an error message\n");
 {% endhighlight %}
 
-`getLevel1()`就从配置文件中读取当前的Level，代码中只有高于当前Level的log才会被输出。
+_这里暂时没有采用前面简化的方法。_
 
-### Marker
+`getLevel1()`从配置文件中读取当前允许的Level，代码中只有高于当前Level的log才会被输出，现在log文件便可以随着你的需要而定制了。
 
-再来考虑这样一种情况，如果你的文件非常大，中间要打印的Normal log非常多，是分为不同层次的，如：粗略的流程，详细一些的，十分详细的。因为都是Normal类型的log，所以不能够用前面的TraceLevel来控制，这时需要引入另外一层控制：
+### 多一些控制：Marker
+
+再来考虑这样一种情况，如果你的文件非常大，中间要输出的Normal log非常多，分为不同层次，比如：粗略的流程，详细一些的，十分详细的。和很多命令的`-verbose`参数一样。由于都是Normal类型的log，所以不能够用前面的`TraceLevel`，这时需要引入另外一层控制：
 
 {% highlight cpp linenos %}
     // My class is too big, I want a filter to determine which
@@ -155,20 +159,31 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf3(TRACE_2, Normal, "I'm a normal message\n");
 {% endhighlight %}
 
-这里提供了四级的控制，和前面的`TraceLevel`一样，它可以配置。假设现在配置的是`TRACE_1`，那么代码中想要打印的三条信息中，只有前两条能够输出。这层控制我们称之为`Marker`。
+这里提供了四级的控制，和前面的`TraceLevel`一样，它也可以通过配置文件配置。假设现在配置的是`TRACE_1`，那么代码中想要输出的三条信息中，只有前两条能够输出。这层控制我们称之为`Marker`。
 
-### Appender
-
-到目前为止，所有的信息都是写到控制台的。如果有时程序不是控制台程序，比如，Win32或者MFC程序，log该写到哪里去？有时我想要log写到控制台，有时想要写到文件中，但不想这些是写死在代码中的，而是可以配置的：
+注意到这里定义的四级控制是可以通过位来操作的，能够任意组合。如果想要`TRACE_1`和`TRACE_2`都能够输出，那么只需要设置：
 
 {% highlight cpp linenos %}
-    // I want my logs go to files, console, eventlog, remote
+    int marker = TRACE_1 | TRACE_2;
+    printf3(marker, Normal, "I'm a normal message\n");
+{% endhighlight %}
+
+如果marker设置为`SUB`，则表明全部输出。通过增加这层控制后，log的订制变得更加灵活。
+
+### 改变目的地：Appender
+
+到目前为止，所有的log都写到控制台。如果你想log写到文件中怎么办？如果不是控制台应用程序，比如，Win32或者MFC程序，log又该写到哪里去？也许你想到可以使用`fwrite`代替前面的`printf`，但是如果你想同时能够将log写到控制台，又写到文件中或者其它地方怎么办？
+
+放弃这种硬编码的方法吧，你可以想到一种更加灵活，可以像前面`TraceLevel`和`Marker`一样容易配置的方法，能够更加优雅的控制log输出的目的地，但不需要这些是硬编码在代码中，而是可以配置的。一起来看下面这段代码：
+
+{% highlight cpp linenos %}
+    // I want my logs go to console, files, eventlog
     class Appender {
-        void printf(TraceLevel level, const char *message);
+        void printf(TraceLevel level, const char *message) = 0;
     };
-    class ConsoleAppener: public Appender {};
-    class FileAppener: public Appender {};
-    class EventLogAppener: public Appender {};
+    class ConsoleAppender: public Appender {/* overwrite printf */};
+    class FileAppender: public Appender {/* overwrite printf */};
+    class EventLogAppender: public Appender {/* overwrite printf */};
 
     std::vector<Appender *> &getAppenders();
     void printf4(int marker, TraceLevel level, const char *message) {
@@ -184,11 +199,15 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf4(TRACE_2, Normal, "I'm a normal message\n");
 {% endhighlight %}
 
-定义了三种输出的目的地，控制台、文件和Windows的EventLog，每种目的地知道自身该如何处理log。这样，如果我们配置了不同的目的地，简单的log就可以根据配置流向各处，从而无须在代码中写死。这每一种目的地我们称之为`Appender`。
+这里定义了一个叫做`Appender`的基类，可以理解为处理log目的地的类，它有一个方法`printf`，对应着如何处理传给它的log。
 
-### Category
+接下来定义了三个子类，分别代表输出目的地为控制台、文件和Windows的EventLog。它们都覆写了基类的`printf`方法，按照各自的目的地处理log的流向，比如`ConsoleAppender`调用前面的`printf2`函数，而`FileAppender`可能调用类似的`fwrite`。这样一来，只要我们为一个程序配置用哪些`Appender`，log就可以根据这些配置交给对应的`Appender`子类处理，从而无需在代码中硬编码。
 
-现在我们的log机制已经足够的完善。但是，随着程序规模越来越大，一个程序所包含的组件越来越多，有时我并不想要一个全局的配置，我需要每一个组件可以独立的进行配置。
+这每一种目的地我们称之为`Appender`。
+
+### 模块独立控制：Category
+
+现在我们的log机制已经足够的完善。但是，随着程序规模越来越大，一个程序所包含的模块也越来越多，有时你并不想要一个全局的配置，而是需要每一个模块可以独立的进行配置：
 
 {% highlight cpp linenos %}
     // There are too many component, I want different component
@@ -210,7 +229,7 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     printf5("Library1", TRACE_2, Normal, "I'm a normal message\n");
 {% endhighlight %}
 
-除了增加一个参数`const char *cat`以外，其它和前一节介绍的完全一样。正是这个参数的出现，才让每一个组件可以独立的配置。这个参数我们称为`Category`。
+对比前一节的代码，可以发现这里除了增加一个参数`const char *cat`以外，其它完全一样。但正是这个参数的出现，才让每一个组件可以独立的配置。这种模块间独立进行配置的方法我们称为`Category`。
 
 ### 配置
 
@@ -227,22 +246,25 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
     Category: "Library2"        -> for Library2 category
     ...
 
-那么在什么时机读取配置文件？一般可以分为这样三种时机：
+那么在什么时机读取这个配置文件？一般有这样几种方式：
 
-- 程序刚启动时载入该配置信息，如果配置改变的不多时可以采用这种方式，最为简单
-- 新开一个线程，间隔一段时间检查一下`logConfig`是否已经改变，如果改变则重新读取
-- 处理每一个log之前先检测`logConfig`，如果有改变则重新读取
+- 程序刚启动时载入`logConfig`，如果配置改变的不多时可以采用这种方式，最为简单。
+- 创建一个新线程，间隔一段时间检查一下`logConfig`是否已经改变，如果改变则重新读取。这种方法比较复杂，可能会影响效率，而且间隔的时间也不好设置。
+- 处理每一个log之前先检测`logConfig`，如果有改变则重新读取。
+- 最后一种方法结合了前两种方法的优点，还是在处理每个log之前检测，但不同的是再加上一个时间间隔，如果超过时间间隔才会真的去检测，而如果在间隔内，则直接忽略。这种方法更加高效且消耗资源最少。
 
-至此，一个简单灵活的log原形建立了，虽然它非常简陋，但已经包含了现代log的雏形，包含了其中重要的几个概念。下面我将以我们所使用的log4me库进行分析。
+对于后面三种方式，每次配置文件有了更新之后，log输出可以几乎实时的作出改变。
 
-## 常见用法
+至此，一个简单灵活的log原形建立了，虽然它还是非常简陋，但已经有了现代log库的雏形，包含了其中重要的几个概念。下面我将以我们所使用的log4me库进行分析。
 
-前面介绍的log雏形完全是小儿科式的代码，如本文开始所介绍的，已经有非常多专业的库来处理log，这些库以最简单的接口提供了最大化的log信息，我们这里采用的log4me库有这样几个优点：
+## log库常见用法
+
+前面介绍的log雏形完全是小儿科式的代码，只是起一个演示作用，实际上我们无需重新发明轮子。如本文开始所介绍，已经有非常多专业的库来处理log，这些库以最简单的接口提供了最大化的log信息。我们这里采用的log4me库就有这样几个优点：
 
 - 更细的粒度来控制log
 - 跨平台，在Windows和Linux上有着完全一样的接口与行为
 - 线程安全
-- 性能好
+- 高性能
 
 我们定义了下面几个宏，专门用于Library1下的log输出，这里会取配置中Library1这个Category的配置，分别输出不同TraceLevel的log。
 
@@ -264,20 +286,38 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
 
 ## 配置
 
-在我们前面的演示代码中，提供了一种非常简单的配置文件，常见的存储配置文件的格式有xml，Windows的ini。log4me中使用的是前者，并且开发了专门的工具来简化其操作。
+在我们前面的演示代码中，提供了一种非常简单的配置文件，常见的存储配置文件的格式有xml，Windows的ini。log4me中使用的是前者，并且提供了专门的工具来简化其操作。我们进一步来看看一些概念。
+
+### TraceLevel
+
+TraceLevel用来控制输出的log等级，通常会包含这些：
+
+    INOUT    : 进入和离开函数
+    DEBUG    : 调试信息，通常用于诊断问题
+    INFO     : 确认一切按计划照常工作
+    WARNING  : 程序仍然可以运行，但有意外发生，或者将来有问题可能要出现(比如硬盘容量低)
+    ERROR    : 错误信息
+    CRITICAL : 严重错误，表示程序可能无法继续运行
+    ALWAYS   : 始终输出log
+
+这些等级按从上到下依次增加的顺序排列，如果配置TraceLevel为其中一个，那么只有上表中位于该level之下的才能够输出。
+
+### Marker
+
+Marker用来进一步控制log的分类，不像前面的演示代码只定义了四种，通常库会完全使用一个32位的整型来表示这些分类，每一位代表一类，这样就有了32种分类，对于大多数应用场景来说这已经完全足够。
 
 ### Appender
 
-前面介绍过Appender这个概念，它的作用就是处理log，定义log的目的地，log4me提供了这些:
+前面介绍过Appender这个概念，它用来处理log的输出目的地，但真正的库可远不止前面介绍的三种Appender，log4me提供了这些:
 
 ![Appenders](/img/posts/log-appenders.png)
 
-注意：最后一个Appender是`TraceSrv`，它写到memfile中。什么是memfile？这是Linux上的一种将文件映射到内存，从而达到达效的读写文件的方式，可以参考这里：[Linux内存管理之mmap详解](http://blog.chinaunix.net/uid-26669729-id-3077015.html)。
+注意：最后一个Appender是`TraceSrv`，它写到memfile中。什么是memfile？这是Linux上的一种处理文件的方法，它将文件映射到内存，通过直接读写内存来操作文件，从而使文件操作变得极其高效便捷，可以参考这里：[Linux内存管理之mmap详解](http://blog.chinaunix.net/uid-26669729-id-3077015.html)。
 
-在Appender中有一些常用的属性可以配置：
+在Appender中还有一些常用的属性可以配置：
 
 - CreateNewFile: 表明log库启动时是否创建新文件。
-- FileCount & FileSize: 用于文件回卷，比如一个log文件lib.log过大时，可以将它重命名为lib.1.log，然后再重新创建lib.log，可以创建多个文件，而这两个参数就用于控制文件数目和单个文件大小。
+- FileCount & FileSize: 用于文件回卷，比如一个log文件lib.log过大时，可以将它重命名为lib.1.log，然后再重新创建lib.log。可以创建多个文件，而这两个参数就用于控制文件数目和单个文件大小。
 - CategoryFilter: 表明该Appender只处理这个filter列举的Category。
 - ProcessFilter: 与上面类似，只处理filter列举的进程。
 
@@ -285,19 +325,19 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
 
 这个概念在前面没有介绍过，但它也非常容易理解：每个Appender都可以包含一个formatter，它用来格式化log信息。因为一条log信息可能包含时间，文件名，行号，TraceLevel，进程ID，正文等信息，有时为了简化log输出，对所有的这些分类作一个取舍，从而达到格式化的目的。这很像C语言中的`printf`。
 
-如果一个formatter设置的是：
+如果formatter设置的是：
 
     %TIME%|%PID%|%LEVEL%|%MARKER%|%CAT%|%FILE%|%LINE%|%FUNC%|%USERTEXT%|
 
-一条log的输出像这样：
+那么log的输出会像这样：
 
     2014/04/07-16:03:35.251560|5560|Notice|SUB|COMP1|main.cpp|78|test|I'm a message
 
-每一段都和前面的formatter一一对应。
+每一项都和前面formatter中设置的一一对应。
 
 ### Category
 
-现代的log库一般都将Category组织成树型结构，每一个节点都和前后组成父子关系，根据设置，子节点的Category完全可以继承父节点的配置。所有的Category的根节点是root。这是一个典型的结构：
+现代的log库一般都将Category组织成树型结构，每一个节点都和前后组成父子关系，根据设置，子节点的Category完全可以继承父节点的配置。所有的Category的根节点是root。这里是一个典型的结构：
 
 ![Category结构](/img/posts/log-category-structure.png)
 
@@ -307,39 +347,41 @@ log信息并不是千篇一律只起一种作用，有的是纪录程序的流�
 
 注意：一个Category可以有多个Appender。
 
-Name, TraceLevel, Marker和Appender这里就不再赘述。注意上图中有一个Flag，这是什么？它的存在是和前面的树型结构息息相关。前面讲到，因为Category被组织成了树型关系，子节点可以继承父节点的配置，那么何时可以继承，如何继承？这就是Flag的作用了，它包含了两个选项：
+Name, TraceLevel, Marker和Appender这里就不再赘述。上图中有一个Flag，这是什么？它的存在和前面的树型结构息息相关。前面讲到，因为Category被组织成了树型关系，子节点可以继承父节点的配置，那么何时可以继承，如何继承？这就是Flag的作用了，它包含了两个选项：
 
-- Process Parent: 如果勾选这一项，就表示一个子节点的log可以传给它的父节点处理。这也是为什么很多情况下只需要配置Root节点，其它的子节点都设置这个Flag即可。
-- Use All Parent Appenders: 如果只有上面的Flag，那么每次传到父节点时，父节点都必须根据自身的TraceLevel及Marker进行匹配，只有匹配时才会处理。而如果此Flag打开，那么在传输过程中，只有一个节点匹配，再向上传的所有节点都不再匹配而直接处理。
+- Process Parent: 如果勾选这一项，就表示一个子节点的log可以传给它的父节点处理。这也是为什么很多情况下只需要配置Root节点，其它的子节点设置这个Flag，就可以默认使用Root的全部配置。
+- Use All Parent Appenders: 如果只有上面的Flag，那么每次传到父节点时，父节点都必须根据自身的TraceLevel及Marker进行匹配，只有匹配时才会处理。而如果此Flag打开，那么在传输过程中，只要有一个节点匹配，再向上传的所有节点都不再匹配而直接处理。
 
 ## 处理流程
 
-接下来来看下log库内部对log的处理流程，这里分为两步，第一步是一个过滤步骤，它在调用log的线程中发生。有些线程可能会对实时性有一定的要求，那么log就不能够在这种线程中去执行，而是将创建的log对象加入到队列中，由专门的Log Working线程处理，这样就完全不会阻塞住主线程。
+log的基本概念以及用法已经介绍完，接下来我们更进一步，来看看log内部是如何工作的。
+
+有了前面的演示代码之后再来看log内部处理流程将变得十分简单，大致可以分为两步，第一步过滤：
 
 ![处理流程1](/img/posts/log-workflow-step1.png)
 
-流程的第二步是处理消息，筛选过Category之后会将消息发给每一个合适的Appender，由Appender进一步的筛选及格式化输出。注意在这一步的刚开始有一个`Check Config`步骤，这和我们前面讲的加载配置文件的时机有关，很明显，这里用的是最后一种读取配置的方案。
+它在log的调用线程中发生，有些线程可能会对实时性有一定的要求，那么log就不能够在这种线程中去直接执行，而是将创建的log对象加入到队列中，由专门的log工作线程处理，这样就完全不会阻塞住主线程，保证主线程畅通无阻。
+
+流程的第二步是处理消息：
 
 ![处理流程2](/img/posts/log-workflow-step2.png)
 
+筛选过Category之后会将消息发给每一个合适的Appender，由Appender进一步的筛选及格式化输出。注意在这一步的刚开始有一个`Check Config`步骤，这和我们前面讲的加载配置文件的时机有关，很明显，这里用的是最后一种读取配置的方案：即每次处理log时，检测配置是否更新。
+
 ## log在系统中的部署
 
-也许你会想，一个简单的库有什么好部署的，直接拿来用不就得了。可有时因为性能，或者系统过于庞大，配置起来会相当复杂，如果不好好组织log的话，你就会见到log文件满天飞，散落各处的情况。有时你可能会需要一个总的log文件包含所有的log，一些特定目的的log还要存于不同的文件中。如果保证不同进程，甚至不同的机器上的不同进程能够写到同一个log文件中呢？假设一个系统包含一台Windows机器，一台Linux，如何收集散落各个机器的log？如果方便的在Windows上查看本应出现在Linux上的log？如果你有疑问，那么恭喜你，请看下面的解决方案：
-
-# TODO: 这里需要一个gif图
+也许你会想，一个简单的库有什么好部署的，直接拿来用不就得了。可有时因为性能，或者系统过于庞大，配置起来会相当复杂，如果log组织的不好的话，你就会见到log文件满天飞，散落各处的情况。有时你可能会需要一个总的log文件包含所有的信息，一些特定目的的log还要存于不同的文件中。如何保证不同进程，甚至不同的机器上的不同进程能够无冲突的写到同一个log文件中呢？假设一个系统包含一台Windows机器，一台Linux，如何收集散落各个机器的log？如何方便的在Windows上查看本应出现在Linux上的log？如果你有疑问，那么恭喜你，请看下面的解决方案：
 
 ![部署log](/img/posts/log-deployment.png)
 
-这个系统足够庞大，包含了两台机器，左边是Windows，右边是Linux。通过以Windows上的TraceSrv这个Service的中轴作用，所有机器上的log都最终交给它来处理，最终会有一份完整的log存在于TraceSrv.log中，还有各种不同组件的log文件。同时，还能够通过远程调用TraceOnlReader来从TraceSrv中读取log信息。
+在``
+这个系统足够庞大，包含了两台机器，左边是Windows，右边是Linux。每台机器除各自保存log之外，还通过Windows上的TraceSrv这个Service的中轴作用，将所有的log都最终交给它来处理，最终会有一份完整的log存在于TraceSrv.log中，还有各种不同模块的log文件。同时，还能够通过远程调用TraceOnlReader来实时从TraceSrv中读取log信息。
 
-这样，开发者就可以通过配置一次，便可以非常方便的组织好所有的log信息，调用端完全剔除了这些复杂的细节，只需要关注log本身。
+这样，开发者就可以通过配置一次，便可以非常方便的组织好所有的log文件，调用端完全剔除了这些复杂的细节，只需要关注log本身。
 
 另外注意到，在Windows和Linux端各有一个memfile，它们各自存有机器上的所有log，由于是运用了前面所说的mmap机制，程序直接以操作内存的方式来操作文件，性能非常高。
 
 ## 写在结尾
-
-# TODO: 把目录显示在文章的左侧，参考其它的blog
-
 
 (全文完)
 
