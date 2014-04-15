@@ -3,7 +3,7 @@ layout: post
 title:  深入理解log机制
 description: 在开源log4cpp的基础上又增加上一些控制，本文深入的分析了log机制的方方面面
 tags:   log, log4cpp, tracing，debug, 日志
-image:  version-ctrl.png
+image:  log-insight.gif
 ---
 
 最近在部门内部做了一个关于log机制的知识分享，深入的探讨了log机制中各种概念的来源、常用log库的用法、内部处理流程，以及如何在一个涉及多台主机的复杂系统中部署log等问题。本文是对这次分享的总结，将对这些问题一一展开介绍。

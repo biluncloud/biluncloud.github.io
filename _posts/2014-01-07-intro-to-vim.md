@@ -3,7 +3,7 @@ layout: post
 title:  跟我一起学习VIM - The Life Changing Editor
 description: 写给同事的简单VIM教程，个人学习VIM经历，优秀插件介绍
 tags:   VIM, 教程, 编程, 入门，插件，YouCompleteMe，自动补全
-image:  hello-world.gif
+image:  vim.png
 ---
 
 前两天同事让我在小组内部分享一下VIM，于是我花了一点时间写了个简短的教程。虽然准备有限，但分享过程中大家大多带着一种惊叹的表情，原来编辑器可以这样强大，这算是对我多年来使用VIM的最大鼓舞吧。所以分享结束之后，将这篇简短教程整理一下作为我2014年的第一篇Blog。
