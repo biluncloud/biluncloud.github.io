@@ -10,7 +10,7 @@ nobio:     true
 
 ![Me](http://www.gravatar.com/avatar/9ffd3273e6f33aaf9cfb1bdccb8f3010?s=200){: .profile .pull-right }
 
-Hi, I'm **feihu**, a programmer from Shenzhen, China. 
+Hi, I'm <a href="https://plus.google.com/110274901350159292510" rel="me">**feihu**</a>, a programmer from Shenzhen, China. 
 
 ### Network
 
