@@ -37,21 +37,59 @@ http://stackoverflow.com/questions/8584431/why-is-the-keyword-typename-needed-be
 # 再看C++ Primer里面有没有
 介绍了一点它和class的区别，并且说明了如果不加typename的话，A::b会默认被当成数据成员而不是类型
 
-由看不懂的例子入手
+侯捷在Effective C++的中文[译序](http://jjhou.boolan.com/effective-cpp-2e-foreword.pdf)中提到:
+> C++的难学，还在于它提供了四种不同（但相辅相成）的程序设计思维模式：procedural-based, object-based, object-oriented, generics
+
+对于较少使用最后一种泛型编程的我来说，程序设计基本上停留在前三种思维模式当中。虽说不得窥见高深又现代的泛型技术，但前三种思维模式已暂时满足所有的需求，因此也未曾深入去了解泛型编程。近日，偶然兴起，在看STL的相关代码时发现了这样一行代码：
 
 {% highlight cpp linenos %}
     typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor
 {% endhighlight %}
 
+短短一行代码却看得我头皮发麻，看起来它像是把一种类型起一个别名，可为何此处有一个`typename`，`typedef`不应该是像这样使用么：
+{% highlight cpp linenos %}
+    typedef int NewNameOfInt;
+{% endhighlight %}
+
+另外`__type_traits`又是什么？记得之前在看Effective C++时曾经看过`traits`这一技术，只是一直未曾遇见，所以并未仔细研究。接下来还有会有另一篇文章来详细介绍C++的`traits`技术。在这里，我们来探讨一下这个多出来的`typename`是怎么回事。
+
+## typename的常见用法
+
+对于`typename`这个关键字，如果你熟悉C++的模板，一定会知道有这样一种用法(摘自C++ Primer)：
+
+{% highlight cpp linenos %}
+    // implement strcmp-like generic compare function
+    // returns 0 if the values are equal, 1 if v1 is larger, -1 if v1 is smaller
+    template <typename T>
+    int compare(const T &v1, const T &v2)
+    {
+        if (v1 < v2) return -1;
+        if (v2 < v1) return 1;
+        return 0;
+    }
+{% endhighlight %}
+
+在之前我仅知道`typename`的这种用法。因为有了上面这种疑惑之后，才去翻了C++ Primer，终于找到了原因。
+
 查找，鲜为人知的历史（也许只是我不知道:-)）,两者没有任何区别，
+
+-> 常规模板如何写(class) -> 原因，介绍到Lippman讲述的历史
+
+{% highlight cpp linenos %}
+    template<class T>
+    const T &max(const T &x, const T &y) {
+        if (x > y)
+            return x;
+        else
+            return y;
+    }
+{% endhighlight %}
 
 ## 介绍typename之前，有几个概念要介绍：
 
 详细解释嵌套，参考leafwind中的文章，解释嵌套的三种情况，把它插在第一篇文章中间: 类里面数据成员，成员函数和类型成员
 qualified和unqualified names
 dependent和non-dependent names
-
--> 常规模板如何写(class) ->
 
 # typename的两种用法
 ## 第一种：和class一样
@@ -64,6 +102,7 @@ C++ Primer建议使用typename而不是class:
 
 历史：为什么typename和class都可以？
 ## 总结：向前兼容，妥协，包括Visual C++也是一样
+python2.x和3.0版本的巨大差别
 
 ## 写sample， 如果不加typename会怎样
 ---
