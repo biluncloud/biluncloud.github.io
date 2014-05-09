@@ -1,15 +1,16 @@
 ---
 layout: post
-title:  知无涯之C++ typename起源与用法
+title:  知无涯之C++ typename的起源与用法
 description: 本文介绍了C++ typename关键字的起源，并展示了它的两种用法
 tags:   C++, typename, 模板, class, template
-image:  debug-stdout.png
+image:  typename.png
 ---
 
 侯捷在Effective C++的中文版[译序](http://jjhou.boolan.com/effective-cpp-2e-foreword.pdf)中提到:
+
 > C++的难学，还在于它提供了四种不同（但相辅相成）的程序设计思维模式：procedural-based, object-based, object-oriented, generics
 
-对于较少使用最后一种泛型编程的我来说，程序设计基本上停留在前三种思维模式当中。虽说不得窥见高深又现代的泛型技术，但前三种思维模式已几乎满足我所遇到的所有需求，因此未曾深入去了解泛型编程。
+对于较少使用最后一种泛型编程的我来说，程序设计基本上停留在前三种思维模式当中。虽说不得窥见高深又现代的泛型技术，但前三种思维模式已几乎满足我所遇到的所有需求，因此一直未曾深入去了解泛型编程。
 
 {{ more }}
 
@@ -24,17 +25,13 @@ image:  debug-stdout.png
 
 近日，看到这样一行代码：
 
-{% highlight cpp linenos %}
     typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
-{% endhighlight %}
 
-虽说已经有多年C++经验，但上面这短短一行代码却看得我头皮发麻。看起来它应该是定义一个类型别名，但是`typedef`不应该是像这样使用么：
+虽说已经有多年C++经验，但上面这短短一行代码却看得我头皮发麻。看起来它应该是定义一个类型别名，但是`typedef`不应该是像这样使用么，`typedef`+原类型名+新类型名：
 
-{% highlight cpp linenos %}
     typedef char* PCHAR;
-{% endhighlight %}
 
-可为何此处多了一个`typename`？另外`__type_traits`又是什么？看起来有些眼熟，想起之前在Effective C++上曾经看过`traits`这一技术的介绍，和这里的`__type_traits`有点像。只是一直未曾遇到需要`traits`的时候，所以当时并未仔细研究。然而STL中大量的充斥着各种各样的traits，才发现原来它是一种非常高级的技术，在更高级的语言中已经很普遍。因此这次花了些时间去学习它，接下来还有会有另一篇文章来详细介绍C++的`traits`技术。在这里，我们暂时忘记它，仅将它当成一个普通的类，先来探讨一下这个多出来的`typename`是怎么回事？
+可为何此处多了一个`typename`？另外`__type_traits`又是什么？看起来有些眼熟，想起之前在Effective C++上曾经看过`traits`这一技术的介绍，和这里的`__type_traits`有点像。只是一直未曾遇到需要`traits`的时候，所以当时并未仔细研究。然而STL中大量的充斥着各种各样的`traits`，一查才发现原来它是一种非常高级的技术，在更现的高级语言中已经很普遍。因此这次花了些时间去学习它，接下来还有会有另一篇文章来详细介绍C++的`traits`技术。在这里，我们暂时忘记它，仅将它当成一个普通的类，先来探讨一下这个多出来的`typename`是怎么回事？
 
 ## typename的常见用法
 
@@ -60,7 +57,7 @@ image:  debug-stdout.png
 
 一切归结于历史。
 
-Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参数引入一个新的关键字，但是这样做很可能会破坏已经写好的很多程序（因为`class`已经使用了很长一段时间）。但是更重要的原因是，在当时看来，`class`已完全足够胜任模板的这一需求，因此，为了避免引起不必要的麻烦，他选择了妥协，重用已有的`class`关键字。所以只到ISO C++标准出来之前，想要指定一个类型参数只有一种方法，那便是使用`class`。这也解释了为什么很多旧的编译器只支持`class`。
+Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参数引入一个新的关键字，但是这样做很可能会破坏已经写好的很多程序（因为`class`已经使用了很长一段时间）。但是更重要的原因是，在当时看来，`class`已完全足够胜任模板的这一需求，因此，为了避免引起不必要的麻烦，他选择了妥协，重用已有的`class`关键字。所以只到ISO C++标准出来之前，想要指定模板的类型参数只有一种方法，那便是使用`class`。这也解释了为什么很多旧的编译器只支持`class`。
 
 但是对很多人来说，总是不习惯`class`，因为从其本来存在的目的来说，是为了区别于语言的内置类型，用于声明一个用户自定义类型。那么对于下面这个模板函数的定义（相对于上例，仅将`typename`换成了`class`）：
 
@@ -84,13 +81,13 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
     ret = compare(pv1, pv2);
 {% endhighlight %}
 
-另外感到奇怪的原因是，`class`在类和模板中表现的意义看起来存在一些不一致，前者针对用户自定义类型，而后者包含了语言内置类型和指针。也正因为如此，人们似乎觉得当时没有引入一个新的关键字是错误的。
+令人感到奇怪的原因是，`class`在类和模板中表现的意义看起来存在一些不一致，前者针对用户自定义类型，而后者包含了语言内置类型和指针。也正因为如此，人们似乎觉得当时没有引入一个新的关键字可能是一个错误。
 
-这是促使标准委员会引入新关键字的一个因素，但其实还有另外一个更加重要的原因，和文章最开始那句代码相关。
+这是促使标准委员会引入新关键字的一个因素，但其实还有另外一个更加重要的原因，和文章最开始那行代码相关。
 
 ## 一些关键概念
 
-在我们揭开面纱之前，先保持一点神秘感，因为为了更好的理解C++标准，有几个概念需要先行介绍一下。
+在我们揭开真实原因的面纱之前，先保持一点神秘感，因为为了更好的理解C++标准，有几个重要的概念需要先行介绍一下。
 
 ### 限定名和非限定名
 
@@ -201,11 +198,11 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
     foo<ContainsAnotherType>();
 {% endhighlight %}
 
-那么，`T::iterator * iter;`便被编译器实例化为`ContainsAnotherType::iterator * iter;`，这是什么？前面是一个静态成员变量而不是类型，那么这便成了一个乘法表达式，只不过`iter`在这里没有定义，编译器会报错：
+那么，`T::iterator * iter;`被编译器实例化为`ContainsAnotherType::iterator * iter;`，这是什么？前面是一个静态成员变量而不是类型，那么这便成了一个乘法表达式，只不过`iter`在这里没有定义，编译器会报错：
 
 > error C2065: 'iter' : undeclared identifier
 
-但如果`iter`是一个全局变量，那么这行代码完全正确，它是表示计算两数相乘的表达式，返回值被抛弃。
+但如果`iter`是一个全局变量，那么这行代码将完全正确，它是表示计算两数相乘的表达式，返回值被抛弃。
 
 同一行代码能以两种完全不同的方式解释，而且在模板实例化之前，完全没有办法来区分它们，这绝对是滋生各种bug的温床。这时C++标准委员会再也忍不住了，与其到实例化时才能知道到底选择哪种方式来解释以上代码，委员会决定引入一个新的关键字，这就是`typename`。
 
@@ -217,7 +214,7 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 
 对于用于模板定义的依赖于模板参数的名称，只有在实例化的参数中存在这个类型名，或者这个名称前使用了`typename`关键字来修饰，编译器才会将该名称当成是类型。除了以上这两种情况，绝不会被当成是类型。
 
-因此，如果你想直接告诉编译器`T::iterator`是类型而不是变量，只需用`typename`修饰它：
+因此，如果你想直接告诉编译器`T::iterator`是类型而不是变量，只需用`typename`修饰：
 
 {% highlight cpp linenos %}
     template <class T>
@@ -227,7 +224,7 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
     }
 {% endhighlight %}
 
-这样编译器就可以确定`T::iterator`是一个类型，而不再需要等到实例化时期，因此消除了前面提到的歧义。
+这样编译器就可以确定`T::iterator`是一个类型，而不再需要等到实例化时期才能确定，因此消除了前面提到的歧义。
 
 ### 不同编译器对错误情况的处理
 
@@ -237,15 +234,27 @@ Visual C++ 2010仍然报告了和前面一样的错误：
 
 > error C2065: 'iter' : undeclared identifier
 
-虽然我们已经用关键字`typename`告诉了编译器`iterator`应该是一个类型，但是用一个定义了`iterator`变量的类型来实例化模板时，编译器却选择忽略了此关键字。出现错误只是由于iter没有定义。
+虽然我们已经用关键字`typename`告诉了编译器`iterator`应该是一个类型，但是用一个定义了`iterator`变量的结构来实例化模板时，编译器却选择忽略了此关键字。出现错误只是由于`iter`没有定义。
 
 再来看看g++如何处理这种情况，它的错误信息如下：
 
 > In function ‘void foo() [with T = ContainsAnotherType]’:
->    instantiated from here
+> instantiated from here
 > error: no type named ‘iterator’ in ‘struct ContainsAnotherType’
 
 g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错。它并没有尝试以另外一种方式来解释，由此可见，在这点上，g++更加严格，更遵循C++标准。
+
+### 使用typename的规则
+
+最后这个规则看起来有些复杂，可以参考[MSDN](http://msdn.microsoft.com/zh-cn/library/8y88s595.aspx)：
+
+- typename在下面情况下**禁止**使用：
+    - 模板定义之外，即typename只能用于模板的定义中
+    - 非限定类型，比如前面介绍过的`int`，`vector<int>`之类
+    - 基类列表中，比如`template <class T> class C1 : T::InnerType`不能在`T::InnerType`前面加typename
+    - 构造函数的初始化列表中
+- 如果类型是依赖于模板参数的限定名，那么在它之前**必须**加typename(除非是基类列表，或者在类的初始化成员列表中)
+- 其它情况下typename是**可选**的，也就是说对于一个不是依赖名的限定名，该名称是可选的，例如`vector<int> vi;`
 
 ### 其它例子
 
@@ -259,7 +268,7 @@ g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错�
     }
 {% endhighlight %}
 
-不像前面的`T::iterator * iter`可能会被当成乘法表达式，它不会引起歧义，但仍需加`typename`修饰。
+不像前面的`T::iterator * iter`可能会被当成乘法表达式，这里不会引起歧义，但仍需加`typename`修饰。
 
 再看下面这种：
 
@@ -271,45 +280,31 @@ g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错�
     }
 {% endhighlight %}
 
-是否和文章刚开始的那行令人头皮发麻的代码有些许相似？没错！现在终于解开`typename`之迷了。我们再看一眼那行代码：
+是否和文章刚开始的那行令人头皮发麻的代码有些许相似？没错！现在终于可以解开`typename`之迷了，看到这里，我相信你也一定可以解释那行代码了，我们再看一眼：
 
-{% highlight cpp linenos %}
     typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
-{% endhighlight %}
 
-现在应该可以很容易的理解其含义了，它是将`__type_traits<T>`这个模板类中的`has_trivial_destructor`嵌套类型定义一个叫做`trivial_destructor`的别名。
+它是将`__type_traits<T>`这个模板类中的`has_trivial_destructor`嵌套类型定义一个叫做`trivial_destructor`的别名，清晰明了。
 
-# 介绍文章开头的代码
+### 再看常见用法
 
-### 再看第一种用法
+既然`typename`关键字已经存在，而且它也可以用于最常见的指定模板参数，那么为什么不废除`class`这一用法呢？答案其实也很明显，因为在最终的标准出来之前，所有已存在的书、文章、教学、代码中都是使用的是`class`，可以想像，如果标准不再支持`class`，会出现什么情况。
 
-既然`typename`关键字已经存在了，而且它也可以用于第一种最简单的用法，那么为什么不废除`class`这一用法呢？答案很简单，因为在最终的标准出来之前，所有已存在的书、文章、演讲、教学、代码中都是用`class`写的，可以想像，如果标准不再支持`class`，会出现什么情况。
-
-但对于这种用法，虽然`class`和`typename`都支持，但就个人而言我还是喜欢用`typename`多一些，因为我始终过不了`class`表示用户定义类型这道坎。另外，我认为从语义上来说，`typename`比`class`表达的更为清楚一些。C++ Primer建议使用typename而不是class:
+对于指定模板参数这一用法，虽然`class`和`typename`都支持，但就个人而言我还是倾向使用`typename`多一些，因为我始终过不了`class`表示用户定义类型这道坎。另外，从语义上来说，`typename`比`class`表达的更为清楚。C++ Primer也建议使用`typename`:
 
 > 使用关键字typename代替关键字class指定模板类型形参也许更为直观，毕竟，可以使用内置类型（非类类型）作为实际的类型形参，而且，typename更清楚地指明后面的名字是一个类型名。但是，关键字typename是作为标准C++的组成部分加入到C++中的，因此旧的程序更有可能只用关键字class。
 
-### 使用typename的规则
-
-最后这个规则看起来有些复杂，可以参考[MSDN](http://msdn.microsoft.com/zh-cn/library/8y88s595.aspx)：
-
-- typename在下面情况下禁止使用：
- - 模板定义之外，即typename只能用于模板的定义中
- - 非限定类型，比如前面介绍过的`int`，`vector<int>`之类
- - 基类列中，比如`template <class T> class C1 : T::InnerType`不能在`T::InnerType`前面加typename
- - 构造函数的初始化列表中
-- 如果类型是依赖于模板参数的限定名，那么在它之前必须加typename(除非是基类列表，或者在类的初始化成员列表中)
-- 其它情况下typename是可选的，也就是说对于一个不是依赖名的限定名，该名称是可选的，例如`vector<int> vi;`
-
 ## 参考
 
-本文参考[A Description of the C++ typename keyword](http://pages.cs.wisc.edu/~driscoll/typename.html)。另外关于`typename`的历史，Stan Lippman写过一篇[文章](http://blogs.msdn.com/b/slippman/archive/2004/08/11/212768.aspx)，Stan Lippman何许人，也许你不知道他的名字，但看完这些你一定会，“哦，原来是他！”：他是_C++ Primer_, _Inside the C++ Object Model_, _Essential C++_, _C# Primer_等著作的作者，另外他也曾是Visual C++的架构师。
+1. [A Description of the C++ typename keyword](http://pages.cs.wisc.edu/~driscoll/typename.html)
+2. [维基百科typename](http://zh.wikipedia.org/wiki/Typename)
+3. 另外关于`typename`的历史，Stan Lippman写过一篇[文章](http://blogs.msdn.com/b/slippman/archive/2004/08/11/212768.aspx)，Stan Lippman何许人，也许你不知道他的名字，但看完这些你一定会发出，“哦，原来是他！”：他是 _C++ Primer, Inside the C++ Object Model, Essential C++, C# Primer_ 等著作的作者，另外他也曾是Visual C++的架构师。
 
 ## 写在结尾
 
-## 总结：向前兼容，妥协，包括Visual C++也是一样
-python2.x和3.0版本的巨大差别
-同样，这个方法也有一定的局限性，比如对于`std::cout`，我还没有找到好的解决办法。
+一个简单的关键字就已经充满曲折，这可以从一个角度反映出一门语言的发展历程，究竟要经历多少决断、波折与妥协，最终才发展成为现在的模样。在一个特定的时期，由于历史、技术、思想等各方面的因素，设计总会向现实做出一定的让步，出现一些“不完美”的设计，为了保持向后兼容，有些“不完美”的历史因素被保留了下来。现在我可以理解经常为人所诟病的Windows操作系统，Intel芯片，IE浏览器，Visual C++等，为了保持向后兼容，不得不在新的设计中仍然保留这些“不完美”，虽然带来的是更多的优秀特性，但有些人却总因为这些历史因素而唾弃它们，也为自己曾有一样的举动而羞愧不已。但也正是这些“不完美”的出现，才让人们在后续的设计中更加注意，站在前人的肩膀上，做出更好，更完善的设计，于是科技才不断向前推进。
+
+然而也有一些敢于大胆尝试的例子，比如C++ 11，它的变化之大甚至连Stroustrup都说它像一门[新语言](http://developer.51cto.com/art/201106/270597_all.htm)。对于有着30余年历史的“老”语言，不仅没有被各种新贵击溃，反而在不断向晚辈们借鉴，吸纳一些好的特性，老而弥坚，这十分不易。还有Python 3，为了清理2.x版本中某些语法方面的问题，打破了与2.x版本的向后兼容性，这种牺牲向后兼容换取进步的做法固然延缓了新版本的接受时间，但我相信这是向前进步的阵痛。Guido van Rossum的这种破旧立新的魅力实在让人钦佩，至于这种做法能否最终为人们所接受，一切交给历史来检验。
 
 (全文完)
 
