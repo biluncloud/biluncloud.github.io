@@ -296,9 +296,11 @@ g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错�
 
 ## 参考
 
-1. [A Description of the C++ typename keyword](http://pages.cs.wisc.edu/~driscoll/typename.html)
-2. [维基百科typename](http://zh.wikipedia.org/wiki/Typename)
-3. 另外关于`typename`的历史，Stan Lippman写过一篇[文章](http://blogs.msdn.com/b/slippman/archive/2004/08/11/212768.aspx)，Stan Lippman何许人，也许你不知道他的名字，但看完这些你一定会发出，“哦，原来是他！”：他是 _C++ Primer, Inside the C++ Object Model, Essential C++, C# Primer_ 等著作的作者，另外他也曾是Visual C++的架构师。
+1. C++ Primer
+2. Effective C++
+3. [A Description of the C++ typename keyword](http://pages.cs.wisc.edu/~driscoll/typename.html)
+4. [维基百科typename](http://zh.wikipedia.org/wiki/Typename)
+5. 另外关于`typename`的历史，Stan Lippman写过一篇[文章](http://blogs.msdn.com/b/slippman/archive/2004/08/11/212768.aspx)，Stan Lippman何许人，也许你不知道他的名字，但看完这些你一定会发出，“哦，原来是他！”：他是 _C++ Primer, Inside the C++ Object Model, Essential C++, C# Primer_ 等著作的作者，另外他也曾是Visual C++的架构师。
 
 ## 写在结尾
 
