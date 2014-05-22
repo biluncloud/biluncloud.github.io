@@ -10,7 +10,7 @@ image:  log-insight.gif
 
 {{ more }}
 
-## Table of Contents
+## 目录
 
 * Table of Contents Placeholder
 {:toc}

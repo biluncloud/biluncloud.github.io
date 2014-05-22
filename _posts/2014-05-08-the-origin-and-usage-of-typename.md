@@ -14,7 +14,7 @@ image:  typename.png
 
 {{ more }}
 
-## Table of Contents
+## 目录
 
 * Table of Contents Placeholder
 {:toc}

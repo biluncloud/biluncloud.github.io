@@ -12,7 +12,7 @@ image:  debug-stdout.png
 
 经过大量的搜索之后，在Stack Overflow上找到了[答案](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，并且成功的解决了我的问题。被采用答案的作者`Anthony Arnold`由于十分喜欢这个问题，所以写了一篇关于它的[博文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)。我也特别喜欢这个问题，之前遇到过多次，但都采用别的方式解决，而只有这个答案最完美。同时它综合运用了很多知识，能够给我们的调试带来不少启发。因为网上也没有再找到其它的解决方案，所以我决定翻译此文，后面对原文再进行其它平台的补充。离开学校之后第一次翻译，不好之处欢迎指正。
 
-## Table of Contents
+## 目录
 
 * Table of Contents Placeholder
 {:toc}
