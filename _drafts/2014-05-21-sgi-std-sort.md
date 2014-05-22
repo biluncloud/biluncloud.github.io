@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  std::sort中\_\_final\_insertion\_sort函数分析
-description: SGI版本的STL中，sort算法分为两部分，前半部分用了introsort，后半部分调用了\_\_final\_insertion\_sort，本文解释了后半部分为何如此实现
+title:  std::sort中__final_insertion_sort函数分析
+description: SGI版本的STL中，sort算法分为两部分，前半部分用了introsort，后半部分调用了__final_insertion_sort，本文解释了后半部分为何如此实现
 tags:   C++, 模板, STL，std::sort，快速排序，堆排序，插入排序
 image:  typename.png
 ---
@@ -19,17 +19,19 @@ image:  typename.png
 
 ## 背景
 
-在学校期间，为了掌握这些排序算法，我们不得不经常手动来实现它们。这些算法实在是太常用了，因此在C语言的标准库中，`stdlib.h`头文件就包含了`qsort`算法，它正是最快排序算法————快速排序的标准实现，这给我们提供了很大的方便。
+在学校期间，为了掌握这些排序算法，我们不得不经常手动来实现它们。这些算法实在是太常用了，因此在C语言的标准库中，`stdlib.h`头文件就包含了`qsort`算法，它正是最快排序算法——快速排序的标准实现，这给我们提供了很大的方便。
 
 然而，快速排序虽然平均复杂度为O(N logN)，但可能由于不当的pivot选择，导致其在最坏情况下复杂度恶化为O(N<sup>2</sup>)。另外，由于快速排序一般是用递归实现，我们知道递归是一种函数调用，它会有一些额外的开销，比如返回指针、参数压栈、出栈等，在分段很小的情况下，过度的递归会带来过大的额外负荷，从而拉缓排序的速度。
 
 ## Introspective Sort
 
-### 前提知识
+堆排序经常是作为快速排序最有力的竞争者出现，它们的复杂度都是O(N logN)，但是就平均表现而言，它却比快速排序慢了2~5倍，知乎上有一个[讨论：堆排序缺点何在](http://www.zhihu.com/question/20842649)？，另外还可以参考[Comparing Quick and Heap Sorts](https://www.cs.auckland.ac.nz/~jmor159/PLDS210/qsort3.html)，还有[Basic Comparison of Heap-Sort and Quick-Sort Algorithms](http://www.student.montefiore.ulg.ac.be/~merciadri/docs/papers/heap-quick-comparison.pdf)。但是有一点它比快速排序要好，在上述最坏的情况下仍然会保持O(N logN)。
 
-堆排序经常是作为快速排序最有力的竞争者出现，它们的复杂度都是O(N logN)，但是就平均表现而言，它却比快速排序慢了2~5倍，知乎上有一个[讨论：堆排序缺点何在？](http://www.zhihu.com/question/20842649)，另外还可以参考[Comparing Quick and Heap Sorts](https://www.cs.auckland.ac.nz/~jmor159/PLDS210/qsort3.html)，还有[Basic Comparison of Heap-Sort and Quick-Sort Algorithms](http://www.student.montefiore.ulg.ac.be/~merciadri/docs/papers/heap-quick-comparison.pdf)。但是有一点它比快速排序要好，在上述最坏的情况下仍然会保持O(N logN)。
+[![堆排序](/img/posts/stl-heapsort.gif)](http://en.wikipedia.org/wiki/File:Sorting_heapsort_anim.gif)
 
-插入排序在数据大致有序的情况表现非常好，可以达到接近O(N)，可以参考这个讨论[Which sort algorithm works best on mostly sorted data?](http://stackoverflow.com/questions/220044/which-sort-algorithm-works-best-on-mostly-sorted-data)
+插入排序在数据大致有序的情况表现非常好，可以达到接近O(N)，可以参考这个讨论[Which sort algorithm works best on mostly sorted data](http://stackoverflow.com/questions/220044/which-sort-algorithm-works-best-on-mostly-sorted-data)?
+
+[![插入排序](/img/posts/stl-insertion-sort.gif)](http://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif)
 
 ### 横空出世
 
@@ -105,7 +107,12 @@ std::sort的代码如下：
 
 该函数返回的是右端的第一个值，《STL源码剖析》给出了两个非常直观的示意图：
 
+分割示例一
+
 ![分割示例一](/img/posts/stl-unguarded-partition-sample1.png)
+
+分割示例二
+
 ![分割示例二](/img/posts/stl-unguarded-partition-sample2.png)
 
 相信这两个图可以让你非常容易明白这个分割算法。
@@ -300,20 +307,20 @@ std::sort的代码如下：
 如果假设每次`__insertion_sort`都不取第一个分支，即首位的元素已经是最小值，此时：
 
 {% highlight cpp linenos %}
-        // __linear_insert函数
-        if (value < *first) {       // 1次比较
-            // ...
-        }
-        else
-            __unguarded_linear_insert(last, value);
-                                    // 见下面
+    // __linear_insert函数
+    if (value < *first) {       // 1次比较
+        // ...
+    }
+    else
+        __unguarded_linear_insert(last, value);
+                                // 见下面
 
-        // __unguarded_linear_insert函数
-        while (value < *next) {     // N次比较
-            *last = *next;          // N次赋值
-            last = next;            // N次赋值
-            --next;                 // N次自减
-        }
+    // __unguarded_linear_insert函数
+    while (value < *next) {     // N次比较
+        *last = *next;          // N次赋值
+        last = next;            // N次赋值
+        --next;                 // N次自减
+    }
 {% endhighlight %}
 
 因此总共需要N+1次比较，2N次赋值和N次自减。
@@ -371,44 +378,65 @@ std::sort的代码如下：
 
 ### 论证最小值存在于前16个元素之中
 
-##这一段移到别处
 我们先看一下维基百科上快速排序的动画，非常直观：
 
 [![快速排序](/img/posts/stl-quicksort.gif)](http://upload.wikimedia.org/wikipedia/commons/6/6a/Sorting_quicksort_anim.gif)
 
-从图中可以看出，无论经过几次递归调用，对于所有划分的区域，左边区间所有的数据一定比右边的小。
-##
+从图中可以看出，无论经过几次递归调用，对于所有划分的区域，左边区间所有的数据一定比右边小。
 
+我们再来看一眼`__introsort_loop`：
 
+{% highlight cpp linenos %}
+    template <class RandomAccessIterator, class T, class Size>
+    void __introsort_loop(RandomAccessIterator first,
+                          RandomAccessIterator last, T*,
+                          Size depth_limit) {
+        while (last - first > __stl_threshold) {
+            if (depth_limit == 0) {
+                partial_sort(first, last, last);
+                return;
+            }
+            --depth_limit;
+            RandomAccessIterator cut = __unguarded_partition
+              (first, last, T(__median(*first, *(first + (last - first)/2),
+                                       *(last - 1))));
+            __introsort_loop(cut, last, value_type(first), depth_limit);
+            last = cut;
+        }
+    }
+{% endhighlight %}
 
-## 证明前16个元素中一定有最小值
-## 前面还有一个unguarded
+该函数只有两种情况下可能返回，一是区域小于阈值16；二是超过递归深度阈值。我们现在只考虑最左边的一个子区间，先假设是由于第一种情况终止了这个函数，那么该子区域小于16。再根据前面说的：左边区间的所有数据一定比右边小，可以推断出最小值一定在该小于16的子区域内。
 
-qsort和sort, 除了模板，有无其它区别
+假设是第二种情况下终止，那么对于最左边的区间，由于递归深度过深，因此该区间会调用堆排序，所以这段区间的最小值一定位于最左端。再加上前面的结论：左边区间所有的数据一定比右边小，那么该区间内最左边的数据一定是整个序列的最小值。
 
-最坏情况下O(N2)
-sort的introsort算法，参考论文
-以一个例子来介绍unguarded，或者直接分析__unguarded_linear_insert和__linear_insert有何不同，学习书上的风格画一个图
-introsort之后的数据是什么情况
-为何分两步？
-为何选择insertion sort
-sort适合哪些容器
+因此，不论是哪种情况，都可以保证起始的16个元素中一定有最小值。如此便能够使用`__insertion_sort`对前16个元素进行排序，接着用`__unguarded_insertion_sort`毫无顾忌的不考虑边界的情况下对剩于的区间进行更快速的排序。
 
-为什么__final_insertion_sort要这样设计？
-看来得去找introsort这篇论文了，里面没有介绍关于insertion_sort的问题，重点放在了introsort上面
-我想我弄明白了，因为经过前面的introsort之后，最小值一定会在最前面的16个当中。只考虑last - first > 16的情况，如果只用insertion_sort的话，那么每个元素插入都需要两个判断，一是它是否比最左边的小，如果是的话，则需要整体右移，否则挨个比较。
-但是由于最小值在已经在前16个当中了，那么对于16个元素之后的其它元素而言，这次比较显然是个浪费。而如果先用一次插入比较对前16个排序完之后，再对所有16之后的元素用unguarded插入排序的话，那么效率肯定会高得多，至少这次比较操作是省了下来，如果元素数量很多时，这将省下来相当多的时间。
-这个也可以去写一篇短的blog
+至此，所有三个问题都得到了解答。
 
-这篇文章会比较短，但是我想很多人看到这里时一定会象我一样觉得充满疑问，为何要分成两段，网上没有查到有详细的分析，因此打算在这里写下这篇文章
-设计一段程序来统计这一比较次数，这样比较直观。
-将16变小一点，可以画图来演示
-这里有一段讨论：http://bytes.com/topic/c/answers/819473-questions-about-stl-sort
-这里是introsort: http://www.cs.rpi.edu/~musser/gp/index_1.html
-这里是pdf版本：http://www.researchgate.net/profile/David_Musser/publication/2476873_Introspective_Sorting_and_Selection_Algorithms/file/3deec518194fb4a32f.pdf
-sort适用哪些容器，当然会包括我们常用的数组
-看看VC里面的sort如何实现 
-各种排序算法适用的场景，为何这里选择insertion sort
+## std::sort适合哪些容器
+
+这里顺带介绍一下，`std::sort`算法适用于STL中的哪些容器。我们知道在STL中的容器可以大致分为：
+
+1. 序列式容器：vector, list, deque
+2. 关联式容器：map, set, multimap, multiset
+3. 容器配置器：queue, stack, priority_queue
+
+对于所有的关联式容器如map和set，由于它们层次是用RB-tree实现，因此已经具有了自动排序功能，不需要sort算法。至于容器配置器，因为它们对出口和入口方式做了限制，因此是禁止使用排序功能的。
+
+因为`std::sort`需要在内部去取中间位置元素的值，为了快速完成，它只接受随机访问迭代器。而剩下的三种序列式容器中，vector和deque是随机访问迭代器，因此它们可以使用`std::sort`算法。而`list`是[双向访问迭代器](http://www.cplusplus.com/reference/list/list/#types)，所以它无法使用`std::sort`。但好在它提供了自己的`sort`[成员函数](http://www.cplusplus.com/reference/list/list/sort/)。
+
+另外，我们最常使用的数组其实和`vector`一样，它的指针就是一种迭代器，而且是随机访问迭代器，因此一样可以使用`std::sort`。
+
+## 写在最后
+
+本来是因为没看明白`__final_insertion_sort`这个函数，所以有了前面提到的三个问题。而无论是在《STL源码剖析》中，还是在网上都没有找到这几个问题的解答，因此在弄明白之后才打算写一篇文章来记录下，供后人遇到一样的问题时能够提供些帮助。所以原来打算重点讨论下这个函数，可写着写着就发现似乎很值得把整个`std::sort`介绍一下，因为所多的细节在书中都没有得到解释，这算是我看完这段源码之后的个人总结吧。
+
+仅仅数十行代码，就包含了如此多的技巧，为得只有一个目的：尽最大可能的提高算法的效率。正如孟岩所说：
+
+> STL是精致的软件框架，是为优化效率而无所不用其极的艺术品，是数据结构与算法大师经年累月的智能结晶，是泛型思想的光辉诗篇，是C++高级技术的精彩亮相！
+
+虽然现在人们对STL
 
 (全文完)
 
