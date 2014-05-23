@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  std::sort中__final_insertion_sort函数分析
-description: SGI版本的STL中，sort算法分为两部分，前半部分用了introsort，后半部分调用了__final_insertion_sort，本文解释了后半部分为何如此实现
+title:  知无涯之std::sort源码剖析
+description: SGI版本的STL中，sort算法采用了Introspective Sort，本文详细分析了该算法的实现。算法后半部分使用了插入排序，本文对几种插入排序作了性能对比，并重点分析了__final_insertion_sort为何如此实现
 tags:   C++, 模板, STL，std::sort，快速排序，堆排序，插入排序
 image:  typename.png
 ---
@@ -10,12 +10,11 @@ image:  typename.png
 
 {{ more }}
 
-## 目录
+### 目录
+{:.no_toc}
 
 * Table of Contents Placeholder
 {:toc}
-
------
 
 ## 背景
 
@@ -78,6 +77,8 @@ std::sort的代码如下：
         }
     }
 {% endhighlight %}
+
+## 为何这样递归，左边呢
 
 #### 三点中值法
 
@@ -419,24 +420,27 @@ std::sort的代码如下：
 这里顺带介绍一下，`std::sort`算法适用于STL中的哪些容器。我们知道在STL中的容器可以大致分为：
 
 1. 序列式容器：vector, list, deque
-2. 关联式容器：map, set, multimap, multiset
-3. 容器配置器：queue, stack, priority_queue
+2. 关联式容器：set, map, multiset, multimap
+3. 配置器容器：queue, stack, priority_queue
+4. 无序关联式容器：unordered_set, unordered_map, unordered_multiset, unordered_multimap。这些是在C++ 11中引入的
 
-对于所有的关联式容器如map和set，由于它们层次是用RB-tree实现，因此已经具有了自动排序功能，不需要sort算法。至于容器配置器，因为它们对出口和入口方式做了限制，因此是禁止使用排序功能的。
+对于所有的关联式容器如map和set，由于它们层次是用RB-tree实现，因此已经具有了自动排序功能，不需要std::sort。至于配置器容器，因为它们对出口和入口做了限制，比如说先进先出，先进后出，因此它们禁止使用排序功能。
 
-因为`std::sort`需要在内部去取中间位置元素的值，为了快速完成，它只接受随机访问迭代器。而剩下的三种序列式容器中，vector和deque是随机访问迭代器，因此它们可以使用`std::sort`算法。而`list`是[双向访问迭代器](http://www.cplusplus.com/reference/list/list/#types)，所以它无法使用`std::sort`。但好在它提供了自己的`sort`[成员函数](http://www.cplusplus.com/reference/list/list/sort/)。
+由于`std::sort`算法内部需要去取中间位置元素的值，为了能够让访问元素更迅速，因此它只接受有随机访问迭代器的容器。所以对于所有的无序关联式容器而言，它们只有[前向迭代器](http://www.cplusplus.com/reference/unordered_set/unordered_set/#types)，因而无法调用`std::sort`。但我认为更为重要的是，从它们名称来看，本身就是无序的，它们底层是用Hash Table来实现。它们的作用像是字典，为的是根据key快速访问对应的元素，所以对其排序是没有意义的。
+
+而剩下的三种序列式容器中，vector和deque是随机访问迭代器，因此它们可以使用`std::sort`算法。而list是[双向迭代器](http://www.cplusplus.com/reference/list/list/#types)，所以它无法使用`std::sort`。但好在它提供了自己的sort[成员函数](http://www.cplusplus.com/reference/list/list/sort/)。
 
 另外，我们最常使用的数组其实和`vector`一样，它的指针就是一种迭代器，而且是随机访问迭代器，因此一样可以使用`std::sort`。
 
 ## 写在最后
 
-本来是因为没看明白`__final_insertion_sort`这个函数，所以有了前面提到的三个问题。而无论是在《STL源码剖析》中，还是在网上都没有找到这几个问题的解答，因此在弄明白之后才打算写一篇文章来记录下，供后人遇到一样的问题时能够提供些帮助。所以原来打算重点讨论下这个函数，可写着写着就发现似乎很值得把整个`std::sort`介绍一下，因为所多的细节在书中都没有得到解释，这算是我看完这段源码之后的个人总结吧。
+本来只是因为没看明白`__final_insertion_sort`这个函数，所以有了前面提到的三个问题。而无论是在《STL源码剖析》中，还是在网上都没有找到这几个问题的解答，因此在弄明白之后才打算写一篇文章来记录下，供遇到一样的问题的人能够提供些帮助。所以原来打算重点讨论下这个函数，可写着写着就发现似乎很值得把整个`std::sort`介绍一遍，因为所多的细节在书中都没有得到解释，自身对这段代码也有些新的理解，这算是我看完这段源码之后的个人总结吧。
 
 仅仅数十行代码，就包含了如此多的技巧，为得只有一个目的：尽最大可能的提高算法的效率。正如孟岩所说：
 
 > STL是精致的软件框架，是为优化效率而无所不用其极的艺术品，是数据结构与算法大师经年累月的智能结晶，是泛型思想的光辉诗篇，是C++高级技术的精彩亮相！
 
-虽然现在人们对STL
+虽然现在人们认为STL存在非常多的诟病，比如引起代码膨胀、性能下降或者是编译信息难以阅读等，但我认为对于C++而言，它就像C的标准库相对于C语言，它们可以让我们的工作达到事半功倍的效果，大大提高工作效率。毕竟这是C++的标准委员会及众多C++专家们画了数十年的心血，无论是在稳定性、安全性、通用性还是效率上都经历住了很大的考验，如果自己从头开始设计一个自认为更好的库，真的难达到这么好的效果么？看看本文所讨论的std::sort，我实在很难想象还有比STL对它的实现更有效率的做法。当然，如果你的项目很特殊，比如禁用异常，或者已经有针对项目更高效稳定的量身定制的库，那么我可以理解禁止使用STL。但总的来说，在大部分情况下，有这么好的标准工具，为什么不去尝试呢？
 
 (全文完)
 
