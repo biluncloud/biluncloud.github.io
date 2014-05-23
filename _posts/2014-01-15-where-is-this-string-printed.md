@@ -18,6 +18,8 @@ image:  debug-stdout.png
 * Table of Contents Placeholder
 {:toc}
 
+-----
+
 ## 调试STDOUT
 
 前几天我遇到一个很有趣的[Stack Overflow 问题](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，提问者希望[GDB](http://www.gnu.org/s/gdb/)能够在一个特定的字符串写到stdout时中断程序。

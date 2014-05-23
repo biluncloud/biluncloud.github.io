@@ -16,6 +16,8 @@ image:  vim.png
 * Table of Contents Placeholder
 {:toc}
 
+-----
+
 搭完网站之后的第一篇文章有些兴奋，先变身话痨简单回顾一下我是如何接触到VIM的，不感兴趣的同学可以直接跳过这一部分:-)
 
 ## 写在前面：Life Changing Editor

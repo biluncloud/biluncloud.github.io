@@ -20,6 +20,8 @@ image:  typename.png
 * Table of Contents Placeholder
 {:toc}
 
+-----
+
 ## 起因
 
 近日，看到这样一行代码：

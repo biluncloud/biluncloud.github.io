@@ -16,6 +16,8 @@ image:  version-ctrl.png
 * Table of Contents Placeholder
 {:toc}
 
+-----
+
 ## 故事背景
 
 我们使用的版本管理工具是[ClearCase](http://www-03.ibm.com/software/products/zh/clearcase/)，一个集中式(相对于分布式的Git)的商业化配置管理工具，类似于SVN，CVS等工具，但功能强大的多，有很强的扩展性，可以根据自己的需要进行一些订制与扩展，比如增加一些提交代码时的trigger，checkout代码时hook等等。当然，[价格也不菲](http://product.yesky.com/product/177/177141/price.shtml)。
