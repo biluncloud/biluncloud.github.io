@@ -12,8 +12,6 @@ image:  std-sort.png
 
 ### 目录
 {:.no_toc}
-##TODO remove this line__
-## 在豆瓣的评价上加上这个链接
 
 * Table of Contents Placeholder
 {:toc}
