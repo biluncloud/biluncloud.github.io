@@ -231,6 +231,44 @@ image:  version-ctrl.png
     ...
 {% endhighlight %}
 
+### 针对checkout文件
+
+(**2014.06.06更新**)
+
+因为有时并不是只对已经archive的节点进行review和unittest，而是对于checkout的文件进行操作。那么此时便没有了上面的`版本号`一说，还是用上面的例子来说明：
+
+    Q:\> clearvtree project\src\test.cpp
+
+此时，假设test.cpp是checkout的文件，我们想对其增加review和unittest属性。这里得到的当前工作目录是：
+
+    Q:\project\src
+
+路径完全正确，没有了前面`@@main`引起的干扰。所以文件的完整路径就可以这样得到：
+
+    当前工作目录 + \test.cpp
+
+但是如果直接用前一节的`reviewed_by_me.bat`脚本，却会得到这样的结果：
+
+    Q:\project\src\test
+
+这里少了后缀名，为什么呢？问题出在代码中的`set version_num=%%~ni`，因为`%~ni`只表示文件名，因此只有`test`出现。如果想要取得完整的路径，那么只用再加上后缀名即可，即将`set version_num=%%~ni`改成`set version_num=%%~nxi`，仅仅增加一个`x`。因为这种情况下后缀名为空，因此也不会影响前面说的archive文件。
+
+所以，最终版本的`reviewed_by_me.bat`代码变为：
+
+{% highlight bat linenos %}
+    set element="%1"
+    rem get time for var %time%
+    ...
+    rem get user for var %user%
+    ...
+    rem Get the version number
+    for /f %%i in ("%element%") do set version_num=%%~nxi
+    rem Assemble the real path
+    for /f %%i in ('CD') do set element_path=%%i\%version_num%
+    call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
+    ...
+{% endhighlight %}
+
 ## 测试
 
 最后对下面几种方式启动的版本树进行了测试，所有的情况都成功的运行：
