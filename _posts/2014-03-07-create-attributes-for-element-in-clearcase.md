@@ -235,7 +235,7 @@ image:  version-ctrl.png
 
 (**2014.06.06更新**)
 
-因为有时并不是只对已经archive的节点进行review和unittest，而是对于checkout的文件进行操作。那么此时便没有了上面的`版本号`一说，还是用上面的例子来说明：
+因为有时并不是只对已经archive的节点进行review和unittest，而是会直接操作于checkout文件。那么此时便没有了上面的`版本号`一说，直接使用上面的代码会出现问题。还是用上面的例子来说明：
 
     Q:\> clearvtree project\src\test.cpp
 
