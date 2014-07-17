@@ -285,7 +285,8 @@ Solarized配色还有一个使它能够成为最受欢迎的配色方案的理�
     `--help:` 这是一个后台运行的插件，不需要手动的任何命令来激活它。
 
 2. [Python-mode](https://github.com/klen/python-mode) - Python in VIM
-    <iframe width="480" height="405" src="http://www.56.com/iframe/NjQ2OTEyODA" frameborder="0" allowfullscreen=""> </iframe>
+
+    <iframe src="http://www.tudou.com/programs/view/html5embed.action?type=0&code=ihRCG5iUg_w&lcode=&resourceId=0_06_05_99" allowtransparency="true" scrolling="no" border="0" frameborder="0" style="width:480px;height:400px;"></iframe>
 
     如果你需要写Python，那么Python-mode是你一定不能错过的插件，靠它就可以把你的VIM打造成一个强大的Python IDE，因为它可以做到一个现代IDE能做的一切：
 

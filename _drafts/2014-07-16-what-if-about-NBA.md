@@ -3,7 +3,7 @@ layout: post
 title:  NBA 38大催泪瞬间：假如
 description: 有关篮球的记忆
 tags:   篮球，NBA，记忆，怀旧，感动，视频
-image:  vim.png
+image:  what-if.png
 ---
 
 此篇文章无关乎技术！献给热爱篮球的朋友！
@@ -16,9 +16,7 @@ image:  vim.png
 
 看完后心情久久无法平复，关注篮球十余年，每张照片都可以勾起一段回忆。但可惜的是楼主没有做成视频，如果像我刚开始一样，点进来看之后发现乱七八糟的照片，就判定为水贴，错过了该有多可惜，一定有很多这样的人。这么好的内容应该以更好的形式展示出来，而并非手动的去拖动页面，播放音乐，竖起耳朵聆听歌词，它们应该是作为一个整体出现，而可以展示这一整体的最好方式便是视频。于是下定决心，花了两天时间将它制作出来，放上[虎扑](http://bbs.hupu.com/9936220.html)。除增加了前奏时96黄金一代合影的照片外，所有的内容均来自原贴。
 
-    <iframe height=498 width=510 src="http://static.video.qq.com/TPout.swf?vid=k013234astc&amp;auto=1" frameborder=0 allowfullscreen></iframe>
-
-    <iframe height=498 width=510 src="http://player.youku.com/embed/XNzM5NTIxNDM2" frameborder=0 allowfullscreen></iframe>
+<iframe frameborder="0" style="width:480px;height:400px;" src="http://v.qq.com/iframe/player.html?vid=k013234astc&tiny=0&auto=0" allowfullscreen></iframe>
 
 ## 碎碎念
 
