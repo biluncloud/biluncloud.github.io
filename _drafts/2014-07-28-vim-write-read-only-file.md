@@ -19,6 +19,24 @@ image:  debug-stdout.png
 
 -----
 
+E45: ‘readonly’ option is set (add ! to override)
+## :help :w
+
+							*:w_c* *:write_c*
+:[range]w[rite] [++opt] !{cmd}
+			Execute {cmd} with [range] lines as standard input
+			(note the space in front of the '!').  {cmd} is
+			executed like with ":!{cmd}", any '!' is replaced with
+			the previous command |:!|.
+
+## w并未保存文件
+## %指什么
+## tee的作用
+## 映射
+不Reload的话可以保存原来的undo history
+截图
+
+
 ## 调试STDOUT
 
 前几天我遇到一个很有趣的[Stack Overflow 问题](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，提问者希望[GDB](http://www.gnu.org/s/gdb/)能够在一个特定的字符串写到stdout时中断程序。
