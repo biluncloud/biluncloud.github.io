@@ -1,252 +1,171 @@
 ---
 layout: post
-title:  Vim如何写需要root权限的文件
-description: 如何未以sudo启动Vim，写需要root权限的文件时会报readonly错误，本文介绍了如何不退出Vim的情况下写此类文件
+title:  以普通用户启动的Vim如何写需要root权限的文件
+description: 如果未以sudo启动Vim，写需要root权限的文件时会报readonly错误，本文介绍了如何不退出Vim的情况下写此类文件
 tags:   Linux，Vim, sudo, tee, root
 image:  debug-stdout.png
 ---
 
-前段时间在调试时遇到一个问题，运行程序出现错误，但并没有足够的信息来定位错误所在。可喜的是控制台上输出了一些可疑信息，只要找到了哪里打印了这些信息便有可能推断错误的原因。然而由于程序过于庞大，不可能一步一步跟踪调试去查找哪条语句执行后输出了这段字符串。尝试在所有的代码中搜索这段字符串也无功而返。后来突发奇想，能否在输出字符串时设置一个条件断点，只要输出的这段信息就中断，这样就可以在中断后找到何处打印了这些可疑信息，进而解决程序的问题了。
+在Linux上工作的朋友很可能遇到过这样一种情况，当你用vi/Vim编辑完一个文件时，运行`:wq`保存退出，突然蹦出一个错误：
+> E45: ‘readonly’ option is set (add ! to override)
+
+这表明文件是只读的，按照提示，加上`!`强制保存：`:w!`，又一个错误出现：
+> “readonly-file-name” E212: Can't open file for writing
 
 {{ more }}
 
-经过大量的搜索之后，在Stack Overflow上找到了[答案](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，并且成功的解决了我的问题。被采用答案的作者`Anthony Arnold`由于十分喜欢这个问题，所以写了一篇关于它的[博文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)。我也特别喜欢这个问题，之前遇到过多次，但都采用别的方式解决，而只有这个答案最完美。同时它综合运用了很多知识，能够给我们的调试带来不少启发。因为网上也没有再找到其它的解决方案，所以我决定翻译此文，后面对原文再进行其它平台的补充。离开学校之后第一次翻译，不好之处欢迎指正。
+文件明明存在，为何提示无法打开？这错误又代表什么呢？查看文档`:help E212`: 
+> For some reason the file you are writing to cannot be created or overwritten.
+> The reason could be that you do not have permission to write in the directory
+> or the file name is not valid.
 
-## Table of Contents
+原来可能是没有权限，此时你才想起，这个文件需要root权限才能编辑，而当前登陆的只是普通用户，在编辑之前你忘了使用`sudo`来启动vi，所以系统会阻止保存。为了防止修改丢失，你只好先把它保存为另外一个临时文件`temp-file-name`，然后退出vi，再运行`sudo mv temp-file-name readonly-file-name`覆盖原文件。
+
+### 目录
+{:.no_toc}
 
 * Table of Contents Placeholder
 {:toc}
 
 -----
 
-E45: ‘readonly’ option is set (add ! to override)
-## :help :w
+但这样操作太麻烦。而且如果还需要接着编辑这个文件，希望保留vi的编辑历史，想要能够撤消一部分操作怎么办？能不能在不退出vi的情况下获得root权限来保存这个文件？
 
-							*:w_c* *:write_c*
-:[range]w[rite] [++opt] !{cmd}
-			Execute {cmd} with [range] lines as standard input
-			(note the space in front of the '!').  {cmd} is
-			executed like with ":!{cmd}", any '!' is replaced with
-			the previous command |:!|.
+## 解决方案
 
-## w并未保存文件
-## %指什么
-## tee的作用
-## 映射
-不Reload的话可以保存原来的undo history
-截图
+答案是可以。执行这样一条命令即可：
 
+    :w !sudo tee %
 
-## 调试STDOUT
+接下来我们来分析这个命令为什么可以工作。首先查看文档，`:help :w`，向下可以看到：
 
-前几天我遇到一个很有趣的[Stack Overflow 问题](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)，提问者希望[GDB](http://www.gnu.org/s/gdb/)能够在一个特定的字符串写到stdout时中断程序。
+> 							*:w_c* *:write_c*
+> :[range]w[rite] [++opt] !{cmd}
+> 			Execute {cmd} with [range] lines as standard input
+> 			(note the space in front of the '!').  {cmd} is
+> 			executed like with ":!{cmd}", any '!' is replaced with
+> 			the previous command |:!|.
+> 
+> The default [range] for the ":w" command is the whole buffer (1,$)
 
-除非你至少掌握了一些下面的知识，否则并不容易得到这个问题的答案：
+对应前面的命令，如下所示：
 
-- 汇编语言
-- 操作系统
-- C语言标准库
-- GDB命令
+> :       w               !sudo tee %
+> |       |               |  |
+> :[range]w[rite] [++opt] !{cmd}
 
-我想出了一种可行的但是不可移植的解决方案，它依赖于x86指令集和Linux的系统调用[write(2)](http://linux.die.net/man/2/write)，所以本文的讨论限制在特定操作系统内核上的特定架构。
+我们并未指定`range`，参见前面帮助文档最下一行，未指定时，默认情况下`range`是整个文件。此外，这里也没有`opt`。
 
-### 例子
+### vi中执行外部命令
 
-我们使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改，增加了另外一个输出字符串的函数，以更好的演示捕获特定字符串)
+接下来是一个叹号`!`，它表示后面部分是外部命令，文档中说的很清楚，这和直接执行`:!{cmd}`是一样的效果。后者的作用是打开shell执行一个命令，比如，运行`:!ls`，会显示当前工作目录下的所有文件，这是个非常有用的命令，任何可以在shell中执行的命令都可以在不退出vi的情况下运行，并且可以将结果读入到vi中来。试想，如果你要在vi中插入当前工作路径或者当前工作路径下的所有文件名，你可以运行：
 
-{% highlight cpp linenos %}
-    #include <stdio.h>
+    :r !pwd或:r !ls
 
-    void test()
-    {
-        printf("Test\n");
-    }
+此时所有的内容便被插入至vi中。
 
-    int main()
-    {
-        printf("Hello World!\n");
-        test();
-        return 0;
-    }
-{% endhighlight %}
+### 命令的另一种表示形式
 
-用下面的命令编译链接：
+注意看前面的文档中:
 
-    # gcc -g -o hello hello.c
+> Execute {cmd} with [range] lines as standard input
 
-用下面的命令调试：
+所以实际上这个`:w`并未真的保存当前文件，就像执行`:w new-file-name`时，它将当前文件的内容保存到另外一个`new-file-name`的文件中，在这里它相当于一个__另存为__，而不是__保存__。它将当前文档的内容写到后面命令的标准输入中，再来执行`cmd`，所以整个命令可以转换为一个普通的shell命令:
 
-    # gdb hello
+    $ cat readonly-file-name | sudo tee %
 
-### 在write中设置断点
+其中`sudo`很好理解，意为切换至root执行后面的命令，`tee`和`%`是什么呢？
 
-第一步，我们需要找出如何在有数据被写到stdout时中断程序。我们假设你调试代码的作者没有疯，他们采用了所选语言的标准用法来向stdout写数据(比如C语言中的[printf(3)](http://linux.die.net/man/3/printf))，或者他们直接调用系统调用[write(2)](http://linux.die.net/man/2/write)。
+### %的意义
 
-实际上**最终`printf(3)`也调用的是`write(2)`**，所以不管采用上面哪种方式都可以。
+我们先来看`%`，执行`:help cmdline-special`可以看到：
 
-因此你可以在[write(2)](http://linux.die.net/man/2/write)系统调用中设置一个断点：
+> In Ex commands, at places where a file name can be used, the following
+> characters have a special meaning.  These can also be used in the expression
+> function expand() |expand()|.
+> 	%	Is replaced with the current file name.		  *:_%* *c_%*
 
-    $gdb break write
+`%`会扩展成当前文件名，所以上述的`cmd`也就成了`sudo tee readonly-file-name`。此时整个命令即：
 
-GDB也许会抱怨它并不知道`write`函数，但是它可以在将来这个函数有效时再在其中设置这一断点：
+    $ cat readonly-file-name | sudo tee readonly-file-name
 
-    Function "write" not defined.
-    Make breakpoint pending on future shared library load? (y or [n])
+__注意__：在另外一个地方我们也经常用到`%`，没错，替换。但是那里`%`的作用不一样，执行`:help :%`:
 
-这完全没问题，直接输入`y`即可。
+> Line numbers may be specified with:		*:range* *E14* *{address}*
+> 	{number}	an absolute line number
+> 	...
+> 	%		equal to 1,$ (the entire file)		  *:%*
 
-### 在write中写到STDOUT时设置断点
+在替换中，`%`的意义是代表整个文件，而不是文件名。所以命令`:%s/old/new/g`，它表示的是替换整篇文档中的old为new。
 
-一旦你能够在`write`函数中设置断点后，你需要设置一个条件，只有在写到stdout时才中断，这里有一点复杂。看看`write(2)`的[帮助页面](http://linux.die.net/man/2/write)：第一个参数`fd`是要写的文件描述符，在Linux中，stdout的文件描述符是[1](http://linux.die.net/man/3/stdout)(也许你使用的平台有所不同)。
+### tee的作用
 
-于是你的第一反应是这样：
+现在只剩一个难点: tee。它究竟有何用？
 
-    $gdb condition 1 fd == 1
+[维基百科](http://en.wikipedia.org/wiki/Tee_%28command%29)上对其有一个详细的解释，你也可以查看man page。下面这幅图很形象的展示了`tee`是如何工作的：
 
-**但是很遗憾，这不起作用。**(feihu注：会出现这样的错误`No symbol "fd" in current context.`)除非你非常幸运，否则不可能已经加载了`write(2)`系统调用的调试`symbols`，这意味着你不能以参数名来访问传给系统调用的参数。
+![tee的作用](/img/posts/tee.png)
 
-### 获取系统调用参数
+`ls -l`的输出经过管道传给了`tee`，后者做了两件事，首先拷贝一份数据到文件`file.txt`，同时再拷贝一份到其标准输出。数据再次经过管道传给`less`的标准输入，所以它在不影响原有管道的基础上对数据作了一份拷贝并保存到文件中。看上图，它的作用很像大写的字母__T__，给数据流动增加了一个分支，`tee`的名字也从此而来。
 
-当然，还有其它的方法可以获取传给系统调用的参数，GDB提供了非常完善的手段让你来访问各种汇编寄存器，在这个问题中，我们感兴趣的是[Extended Stack Pointer](http://wiki.osdev.org/Stack#Stack_example_on_the_X86_architecture)，也就是`esp`寄存器。(feihu注：这里仅适用于x86 32位系统，x86 64位系统的解决方案请向下看。)
+那么上面的命令就容易理解了，`tee`将其标准输入中的内容写到了`readonly-file-name`中，从而达到了更新只读文件的目的。当然这里其实还有另外一半数据：`tee`的标准输出，因为后面没有其它的命令了，所以这份输出相当于被抛弃。当然也可以在后面接一个`> /dev/null`显式的丢弃标准输出，但是这对整个操作没有影响，而且会增加输入的字符数，因此只需上述命令即可。
 
-当一个函数调用发生时，栈中储存了：
+### 命令执行之后
 
-- 函数的返回地址
-- 指向函数参数的指针
+运行完上述命令后，会出现下面的提示：
 
-这意味着当调用`write`函数时，栈的结构可能像下面一样：
+> W12: Warning: File “readonly-file-name” has changed and the buffer was changed in Vim as well
+> See “:help W12” for more info.
+> [O]K, (L)oad File:
 
-![系统调用参数](/img/posts/stdout-table.jpg)
+vi提示文件更新，询问是确认还是重新加载文件。建议直接输入`O`，因为这样可以保留vi的工作状态，编辑历史，撤消等操作仍然可以继续。而如果选择`L`，文件会以全新的文件打开，所有的工作状态便丢失了，此时无法执行撤消，buffer中的内容也被清空。
 
-_这是假设地址占4个字节，根据你自己的机器作相应的调整_
+## 更简单的方案：映射
 
-所以现在你可以像这样设置条件断点：
+上述方式非常完美的解决了文章开头提出的问题，但毕竟命令还是有些长，为了避免每次输入一长串的命令，可以将它[映射](http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work/2600852#2600852)为一个简单的命令加到`.vimrc`中：
 
-    $gdb break write if *(int *)($esp + 4) == 1
+    " Allow saving of files as sudo when I forgot to start vim using sudo.
+    cmap w!! w !sudo tee > /dev/null %
 
-_再一次声明，假设地址占4个字节_
+这样，简单的运行`:w!!`即可。命令后半部分`> /dev/null`如前所述，显式的丢掉了标准输出的内容。
 
-注意，`$esp`能够访问`ESP`寄存器，它将所有的数据都看成是`void *`。因为GDB不允许直接将`void *`转换成`int`型(这么做是对的)，所以你需要先将`($esp + 4)`转换成`int *`，然后再对其指针取值以获得文件描述符参数的值。
+## 为什么不用重定向
 
-### 限定到特定字符串
+你可能会问，为什么不用下面这样更常见的命令呢？这不是更容易理解，更简单一些么？
 
-接下来更加复杂一点，它是上一步的扩展，而且，它并不适用于所有的情况。传给`printf(3)`的字符串并不一定会完整的传给`write(2)`，它可能会被分成更小的块然后一次性的写到文件中，调试stdout时请记住这一点，当然如果用短字符串的话应该没问题。(feihu注：调用`printf`时并不会每次都调用`write`，而是会先把数据放到缓冲区，等缓冲区积累到一定量时才会一次性的写到文件中。如果想到立即写到文件中的话，需要调用[fflush](http://www.cplusplus.com/reference/cstdio/fflush/)。)
+    :w !sudo cat > %
 
-现在你必须再将这个断点加上一定的限制，当且仅当一个特定的字符串传给`write(2)`时才中断程序。为了做到这一点，你可以对`write`的第二个参数`buf`调用[strcmp(3)](http://linux.die.net/man/3/strcmp)。从前面的表中可知，`$esp + 8`指向的就是`buf`，所以再给断点增加一个条件就变得很简单了：
+像前面一样，它可以被转换为shell命令：
 
-    $gdb break write if *(int *)($esp + 4) == 1 && strcmp("Hello World!\n", *(char **)($esp + 8)) == 0
+    $ cat readonly-file-name | sudo cat > %
 
-请记住，`$esp + n / sizeof(void *)`就代表了函数第n个参数的指针，这表明`$esp + 8`指向的是一个指向字符串的指针，为了让它能够正确的运行，你需要做一些转换和取值操作。
+这条命令看起来一点问题没有，可一旦运行，又会出现另外一个错误：
 
-### 64位系统的解决方案
+> /bin/sh: readonly-file-name: Permission denied
+> 
+> shell returned 1
 
-64位系统需要采用`RDI`和`RSI`寄存器。(feihu注：对于32位系统，所有的函数参数是写在栈里面的，所以可以用前面介绍的办法。但是64位系统中函数的参数并未存放在栈中，它提供了更多的寄存器用于存放参数，请戳[这里](http://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI)。)
+这是怎么回事？不是明明加了`sudo`么，为什么还提示说没有权限？稍安勿躁，原因在于重定向，它是由shell执行的，在一切命令开始之前，shell便会执行重定向操作，所以重定向并未受`sudo`影响，而当前的shell本身也是以普通用户身份启动，也没有权限写此文件，因此便有了上面的错误。
 
-    $gdb break write if 1 == $rdi && strcmp((char *)($rsi), "Hello World!\n") == 0
+[这里](http://stackoverflow.com/questions/82256/how-do-i-use-sudo-to-redirect-output-to-a-location-i-dont-have-permission-to-wr)介绍了几种解决重定向无权限错误的方法，当然除了`tee`方案以外，还有一种比较方便的方案：
 
-注意这里没有了指针的转换操作，因为寄存器里面存的不是指向栈中元素的指针，它们存的是值本身。
+以`sudo`打开一个shell，然后在该具有root权限的shell中执行含重定向的命令，如：
 
-### 总结
+    :w !sudo sh -c 'cat > %'
 
-经过上面的一系列步骤之后，你可以得到一个移植性不好的解决方案，在一些特定的平台和架构下，可以使用GDB在一个特定的字符串写到stdout时中断程序。
+可是这样执行时，由于单引号的存在，所以在vi中`%`并不会展开，它被原封不动的传给了shell，而在shell中，`%`相当于`nil`，所以文件被重定向到了`nil`，并未达到目的。
 
-如果你有一个更好的解决方案，或者仅仅是另外一个替代方案，请在下面留言，并且/或者直接在Stack Overflow上[回答](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#8235612)这个问题。还有，如果你有一种方案可以工作在其它平台或者架构下，请一定也给我留言。
+既然是由于`%`没有展开导致了错误，那么试着将单引号`'`换成双引号`"`再试一次：
 
-----
+    :w !sudo sh -c "cat > %"
 
-## 再进一步
+成功！这是因为在将命令传到shell去之前，`%`已经被扩展为当前的文件名。
 
-原文的翻译就到上面，但是这里还可以再做一些改进。比如上面的`strcmp`函数可以用下面的函数来代替：
-
-- [strncmp](http://en.cppreference.com/w/cpp/string/byte/strncmp)对于你只想匹配前`n`个字符的情况非常有用
-- [strstr](http://en.cppreference.com/w/cpp/string/byte/strstr)可以用来查找子字符串，这个非常有用，因为你不能确定你要查找的字符串到底是完整的一次由`write`输出的，还是经过几次`printf`在缓存区合并之后才写到控制台的，因此我更加倾向这个方法
-
-## Windows上的解决方案
-
-随后我想，能不能在Windows平台上也使用类似的方法，最终也成功了(x86-64位操作系统下的Win32和64位程序)。
-
-对于所有的写文件操作来说，Linux最终都会调用到它的POSIX API `write`函数，Windows和Linux不一样，它提供的API是[WriteFile](http://msdn.microsoft.com/en-us/library/windows/desktop/aa365747%28v=vs.85%29.aspx)，最终Windows上的调用都会用到它。但是，不像开源的Linux可以调试write，Windows无法调试WriteFile函数，所以也无法在WriteFile处设置断点。
-
-但微软公开了部分VC的源码，所以我们可以在给出的源代码部分找到最终调用WriteFile的地方，在那一层设置断点即可。经过调试，我发现最后是`_write_nolock`调用了WriteFile，这个函数位于`your\VS\Folder\VC\crt\src\write.c`，函数原型如下：
-
-
-{% highlight cpp %}
-    /* now define version that doesn't lock/unlock, validate fh */
-    int __cdecl _write_nolock (
-            int fh,
-            const void *buf,
-            unsigned cnt
-            )
-{% endhighlight %}
-
-对比Linux的write系统调用：
-
-{% highlight cpp %}
-    #include <unistd.h>
-    
-    ssize_t write(int fd, const void *buf, size_t count); 
-{% endhighlight %}
-
-每个参数都可以对应的起来，所以完全可以参照上面的方法来处理，在`_write_nolock`中设置一个条件断点即可，只有一些细节不一样。
-
-### 可移植方案
-
-很神奇的是Windows下面，在设置条件断点时可以直接使用变量名，而且在Win32和x64下面都可以。这样的话调试就变得简单了很多：
-
-1. 在`_write_nolock`处增加一个断点
-
-    **注意**：Win32和x64在这里有些许不同，Win32可以直接将函数名作为断点的位置，而x64如果直接设置在函数名处是无法中断的，我调试了一下发现原因在于x64的函数入口处会给这些参数赋值，所以在赋完值之前这些参数名还是无法使用的。我们这里可以有一个work around：不在函数的入口处设置断点，设置在函数的第一行，此时参数已经初始化，所以可以正常使用了。(即不用函数名作为断点的位置，而是用文件名+行号；或者直接打开这个文件，在相应的位置设置断点即可。)
-2. 设置条件：
-
-        fh == 1 && strstr((char *)buf, "Hello World") != 0
-
-**注意**：但是这里有一个问题，我测试了`printf`和`std::cout`，对于前者，所有的字符串一次都写到了`_write_nolock`中，然而`std::cout`是一次传一个字符，这样也就无法使用后面比较字符串这个条件了。
-
-### 只适用Win32的方案
-
-当然，这里我们也可以采用前面介绍的方法，通过寄存器来设置断点的条件。同样由于平台的差异，这里分Win32和x64来讨论。
-
-对于Win32程序，和前面介绍的Linux下使用GDB的方法基本一致。注意到函数前面的`__cdecl`，这种调用约定表明：
-
-- 参数由右至左传递
-- 调用方负责清理栈
-- 非特殊情况下，会在函数名前加下划线来修饰
-- 不执行任何大小写转换
-
-可以参考[这里](http://msdn.microsoft.com/en-us/library/zkwh89ks.aspx)。微软的网站上还有一个[例子](http://msdn.microsoft.com/en-us/library/a5s9345t.aspx)来展示函数调用时参数在栈中的情况，结果请看[这里](http://msdn.microsoft.com/en-us/library/25687bhx.aspx)，它给出的每一种调用约定下寄存器和栈的使用情况。
-
-知道这些之后，设置一个条件断点就变得非常容易了：
-
-1. 在`_write_nolock`处设置一个断点
-2. 增加条件：
-
-        *(int *)($esp + 4) == 1 && strstr(*(char **)($esp + 8), "Hello") != 0
-
-同前面介绍的Linux下的方法一样，条件的第一部分是对`fh`，只有当向`stdout`写数据时才中断。第二部分是针对`buf`，当其中含有特定的字符串时满足中断条件。
-
-### 只适用x64的方案
-
-从x86到x64有两个重要的[改变](http://msdn.microsoft.com/en-us/library/ms235286.aspx)，一是地址容量从32位变成了64位，二是增加了一些64位寄存器。因为这些寄存器的增加，x64就只使用[`__fastcall`](http://msdn.microsoft.com/en-us/library/6xa169sk.aspx)这种方式作为调用约定，这种方式会将前四个参数放到寄存器中，如果有更多参数的话，会存到栈中。
-
-关于参数传递可以参考[这里](http://msdn.microsoft.com/en-us/library/zthk2dkh.aspx)，函数调用时前四个参数会依次放到：`RCX`、`RDX`、`R8`和`R9`当中，因此增加条件断点也变得很容易：
-
-1. 在`_write_nolock`处设置一个断点：
-
-    **注意**：这里直接在入口设置即可，不需要像前面可移植方案中介绍的那样设置到函数的第一行，因为寄存器在入口处已经有了正确的值。
-2. 设置条件：
-
-        $rcx == 1 && strstr((char *)$rdx, "Hello") != 0
-
-由于`esp`是将所有的数据都看成是`void *`，所以需要做一定的转换才可以使用。而这里的寄存器存的是参数的值，所以不需要这个转换。所以`rcx`本身就是`fh`的值，而`rdx`中存的是一个指针，将它转成`char *`之后即可表示字符串。
-
-### 写在结尾
-
-同样，这个方法也有一定的局限性，比如对于`std::cout`，我还没有找到好的解决办法。
-
-我也将这后面Windows上的方法发到[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#21179562)和[原文](http://anthony-arnold.com/2011/12/20/debugging-stdout/)的评论中，算是给这个问题的一个扩展吧。如果你有更好的解决方案，请给我们留言或者直接在[Stack Overflow](http://stackoverflow.com/questions/8235436/how-can-i-monitor-whats-being-put-into-the-standard-out-buffer-and-break-when-a/8235612#21179562)回答。
+## 写在结尾
 
 (全文完)
 
 feihu
 
-2014.01.16 于 Shenzhen
+2014.07.29 于 Shenzhen
+
