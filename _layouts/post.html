@@ -2,12 +2,12 @@
 layout: default
 blogfeed: true
 ---
-{% capture readtime %}{{ page.content | number_of_words | plus:91 | divided_by:180 }}{% endcapture %}
+{% capture fuzzy_word_count %}{{ post.content | strip_html | strip_newlines | split: "" | size | plus:99 | divided_by:100 | times:100 }}{% endcapture %}
 
 <h1 class="post-title">{{ page.title }}</h1>
 <p class="post-meta">
 	{{ page.date | date_to_string }} &bull;
-	{% if readtime == '0' %} &lt; 1{% else %}{{ readtime }}{% endif %} min. read &bull;
+	{% if fuzzy_word_count == '0' %} &lt; 1{% else %}{{ fuzzy_word_count }}{% endif %} Words &bull;
 	<a href="#disqus_thread" data-disqus-identifier="{{ page.path | split:'/' | last | cgi_escape }}">Comments</a>
 </p>
 
