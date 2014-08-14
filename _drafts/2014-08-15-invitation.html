@@ -71,9 +71,9 @@
     <title>impress.js | presentation tool based on the power of CSS3 transforms and transitions in modern browsers | by Bartek Szopka @bartaz</title>
     
     <meta name="description" content="impress.js is a presentation tool based on the power of CSS3 transforms and transitions in modern browsers and inspired by the idea behind prezi.com." />
-    <meta name="author" content="Bartek Szopka" />
+    <meta name="author" content="feihu" />
 
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <!--<link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />-->
 
     <!--
         
@@ -91,10 +91,14 @@
         
     -->
     <link href="/css/impress-demo.css" rel="stylesheet" />
+    <link href="/css/keys.css" rel="stylesheet" />
     
     <link rel="shortcut icon" href="/favicon.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <audio src="/audio/Young For You.m4a" type="audio/mpeg" autoplay="autoplay" loop="loop"> </audio>
+    <!--
+        TODO: Temporary disable the audio!
+    -->
+    <!--<audio src="/audio/Young For You.m4a" type="audio/mpeg" autoplay="autoplay" loop="loop"> </audio>-->
 </head>
 
 <!--
@@ -338,7 +342,7 @@
     
 -->
 <div class="hint">
-    <p>Use a spacebar or arrow keys to navigate</p>
+    <p>请使用<kbd class="light">SPACE</kbd>或者方向键</p>
 </div>
 <script>
 if ("ontouchstart" in document.documentElement) { 

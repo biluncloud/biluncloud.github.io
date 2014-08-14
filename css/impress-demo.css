@@ -97,7 +97,10 @@ body {
 /*
     Now let's bring some text styles back ...
 */
-b, strong { font-weight: bold }
+b, strong { 
+    font-weight: bold;
+    font-family: '微软雅黑', 'Microsoft YaHei', '黑体';
+}
 i, em { font-style: italic }
 
 /*
