@@ -179,7 +179,7 @@ call cleartool mkattr reviewed_by_%user% \"%time%\" %element%
 1. 清空`reviewed`快捷方式的`Start in`
 2. 在`reviewed_by_me.bat`脚本中输出`当前工作目录`：
 
-    `for /f %%i in ('CD') do echo %%i`
+        `for /f %%i in ('CD') do echo %%i`
 
 ### 一波三折
 
