@@ -39,15 +39,15 @@ image:  typename.png
 对于`typename`这个关键字，如果你熟悉C++的模板，一定会知道它有这样一种最常见的用法(代码摘自C++ Primer)：
 
 {% highlight cpp linenos %}
-    // implement strcmp-like generic compare function
-    // returns 0 if the values are equal, 1 if v1 is larger, -1 if v1 is smaller
-    template <typename T>
-    int compare(const T &v1, const T &v2)
-    {
-        if (v1 < v2) return -1;
-        if (v2 < v1) return 1;
-        return 0;
-    }
+// implement strcmp-like generic compare function
+// returns 0 if the values are equal, 1 if v1 is larger, -1 if v1 is smaller
+template <typename T>
+int compare(const T &v1, const T &v2)
+{
+    if (v1 < v2) return -1;
+    if (v2 < v1) return 1;
+    return 0;
+}
 {% endhighlight %}
 
 也许你会想到上面这段代码中的`typename`换成`class`也一样可以，不错！那么这里便有了疑问，这两种方式有区别么？查看C++ Primer之后，发现两者完全一样。那么为什么C++要同时支持这两种方式呢？既然`class`很早就已经有了，为什么还要引入`typename`这一关键字呢？问的好，这里面有一段鲜为人知的历史（也许只是我不知道:-)）。带着这些疑问，我们开始探寻之旅。
@@ -63,23 +63,23 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 但是对很多人来说，总是不习惯`class`，因为从其本来存在的目的来说，是为了区别于语言的内置类型，用于声明一个用户自定义类型。那么对于下面这个模板函数的定义（相对于上例，仅将`typename`换成了`class`）：
 
 {% highlight cpp linenos %}
-    template <class T>
-    int compare(const T &v1, const T &v2)
-    {
-        if (v1 < v2) return -1;
-        if (v2 < v1) return 1;
-        return 0;
-    }
+template <class T>
+int compare(const T &v1, const T &v2)
+{
+    if (v1 < v2) return -1;
+    if (v2 < v1) return 1;
+    return 0;
+}
 {% endhighlight %}
 
 从表面上看起来就好像这个模板的参数应该只支持**用户自定义类型**，所以使用语言内置类型或者指针来调用该模板函数时总会觉得有一丝奇怪（虽然并没有错误）：
 
 {% highlight cpp linenos %}
-    int v1 = 1, v2 = 2;
-    int ret = compare(v1, v2);
+int v1 = 1, v2 = 2;
+int ret = compare(v1, v2);
 
-    int *pv1 = NULL, *pv2 = NULL;
-    ret = compare(pv1, pv2);
+int *pv1 = NULL, *pv2 = NULL;
+ret = compare(pv1, pv2);
 {% endhighlight %}
 
 令人感到奇怪的原因是，`class`在类和模板中表现的意义看起来存在一些不一致，前者针对用户自定义类型，而后者包含了语言内置类型和指针。也正因为如此，人们似乎觉得当时没有引入一个新的关键字可能是一个错误。
@@ -95,11 +95,11 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 限定名(qualified name)，故名思义，是限定了命名空间的名称。看下面这段代码，`cout`和`endl`就是限定名：
 
 {% highlight cpp linenos %}
-    #include <iostream>
+#include <iostream>
 
-    int main()  {
-        std::cout << "Hello world!" << std::endl;
-    }
+int main()  {
+    std::cout << "Hello world!" << std::endl;
+}
 {% endhighlight %}
 
 `cout`和`endl`前面都有`std::`，它限定了`std`这个命名空间，因此称其为限定名。
@@ -111,16 +111,16 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 依赖名(dependent name)是指依赖于模板参数的名称，而非依赖名(non-dependent name)则相反，指不依赖于模板参数的名称。看下面这段代码：
 
 {% highlight cpp linenos %}
-    template <class T>
-    class MyClass {
-        int i;
-        vector<int> vi;
-        vector<int>::iterator vitr;
+template <class T>
+class MyClass {
+    int i;
+    vector<int> vi;
+    vector<int>::iterator vitr;
 
-        T t;
-        vector<T> vt;
-        vector<T>::iterator viter;
-    };
+    T t;
+    vector<T> vt;
+    vector<T>::iterator viter;
+};
 {% endhighlight %}
 
 因为是内置类型，所以类中前三个定义的类型在声明这个模板类时就已知。然而对于接下来的三行定义，只有在模板实例化时才能知道它们的类型，因为它们都依赖于模板参数`T`。因此，`T`, `vector<T>`和`vector<T>::iterator`称为依赖名。前三个定义叫做非依赖名。
@@ -132,11 +132,11 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 在类外部访问类中的名称时，可以使用类作用域操作符，形如`MyClass::name`的调用通常存在三种：静态数据成员、静态成员函数和嵌套类型：
 
 {% highlight cpp linenos %}
-    struct MyClass {
-        static int A;
-        static int B();
-        typedef int C;
-    }
+struct MyClass {
+    static int A;
+    static int B();
+    typedef int C;
+}
 {% endhighlight %}
 
 `MyClass::A`, `MyClass::B`, `MyClass::C`分别对应着上面三种。
@@ -150,26 +150,26 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 在Stroustrup起草了最初的模板规范之后，人们更加无忧无虑的使用了`class`很长一段时间。可是，随着标准化C++工作的到来，人们发现了模板这样一种定义：
 
 {% highlight cpp linenos %}
-    template <class T>
-    void foo() {
-        T::iterator * iter;
-        // ...
-    }
+template <class T>
+void foo() {
+    T::iterator * iter;
+    // ...
+}
 {% endhighlight %}
 
 这段代码的目的是什么？多数人第一反应可能是：作者想定义一个指针`iter`，它指向的类型是包含在类作用域`T`中的`iterator`。可能存在这样一个包含`iterator`类型的结构：
 
 {% highlight cpp linenos %}
-    struct ContainsAType {
-        struct iterator { /*...*/ };
-        // ...
-    };
+struct ContainsAType {
+    struct iterator { /*...*/ };
+    // ...
+};
 {% endhighlight %}
 
 然后像这样实例化`foo`：
 
 {% highlight cpp linenos %}
-    foo<ContainsAType>();
+foo<ContainsAType>();
 {% endhighlight %}
 
 这样一来，`iter`那行代码就很明显了，它是一个`ContainsAType::iterator`类型的指针。到目前为止，咱们猜测的一点不错，一切都看起来很美好。
@@ -187,16 +187,16 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 前面例子中的`ContainsAType::iterator`是嵌套类型，完全没有问题。可如果是静态数据成员呢？如果实例化`foo`模板函数的类型是像这样的：
 
 {% highlight cpp linenos %}
-    struct ContainsAnotherType {
-        static int iterator;
-        // ...
-    };
+struct ContainsAnotherType {
+    static int iterator;
+    // ...
+};
 {% endhighlight %}
 
 然后如此实例化`foo`的类型参数：
 
 {% highlight cpp linenos %}
-    foo<ContainsAnotherType>();
+foo<ContainsAnotherType>();
 {% endhighlight %}
 
 那么，`T::iterator * iter;`被编译器实例化为`ContainsAnotherType::iterator * iter;`，这是什么？前面是一个静态成员变量而不是类型，那么这便成了一个乘法表达式，只不过`iter`在这里没有定义，编译器会报错：
@@ -218,11 +218,11 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 因此，如果你想直接告诉编译器`T::iterator`是类型而不是变量，只需用`typename`修饰：
 
 {% highlight cpp linenos %}
-    template <class T>
-    void foo() {
-        typename T::iterator * iter;
-        // ...
-    }
+template <class T>
+void foo() {
+    typename T::iterator * iter;
+    // ...
+}
 {% endhighlight %}
 
 这样编译器就可以确定`T::iterator`是一个类型，而不再需要等到实例化时期才能确定，因此消除了前面提到的歧义。
@@ -262,11 +262,11 @@ g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错�
 对于不会引起歧义的情况，仍然需要在前面加`typename`，比如：
 
 {% highlight cpp linenos %}
-    template <class T>
-    void foo() {
-        typename T::iterator iter;
-        // ...
-    }
+template <class T>
+void foo() {
+    typename T::iterator iter;
+    // ...
+}
 {% endhighlight %}
 
 不像前面的`T::iterator * iter`可能会被当成乘法表达式，这里不会引起歧义，但仍需加`typename`修饰。
@@ -274,11 +274,11 @@ g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错�
 再看下面这种：
 
 {% highlight cpp linenos %}
-    template <class T>
-    void foo() {
-        typedef typename T::iterator iterator_type;
-        // ...
-    }
+template <class T>
+void foo() {
+    typedef typename T::iterator iterator_type;
+    // ...
+}
 {% endhighlight %}
 
 是否和文章刚开始的那行令人头皮发麻的代码有些许相似？没错！现在终于可以解开`typename`之迷了，看到这里，我相信你也一定可以解释那行代码了，我们再看一眼：

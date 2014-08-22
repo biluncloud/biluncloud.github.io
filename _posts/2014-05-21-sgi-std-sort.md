@@ -63,35 +63,35 @@ SGI版本的STL一直是评价最高的一个STL实现，在技术层次、源�
 std::sort的代码如下：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator>
-    inline void sort(RandomAccessIterator first, RandomAccessIterator last) {
-        if (first != last) {
-            __introsort_loop(first, last, value_type(first), __lg(last - first) * 2);
-            __final_insertion_sort(first, last);
-        }
+template <class RandomAccessIterator>
+inline void sort(RandomAccessIterator first, RandomAccessIterator last) {
+    if (first != last) {
+        __introsort_loop(first, last, value_type(first), __lg(last - first) * 2);
+        __final_insertion_sort(first, last);
     }
+}
 {% endhighlight %}
 
 它是一个模板函数，只接受随机访问迭代器。`if`语句先判断区间有效性，接着调用`__introsort_loop`，它就是STL的Introspective Sort实现。在该函数结束之后，最后调用插入排序。我们来揭开该算法的面纱：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator, class T, class Size>
-    void __introsort_loop(RandomAccessIterator first,
-                          RandomAccessIterator last, T*,
-                          Size depth_limit) {
-        while (last - first > __stl_threshold) {
-            if (depth_limit == 0) {
-                partial_sort(first, last, last);
-                return;
-            }
-            --depth_limit;
-            RandomAccessIterator cut = __unguarded_partition
-              (first, last, T(__median(*first, *(first + (last - first)/2),
-                                       *(last - 1))));
-            __introsort_loop(cut, last, value_type(first), depth_limit);
-            last = cut;
+template <class RandomAccessIterator, class T, class Size>
+void __introsort_loop(RandomAccessIterator first,
+                      RandomAccessIterator last, T*,
+                      Size depth_limit) {
+    while (last - first > __stl_threshold) {
+        if (depth_limit == 0) {
+            partial_sort(first, last, last);
+            return;
         }
+        --depth_limit;
+        RandomAccessIterator cut = __unguarded_partition
+          (first, last, T(__median(*first, *(first + (last - first)/2),
+                                   *(last - 1))));
+        __introsort_loop(cut, last, value_type(first), depth_limit);
+        last = cut;
     }
+}
 {% endhighlight %}
 
 这是算法主体部分，代码虽然不长，但充满技巧，有很多细节需要注意，接下来我们将对其一一展开分析。
@@ -131,19 +131,19 @@ function quicksort(array, left, right)
 主循环中另外一个重要的函数是`__unguarded_partition`，这其实就是我们平常所使用的快速排序主体部分，用于根据pivot将区间分割为两个子序列。其源码如下：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator, class T>
-    RandomAccessIterator __unguarded_partition(RandomAccessIterator first, 
-                                               RandomAccessIterator last, 
-                                               T pivot) {
-        while (true) {
-            while (*first < pivot) ++first;
-            --last;
-            while (pivot < *last) --last;
-            if (!(first < last)) return first;
-            iter_swap(first, last);
-            ++first;
-        }
-    } 
+template <class RandomAccessIterator, class T>
+RandomAccessIterator __unguarded_partition(RandomAccessIterator first, 
+                                           RandomAccessIterator last, 
+                                           T pivot) {
+    while (true) {
+        while (*first < pivot) ++first;
+        --last;
+        while (pivot < *last) --last;
+        if (!(first < last)) return first;
+        iter_swap(first, last);
+        ++first;
+    }
+} 
 {% endhighlight %}
 
 它会不断去交换放错位置的元素，直到first和last指针相互交错为止，函数返回的是右边区间的起始位置。注意看：这个函数没有对first和last作边界检查，而是以两个指针交错作为中止条件，节约了比较运算的开支。可以这么做的理由是因为，选择是首尾中间位置三个值的中间值作为pivot，因此一定会在超出此有效区域之前中止指针的移动。《STL源码剖析》给出了两个非常直观的示意图：
@@ -163,22 +163,22 @@ function quicksort(array, left, right)
 现在我们来关注循环条件和`if`语句。`__introsort_loop`的最后一个参数`depth_limit`是前面所提到的判断分割行为是否有恶化倾向的阈值，即允许递归的深度，调用者传递的值为`2logN`。注意看`if`语句，当递归次数超过阈值时，函数调用`partial_sort`，它便是堆排序:
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator, class T, class Compare>
-    void __partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
-                        RandomAccessIterator last, T*, Compare comp) {
-        make_heap(first, middle, comp);
-        for (RandomAccessIterator i = middle; i < last; ++i)
-            if (comp(*i, *first))
-                __pop_heap(first, middle, i, T(*i), comp, distance_type(first));
-        sort_heap(first, middle, comp);
-    }
+template <class RandomAccessIterator, class T, class Compare>
+void __partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
+                    RandomAccessIterator last, T*, Compare comp) {
+    make_heap(first, middle, comp);
+    for (RandomAccessIterator i = middle; i < last; ++i)
+        if (comp(*i, *first))
+            __pop_heap(first, middle, i, T(*i), comp, distance_type(first));
+    sort_heap(first, middle, comp);
+}
 
-    template <class RandomAccessIterator, class Compare>
-    inline void partial_sort(RandomAccessIterator first,
-                             RandomAccessIterator middle,
-                             RandomAccessIterator last, Compare comp) {
-        __partial_sort(first, middle, last, value_type(first), comp);
-    }
+template <class RandomAccessIterator, class Compare>
+inline void partial_sort(RandomAccessIterator first,
+                         RandomAccessIterator middle,
+                         RandomAccessIterator last, Compare comp) {
+    __partial_sort(first, middle, last, value_type(first), comp);
+}
 {% endhighlight %}
 
 如前所述，此时采用堆排序可以将快速排序的效率从O(N<sup>2</sup>)提升到O(N logN)，杜绝了过度递归所带来的开销。堆排序结束之后直接结束当前递归。
@@ -188,7 +188,7 @@ function quicksort(array, left, right)
 除了递归深度阈值以外，Introspective Sort还用到另外一个阈值。注意看`__introsort_loop`中的`while`语句，其中有一个变量`__stl_threshold`，其定义为：
 
 {% highlight cpp linenos %}
-    const int __stl_threshold = 16;
+const int __stl_threshold = 16;
 {% endhighlight %}
 
 它就是我们前面所说的最小分段阈值。当数据长度小于该阈值时，再使用递归来排序显然不划算，递归的开销相对来说太大。而此时整个区间内部有多个元素个数少于16的子序列，每个子序列都有相当程度的排序，但又尚未完全排序，过多的递归调用是不可取的。而这种情况刚好插入排序最拿手，它的效率能够达到O(N)。因此这里中止快速排序，sort会接着调用外部的`__final_insertion_sort`，即插入排序来处理未排序完全的子序列。
@@ -200,16 +200,16 @@ function quicksort(array, left, right)
 现在终于来到std::sort的最后一步——插入排序。将它作为单独的一章是因为它使用了些优化技巧，让人难以理解，我花了些时间才弄懂它，这也正是为何会有本文的根本原因。我们先来看看其定义：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator>
-    void __final_insertion_sort(RandomAccessIterator first, 
-                                RandomAccessIterator last) {
-        if (last - first > __stl_threshold) {
-            __insertion_sort(first, first + __stl_threshold);
-            __unguarded_insertion_sort(first + __stl_threshold, last);
-        }
-        else
-            __insertion_sort(first, last);
+template <class RandomAccessIterator>
+void __final_insertion_sort(RandomAccessIterator first, 
+                            RandomAccessIterator last) {
+    if (last - first > __stl_threshold) {
+        __insertion_sort(first, first + __stl_threshold);
+        __unguarded_insertion_sort(first + __stl_threshold, last);
     }
+    else
+        __insertion_sort(first, last);
+}
 {% endhighlight %}
 
 它被分成了两个分支，前一个分支是处理大于分段阈值的情况，后一个分支处理小于等于分段阈值。第一个问题：为什么要划分成两种情况不同对待？
@@ -229,11 +229,11 @@ function quicksort(array, left, right)
 插入排序很简单，本文前面的动态图可以很直观的展示它的原理。这里是摘自[维基百科](http://en.wikipedia.org/wiki/Insertion_sort)的一段伪代码：
 
 {% highlight cpp linenos %}
-    for i ← 1 to length(A)
-        j ← i
-        while j > 0 and A[j-1] > A[j]
-            swap A[j] and A[j-1]
-            j ← j - 1
+for i ← 1 to length(A)
+    j ← i
+    while j > 0 and A[j-1] > A[j]
+        swap A[j] and A[j-1]
+        j ← j - 1
 {% endhighlight %}
 
 从第二个值开始遍历每个元素，首先判断是否有越界，然后判断是否需要交换。
@@ -243,36 +243,36 @@ function quicksort(array, left, right)
 那么同样都是插入排序，`__insertion_sort`和`__unguarded_insertion_sort`有何不同，为什么叫unguarded？接下来看看STL的实现：（注：这里取得都是采用默认比较函数的版本）：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator, class T>
-    void __unguarded_linear_insert(RandomAccessIterator last, T value) {
-        RandomAccessIterator next = last;
+template <class RandomAccessIterator, class T>
+void __unguarded_linear_insert(RandomAccessIterator last, T value) {
+    RandomAccessIterator next = last;
+    --next;
+    while (value < *next) {
+        *last = *next;
+        last = next;
         --next;
-        while (value < *next) {
-            *last = *next;
-            last = next;
-            --next;
-        }
-        *last = value;
     }
+    *last = value;
+}
 
-    template <class RandomAccessIterator, class T>
-    inline void __linear_insert(RandomAccessIterator first, 
-                                RandomAccessIterator last, T*) {
-        T value = *last;
-        if (value < *first) {
-            copy_backward(first, last, last + 1);
-            *first = value;
-        }
-        else
-            __unguarded_linear_insert(last, value);
+template <class RandomAccessIterator, class T>
+inline void __linear_insert(RandomAccessIterator first, 
+                            RandomAccessIterator last, T*) {
+    T value = *last;
+    if (value < *first) {
+        copy_backward(first, last, last + 1);
+        *first = value;
     }
+    else
+        __unguarded_linear_insert(last, value);
+}
 
-    template <class RandomAccessIterator>
-    void __insertion_sort(RandomAccessIterator first, RandomAccessIterator last) {
-        if (first == last) return; 
-        for (RandomAccessIterator i = first + 1; i != last; ++i)
-            __linear_insert(first, i, value_type(first));
-    }
+template <class RandomAccessIterator>
+void __insertion_sort(RandomAccessIterator first, RandomAccessIterator last) {
+    if (first == last) return; 
+    for (RandomAccessIterator i = first + 1; i != last; ++i)
+        __linear_insert(first, i, value_type(first));
+}
 {% endhighlight %}
 
 最下面的函数，它是从第二个元素开始对每个元素依次调用了`__linear_insert`。后者和前面提到的标准插入排序有一点点不同，它会先将该值和第一个元素进行比较，如果比第一个元素还小，那么就直接将前面已经排列好的数据整体向后移动一位，然后将该元素放在起始位置。对于这种情况，和标准插入排序相比，它将`last - first - 1`次的比较与交换操作变成了一次`copy_backward`操作，节省了每次移动前的比较操作。
@@ -286,18 +286,18 @@ function quicksort(array, left, right)
 最后再来看看`__unguarded_insertion_sort`在STL中的实现，同样这里只是默认比较函数版本：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator, class T>
-    void __unguarded_insertion_sort_aux(RandomAccessIterator first, 
-                                        RandomAccessIterator last, T*) {
-        for (RandomAccessIterator i = first; i != last; ++i)
-            __unguarded_linear_insert(i, T(*i));
-    }
+template <class RandomAccessIterator, class T>
+void __unguarded_insertion_sort_aux(RandomAccessIterator first, 
+                                    RandomAccessIterator last, T*) {
+    for (RandomAccessIterator i = first; i != last; ++i)
+        __unguarded_linear_insert(i, T(*i));
+}
 
-    template <class RandomAccessIterator>
-    inline void __unguarded_insertion_sort(RandomAccessIterator first, 
-                                    RandomAccessIterator last) {
-        __unguarded_insertion_sort_aux(first, last, value_type(first));
-    }
+template <class RandomAccessIterator>
+inline void __unguarded_insertion_sort(RandomAccessIterator first, 
+                                RandomAccessIterator last) {
+    __unguarded_insertion_sort_aux(first, last, value_type(first));
+}
 {% endhighlight %}
 
 可以忽略掉这层aux函数的包装，它只是为了获得迭代器所指向的类型，其实这两个函数可以合并为一个。这里直接对每个元素都调用`__unguarded_linear_insert`，这个函数我们在上节已经分析过，它不对边界作检查。正因为如此，它一定比前面的`__insertion_sort`要快。
@@ -313,10 +313,10 @@ function quicksort(array, left, right)
 对于标准插入排序，它需要的操作次数为：
 
 {% highlight cpp linenos %}
-    // 标准插入排序伪代码
-    while j > 0 and A[j-1] > A[j]   // 2N次比较运算，N次减法运算
-        swap A[j] and A[j-1]        // N次交换运算（通常理解为3N次赋值运算)
-        j ← j - 1                   // N次自减运算
+// 标准插入排序伪代码
+while j > 0 and A[j-1] > A[j]   // 2N次比较运算，N次减法运算
+    swap A[j] and A[j-1]        // N次交换运算（通常理解为3N次赋值运算)
+    j ← j - 1                   // N次自减运算
 {% endhighlight %}
 
 总共为2N次比较，3N次赋值，N次减法，N次自减。
@@ -326,20 +326,20 @@ function quicksort(array, left, right)
 再来看`__insertion_sort`，因为这里出现了分支，因此需要分开来对待。我们取两种极端情况，先假设每次都是取第一个分支，即`value < *first`，那么此时`N=i`：
 
 {% highlight cpp linenos %}
-    // __linear_insert函数
-    if (value < *first) {           // 1次比较运算
-        copy_backward(first, last, last + 1);   
-                                    // 1次copy_backward
-        *first = value;             // 1次赋值运算
-    }
+// __linear_insert函数
+if (value < *first) {           // 1次比较运算
+    copy_backward(first, last, last + 1);   
+                                // 1次copy_backward
+    *first = value;             // 1次赋值运算
+}
 {% endhighlight %}
 
 因为`copy_backward`最后调用的是`memmove`，它在C标准库中实现为：
 
 {% highlight cpp linenos %}
-    // memmove函数
-    for (; 0 < n; --n)              // N次比较运算，N次自减运算
-        *sc1++ = *sc2++;            // 2N次自增运算，N次赋值运算
+// memmove函数
+for (; 0 < n; --n)              // N次比较运算，N次自减运算
+    *sc1++ = *sc2++;            // 2N次自增运算，N次赋值运算
 {% endhighlight %}
 
 这里认为自增自减一样，因此总共需要N+1次比较，N+1次赋值，3N次自减。
@@ -347,20 +347,20 @@ function quicksort(array, left, right)
 如果假设每次`__insertion_sort`都不取第一个分支，即首位的元素已经是最小值，此时：
 
 {% highlight cpp linenos %}
-    // __linear_insert函数
-    if (value < *first) {       // 1次比较
-        // ...
-    }
-    else
-        __unguarded_linear_insert(last, value);
-                                // 见下面
+// __linear_insert函数
+if (value < *first) {       // 1次比较
+    // ...
+}
+else
+    __unguarded_linear_insert(last, value);
+                            // 见下面
 
-    // __unguarded_linear_insert函数
-    while (value < *next) {     // N次比较
-        *last = *next;          // N次赋值
-        last = next;            // N次赋值
-        --next;                 // N次自减
-    }
+// __unguarded_linear_insert函数
+while (value < *next) {     // N次比较
+    *last = *next;          // N次赋值
+    last = next;            // N次赋值
+    --next;                 // N次自减
+}
 {% endhighlight %}
 
 因此总共需要N+1次比较，2N次赋值和N次自减。
@@ -392,16 +392,16 @@ function quicksort(array, left, right)
 让我们回到`__final_insertion_sort`函数，为了唤醒你的记忆，再贴一次它的源代码：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator>
-    void __final_insertion_sort(RandomAccessIterator first, 
-                                RandomAccessIterator last) {
-        if (last - first > __stl_threshold) {
-            __insertion_sort(first, first + __stl_threshold);
-            __unguarded_insertion_sort(first + __stl_threshold, last);
-        }
-        else
-            __insertion_sort(first, last);
+template <class RandomAccessIterator>
+void __final_insertion_sort(RandomAccessIterator first, 
+                            RandomAccessIterator last) {
+    if (last - first > __stl_threshold) {
+        __insertion_sort(first, first + __stl_threshold);
+        __unguarded_insertion_sort(first + __stl_threshold, last);
     }
+    else
+        __insertion_sort(first, last);
+}
 {% endhighlight %}
 
 此时前面提的最后一个问题：两种插入算法有何区别？已经有了答案：一个带边界检查而另一个不带，不带边界检查的`__unguarded_insertion_sort`更快。
@@ -427,23 +427,23 @@ function quicksort(array, left, right)
 再来看一眼`__introsort_loop`：
 
 {% highlight cpp linenos %}
-    template <class RandomAccessIterator, class T, class Size>
-    void __introsort_loop(RandomAccessIterator first,
-                          RandomAccessIterator last, T*,
-                          Size depth_limit) {
-        while (last - first > __stl_threshold) {
-            if (depth_limit == 0) {
-                partial_sort(first, last, last);
-                return;
-            }
-            --depth_limit;
-            RandomAccessIterator cut = __unguarded_partition
-              (first, last, T(__median(*first, *(first + (last - first)/2),
-                                       *(last - 1))));
-            __introsort_loop(cut, last, value_type(first), depth_limit);
-            last = cut;
+template <class RandomAccessIterator, class T, class Size>
+void __introsort_loop(RandomAccessIterator first,
+                      RandomAccessIterator last, T*,
+                      Size depth_limit) {
+    while (last - first > __stl_threshold) {
+        if (depth_limit == 0) {
+            partial_sort(first, last, last);
+            return;
         }
+        --depth_limit;
+        RandomAccessIterator cut = __unguarded_partition
+          (first, last, T(__median(*first, *(first + (last - first)/2),
+                                   *(last - 1))));
+        __introsort_loop(cut, last, value_type(first), depth_limit);
+        last = cut;
     }
+}
 {% endhighlight %}
 
 该函数只有两种情况下可能返回，一是区域小于等于阈值16；二是超过递归深度阈值。我们现在只考虑最左边的子序列，先假设是由于第一种情况终止了这个函数，那么该子区域小于16。再根据前面的结论：左边区间的所有数据一定比右边小，可以推断出最小值一定在该小于16的子区域内。

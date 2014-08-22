@@ -125,8 +125,8 @@ Vim提示文件更新，询问是确认还是重新加载文件。建议直接�
 上述方式非常完美的解决了文章开始提出的问题，但毕竟命令还是有些长，为了避免每次输入一长串的命令，可以将它[映射](http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work/2600852#2600852)为一个简单的命令加到`.vimrc`中：
 
 {% highlight vim linenos %}
-    " Allow saving of files as sudo when I forgot to start vim using sudo.
-    cmap w!! w !sudo tee > /dev/null %
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
 {% endhighlight %}
 
 这样，简单的运行`:w!!`即可。命令后半部分`> /dev/null`在前面已经解释过，作用为显式的丢掉标准输出的内容。
@@ -168,8 +168,8 @@ Vim提示文件更新，询问是确认还是重新加载文件。建议直接�
 当然，也可以像前面一样将它映射为一个简单的命令并添加到.vimrc中：
 
 {% highlight vim linenos %}
-    " Allow saving of files as sudo when I forgot to start vim using sudo.
-    cmap w!! w !sudo sh -c "cat > %"
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo sh -c "cat > %"
 {% endhighlight %}
 
 注意：这里不再需要把输出重定向到`/dev/null`中。

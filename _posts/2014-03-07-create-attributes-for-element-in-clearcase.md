@@ -34,13 +34,13 @@ image:  version-ctrl.png
 使用[cleartool mkattr](http://www.ipnom.com/ClearCase-Commands/mkattr.html)命令可以创建这些属性，但由于这两个属性必须带上一些有用的信息，比如时间，执行者，所以为了方便起见，我们通常不直接调用，而是采用一个脚本`reviewed_by_me.bat`(这里只讨论review，unittest的处理完全一样)去得到执行者与当前时间的信息，这个脚本里面的内容大致如下：
 
 {% highlight bat linenos %}
-    set element="%1"
-    rem get time for var %time%
-    ...
-    rem get user for var %user%
-    ...
-    call cleartool mkattr reviewed_by_%user% \"%time%\" %element%
-    ...
+set element="%1"
+rem get time for var %time%
+...
+rem get user for var %user%
+...
+call cleartool mkattr reviewed_by_%user% \"%time%\" %element%
+...
 {% endhighlight %}
 
 然后在Windows的`SendTo`目录下创建一个快捷方式`reviewed`，指向这个脚本。于是，要给一个文件创建属性时，只需：
@@ -218,17 +218,17 @@ image:  version-ctrl.png
 看到这里想必大家都明白我要做什么了，没错，这个奇怪的"目录"其实就差一个`版本号`就可以构成一个完整的节点路径，而`clearvtree`传过来的`%1`参数就包含了这个`版本号`，截取之后拼在上面的目录后就可以得到完整的路径，这里是最终的`reviewed_by_me.bat`代码：
 
 {% highlight bat linenos %}
-    set element="%1"
-    rem get time for var %time%
-    ...
-    rem get user for var %user%
-    ...
-    rem Get the version number
-    for /f %%i in ("%element%") do set version_num=%%~ni
-    rem Assemble the real path
-    for /f %%i in ('CD') do set element_path=%%i\%version_num%
-    call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
-    ...
+set element="%1"
+rem get time for var %time%
+...
+rem get user for var %user%
+...
+rem Get the version number
+for /f %%i in ("%element%") do set version_num=%%~ni
+rem Assemble the real path
+for /f %%i in ('CD') do set element_path=%%i\%version_num%
+call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
+...
 {% endhighlight %}
 
 ### 针对checkout文件
@@ -256,17 +256,17 @@ image:  version-ctrl.png
 所以，最终版本的`reviewed_by_me.bat`代码变为：
 
 {% highlight bat linenos %}
-    set element="%1"
-    rem get time for var %time%
-    ...
-    rem get user for var %user%
-    ...
-    rem Get the version number
-    for /f %%i in ("%element%") do set version_num=%%~nxi
-    rem Assemble the real path
-    for /f %%i in ('CD') do set element_path=%%i\%version_num%
-    call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
-    ...
+set element="%1"
+rem get time for var %time%
+...
+rem get user for var %user%
+...
+rem Get the version number
+for /f %%i in ("%element%") do set version_num=%%~nxi
+rem Assemble the real path
+for /f %%i in ('CD') do set element_path=%%i\%version_num%
+call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
+...
 {% endhighlight %}
 
 ### 针对直接使用脚本的情况
