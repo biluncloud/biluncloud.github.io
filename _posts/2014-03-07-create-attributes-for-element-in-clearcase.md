@@ -269,6 +269,35 @@ image:  version-ctrl.png
     ...
 {% endhighlight %}
 
+### 针对直接使用脚本的情况
+
+(2014.08.22更新)
+
+因为有时会不使用`SendTo`快捷方式来打标签，而是直接调用脚本，此时，当前工作目录可能会出错，为了避免这种情况，脚本又做了以下更新：
+
+{% highlight bat linenos %}
+    set element="%1"
+    rem get time for var %time%
+    ...
+    rem get user for var %user%
+    ...
+    rem Get the version number
+    for /f %%i in ("%element%") do set version_num=%%~nxi
+    rem Assemble the real path
+    for /f %%i in ('CD') do (
+        set element_path=%%i\!version_num!
+        rem If the assembled file does not exist, then there are two possibilities:
+        rem 1. Wrong path
+        rem 2. The batch file is called directly rather than the shortcut
+        rem Both the above should use the argument directly
+        if NOT EXIST !element_path! set element_path=!sw_element!
+    )
+    call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
+    ...
+{% endhighlight %}
+
+测试亦作了相应的更新。
+
 ## 测试
 
 最后对下面几种方式启动的版本树进行了测试，所有的情况都成功的运行：
@@ -279,6 +308,9 @@ image:  version-ctrl.png
     Q:\project> clearvtree \project\src\test.cpp
     Q:\project\src> clearvtree test.cpp
     C:\> clearvtree Q:\project\src\test.cpp
+    直接从ClearCase Explorer中打开版本树
+    针对已经checkout的文件
+    直接使用bat脚本而不是快捷方式
 
 至此，该问题成功解决。
 
