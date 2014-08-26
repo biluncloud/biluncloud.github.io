@@ -7,15 +7,7 @@
 <title>我们结婚啦</title>
 
 <meta name="description" content="TODO">
-<meta name="author" content="TODO">
-
-<!--for map-->
-<style type="text/css">
-    html,body{margin:0;padding:0;}
-    .iw_poi_title {color:#CC5522;font-size:14px;font-weight:bold;overflow:hidden;padding-right:13px;white-space:nowrap}
-    .iw_poi_content {font:12px arial,sans-serif;overflow:visible;padding-top:4px;white-space:-moz-pre-wrap;word-wrap:break-word}
-</style>
-<script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
+<meta name="author" content="feihu & Emily">
 
 <style>
 .componentContainer {
@@ -38,35 +30,24 @@
 }
 </style>
 
-<link rel="stylesheet" href="invitation-02_files/default-reset.css">
-<link href="invitation-02_files/main.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="invitation-02_files/default.css" id="theme">
-<link href="invitation-02_files/web-fonts.css" rel="stylesheet" type="text/css">
-<link href="invitation-02_files/backgroundClasses.css" rel="stylesheet" type="text/css">
-<link href="invitation-02_files/surfaceClasses.css" rel="stylesheet" type="text/css">
+<link href="css/default-reset.css" rel="stylesheet">
+<link href="css/main.css" rel="stylesheet" type="text/css">
+<link href="css/default.css" rel="stylesheet" id="theme">
+<link href="css/backgroundClasses.css" rel="stylesheet" type="text/css">
+<link href="css/surfaceClasses.css" rel="stylesheet" type="text/css">
 
 <link rel="shortcut icon" href="http://strut.io/editor/preview_export/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="http://strut.io/editor/preview_export/apple-touch-icon.png" type="image/png">
 
 <link rel="canonical" href="http://feihu.me/invitation/" />
 
-<style>
-.reveal.themedArea {
-    display: block;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-}
-</style>
+<!--for baidu map-->
+<script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
+<script type="text/javascript" src="js/dataset-shim.js"></script>
+<script type="text/javascript" src="js/impress.js"></script>
 
-<script type="text/javascript" src="invitation-02_files/dataset-shim.js"></script>
-<script type="text/javascript" src="invitation-02_files/impress.js"></script>
-
-<script src="invitation-02_files/onready.js"></script>
-<script src="invitation-02_files/loadPresentation.js"></script>
+<script src="js/onready.js"></script>
+<script src="js/loadPresentation.js"></script>
 <script>
 ready(function() {
     if (document.getElementById('launched-placeholder'))
@@ -205,17 +186,6 @@ ready(function() {
 <!-- This is a work around / hack to get the user's browser to download the fonts 
  if they decide to save the presentation. -->
 <div style="visibility: hidden; width: 0px; height: 0px">
-<img src="invitation-02_files/Lato-Bold.woff">
-<img src="invitation-02_files/HammersmithOne.woff">
-<img src="invitation-02_files/Droid-Sans-Mono.woff">
-<img src="invitation-02_files/Gorditas-Regular.woff">
-<img src="invitation-02_files/FredokaOne-Regular.woff">
-<img src="invitation-02_files/Ubuntu.woff">
-<img src="invitation-02_files/Ubuntu-Bold.woff">
-<img src="invitation-02_files/PressStart2P-Regular.woff">
-<img src="invitation-02_files/Lato-BoldItalic.woff">
-<img src="invitation-02_files/AbrilFatface-Regular.woff">
-<img src="invitation-02_files/Lato-Regular.woff">
 </div>
 
 <div class="fallback-message">
@@ -246,7 +216,7 @@ transform: scale(1, 1)">
 <div class="transformContainer" style="-webkit-transform: scale(1, 1);
 -moz-transform: scale(1, 1);
 transform: scale(1, 1)">
-<img src="invitation-02_files/cover.jpg">
+<img src="img/cover.jpg">
 </div>
 </div>
 			
@@ -273,7 +243,7 @@ transform: scale(1, 1)">
 <div class="transformContainer" style="-webkit-transform: scale(0.91, 0.91);
 -moz-transform: scale(0.91, 0.91);
 transform: scale(0.91, 0.91)">
-<img src="invitation-02_files/marry-1.jpg">
+<img src="img/marry-1.jpg">
 </div>
 </div>
 			
@@ -292,7 +262,7 @@ transform: scale(0.91, 0.91)">
 <div class="transformContainer" style="-webkit-transform: scale(0.9, 0.9);
 -moz-transform: scale(0.9, 0.9);
 transform: scale(0.9, 0.9)">
-<img src="invitation-02_files/marry-2.jpg">
+<img src="img/marry-2.jpg">
 </div>
 </div>
 			
@@ -406,7 +376,7 @@ You are invited to witness<br>
 <div class="transformContainer" style="-webkit-transform: scale(0.91, 0.91);
 -moz-transform: scale(0.91, 0.91);
 transform: scale(0.91, 0.91)">
-<img src="invitation-02_files/witness.jpg">
+<img src="img/witness.jpg">
 </div>
 </div>
 			
@@ -456,7 +426,7 @@ Our Story<br>
 <div class="transformContainer" style="-webkit-transform: scale(0.87, 0.87);
 -moz-transform: scale(0.87, 0.87);
 transform: scale(0.87, 0.87)">
-<img src="invitation-02_files/photo-wall.jpg">
+<img src="img/photo-wall.jpg">
 </div>
 </div>
 			
@@ -526,7 +496,7 @@ You are the delightful days of April<br><br>
 <div class="transformContainer" style="-webkit-transform: scale(0.91, 0.91);
 -moz-transform: scale(0.91, 0.91);
 transform: scale(0.91, 0.91)">
-<img src="invitation-02_files/april-0.jpg">
+<img src="img/april-0.jpg">
 </div>
 </div>
 			
@@ -585,7 +555,7 @@ transform: scale(1, 1)">
 <div class="transformContainer" style="-webkit-transform: scale(0.65, 0.65);
 -moz-transform: scale(0.65, 0.65);
 transform: scale(0.65, 0.65)">
-<img src="invitation-02_files/april-1.jpg">
+<img src="img/april-1.jpg">
 </div>
 </div>
 			
@@ -614,7 +584,7 @@ I think you are the delightful days of April<br><br>
 <div class="transformContainer" style="-webkit-transform: scale(0.78, 0.78);
 -moz-transform: scale(0.78, 0.78);
 transform: scale(0.78, 0.78)">
-<img src="invitation-02_files/april-2.jpg">
+<img src="img/april-2.jpg">
 </div>
 </div>
 			
@@ -653,7 +623,7 @@ Your laughter has lit up all the wind<br>
 <div class="transformContainer" style="-webkit-transform: scale(0.67, 0.67);
 -moz-transform: scale(0.67, 0.67);
 transform: scale(0.67, 0.67)">
-<img src="invitation-02_files/april-3.jpg">
+<img src="img/april-3.jpg">
 </div>
 </div>
 			
@@ -702,7 +672,7 @@ transform: scale(1, 1)">
 <div class="transformContainer" style="-webkit-transform: scale(0.75, 0.75);
 -moz-transform: scale(0.75, 0.75);
 transform: scale(0.75, 0.75)">
-<img src="invitation-02_files/april-4.jpg">
+<img src="img/april-4.jpg">
 </div>
 </div>
 			
@@ -751,7 +721,7 @@ You are the clouds in early spring<br><br>
 <div class="transformContainer" style="-webkit-transform: scale(0.78, 0.78);
 -moz-transform: scale(0.78, 0.78);
 transform: scale(0.78, 0.78)">
-<img src="invitation-02_files/april-5.jpg">
+<img src="img/april-5.jpg">
 </div>
 </div>
 			
@@ -810,7 +780,7 @@ And the stars blink now and then<br>
 <div class="transformContainer" style="-webkit-transform: scale(0.89, 0.89);
 -moz-transform: scale(0.89, 0.89);
 transform: scale(0.89, 0.89)">
-<img src="invitation-02_files/april-6.jpg">
+<img src="img/april-6.jpg">
 </div>
 </div>
 			
@@ -859,7 +829,7 @@ transform: scale(1, 1)">
 <div class="transformContainer" style="-webkit-transform: scale(0.76, 0.76);
 -moz-transform: scale(0.76, 0.76);
 transform: scale(0.76, 0.76)">
-<img src="invitation-02_files/april-7.jpg">
+<img src="img/april-7.jpg">
 </div>
 </div>
 			
@@ -908,7 +878,7 @@ You're the blooming flowers over the trees<br>
 <div class="transformContainer" style="-webkit-transform: scale(0.74, 0.74);
 -moz-transform: scale(0.74, 0.74);
 transform: scale(0.74, 0.74)">
-<img src="invitation-02_files/april-8.jpg">
+<img src="img/april-8.jpg">
 </div>
 </div>
 			
@@ -947,7 +917,7 @@ transform: scale(1, 1)">
 <div class="transformContainer" style="-webkit-transform: scale(0.87, 0.87);
 -moz-transform: scale(0.87, 0.87);
 transform: scale(0.87, 0.87)">
-<img src="invitation-02_files/april-9.jpg">
+<img src="img/april-9.jpg">
 </div>
 </div>
 			
@@ -1016,7 +986,7 @@ Full of love, full of warm hope<br>
 <div class="transformContainer" style="-webkit-transform: scale(0.87, 0.87);
 -moz-transform: scale(0.87, 0.87);
 transform: scale(0.87, 0.87)">
-<img src="invitation-02_files/april-10.jpg">
+<img src="img/april-10.jpg">
 </div>
 </div>
 			
@@ -1055,7 +1025,7 @@ You are the delightful days of April<br><br>
 <div class="transformContainer" style="-webkit-transform: scale(1, 1);
 -moz-transform: scale(1, 1);
 transform: scale(1, 1)">
-<img src="invitation-02_files/back-cover.jpg">
+<img src="img/back-cover.jpg">
 </div>
 </div>
 			
