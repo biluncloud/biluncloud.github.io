@@ -70,7 +70,7 @@ body {
 */
 b, strong { 
     font-weight: bold;
-    font-family: '΢???ź?', 'Microsoft YaHei', '????';
+    font-family: '微软雅黑', 'Microsoft YaHei', '????';
 }
 i, em { font-style: italic }
 
@@ -142,6 +142,9 @@ a:focus {
     /*width: 900px;
     padding: 40px;*/
     /*margin: 20px auto;*/
+    /* The background size*/
+    width: 1024px; 
+    height: 768px;
 
     -webkit-box-sizing: border-box;
     -moz-box-sizing:    border-box;
@@ -445,84 +448,335 @@ a:focus {
     height: 100%;
 }
 
-// impress
-/*
-#impress {
-    position: absolute; 
-    transform-origin: left top 0px; 
-    transition: all 0ms ease-in-out 0ms; 
-    transform-style: preserve-3d; 
-    top: 50%; 
-    left: 50%; 
-    width: 1024px; 
-    height: 768px;
-    transform: perspective(2000px) scale(0.5) rotateZ(0deg) rotateY(0deg) rotateX(0deg) translate3d(-9434.45px, -6696.96px, 0px);
+.componentContainer {
+    position: absolute;
+    line-height: normal;
+    /*-webkit-transform-origin: 135% 135%;
+    -moz-transform-origin: 135% 135%;
+    transform-origin: 135% 135%;*/
 }
 
-#step-1 {
+.transformContainer {
+    -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.bg {
+    width: 100%;
+    height: 100%;
+}
+
+#impress {
+    position: absolute;
+    transform-origin: left top 0px;
+    transition: all 0ms ease-in-out 0ms;
+    transform-style: preserve-3d;
+    top: 50%;
+    left: 50%;
+    transform: perspective(2000px) scale(0.5);
+}
+
+#container {
+    position: absolute;
+    transform-origin: left top 0px;
+    transition: all 0ms ease-in-out 0ms;
+    transform-style: preserve-3d;
+    transform: rotateZ(0deg) rotateY(0deg) rotateX(0deg) translate3d(-9434.45px, -6696.96px, 0px);
+}
+
+#step-1 img {
     top: 0px; 
     left: 235px; 
-    transform: translate(-50%, -50%) translate3d(9434.45px, 6696.96px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(2); 
-    transform-style: preserve-3d;
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1)
 }
 
-#step-2 {
-    transform: translate(-50%, -50%) translate3d(7290.88px, 4469.76px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(-89.9544deg) scale(2); 
-    transform-style: preserve-3d;
-    top: 4px; 
-    left: 257px; 
+#step-2 img {
+    top: -2px; 
+    left: -164px; 
+    width: 1361px; 
+    height: 766.58px;
 }
-*/
+
+#step-3 img {
+    top: -2px;
+    left: -158px;
+    width: 1357px; 
+    height: 764.33px;
+}
+
+#step-4 .cn1 {
+    top: 296px;
+    left: 303px;
+    font-size: 96px;
+}
+#step-4 .cn2 {
+    top: 319px;
+    left: 534px;
+    font-size: 29px;
+}
+
+#step-5 .cn1 {
+    top: 100px; 
+    left: 116px;
+    font-size: 72px;
+}
+#step-5 .cn2 {
+    top: 195px; 
+    left: 125px;
+    font-size: 38px;
+}
+#step-5 .cn3 {
+    top: 243px;
+    left: 251px;
+    font-size: 24px;
+}
+#dituContent {
+    top: 100px;
+    left: 350px;
+    width:697px;
+    height:550px;
+    border:#ccc solid 1px;
+}
+
+#step-6 img {
+    top: 0px; 
+    left: 394px; 
+    width: 513px; 
+    height: 769.5px;
+}
+#step-6 .cn {
+    top: 238px;
+    left: 281px;
+    font-size: 27px;
+}
+#step-6 .en {
+    top: 366px;
+    left: 121px;
+    -webkit-transform: rotate(1.57rad)  ;
+    -moz-transform: rotate(1.57rad)  ;
+    transform: rotate(1.57rad)  ;
+    font-size: 24px;
+}
+
+#step-7 .cn {
+    top: 260px;
+    left: 764px;
+    font-size: 27px;
+}
+#step-7 .en {
+    top: 306px;
+    left: 690px;
+    -webkit-transform: rotate(1.57rad)  ;
+    -moz-transform: rotate(1.57rad)  ;
+    transform: rotate(1.57rad)  ;
+    font-size: 24px;
+}
+
+#step-8 img {
+    top: 22px;
+    left: -9px;
+    width: 1047px; height: 698px;
+}
+
+#step-9 .cn {
+    top: 256px;
+    left: 229px;
+    font-size: 27px;
+}
+#step-9 .en {
+    top: 357px;
+    left: 173px;
+    -webkit-transform: rotate(1.57rad)  ;
+    -moz-transform: rotate(1.57rad)  ;
+    transform: rotate(1.57rad)  ;
+    font-size: 24px;
+}
+
+#step-10 .cn {
+    top: 256px;
+    left: 229px;
+    font-size: 24px;
+}
+#step-10 .en {
+    top: 408px; 
+    left: 84px; 
+    -webkit-transform: rotate(1.57rad)  ;
+    -moz-transform: rotate(1.57rad)  ;
+    transform: rotate(1.57rad)  ;
+    font-size: 19px;
+}
+#step-10 img {
+    top: -1px;
+    left: 375px;
+    width: 542px; 
+    height: 769.35px;
+}
+
+#step-11 img {
+    top: 106px;
+    left: 254px;
+    width: 768px; height: 551.08px;
+}
+#step-11 .cn1 {
+    top: 209px; 
+    left: 116px;
+    font-size: 24px;
+}
+#step-11 .cn2 {
+    top: 275px;
+    left: 156px;
+    font-size: 24px;
+}
+#step-11 .cn3 {
+    top: 377px; 
+    left: 150px;
+    font-size: 36px;
+}
+#step-11 .en {
+    top: 400px; 
+    left: -21px; 
+    -webkit-transform: rotate(1.57rad)  ; 
+    -moz-transform: rotate(1.57rad)  ; 
+    transform: rotate(1.57rad)  ;
+    font-size: 24px;
+}
+
+#step-12 img {
+    top: 50px; 
+    left: 0px; 
+    width: 877px; 
+    height: 659.5px;
+}
+#step-12 .cn {
+    top: 238px; 
+    left: 921px;
+    font-size: 24px;
+}
+#step-12 .en {
+    top: 391px; 
+    left: 742px; 
+    -webkit-transform: rotate(1.57rad)  ;
+    -moz-transform: rotate(1.57rad)  ;
+    transform: rotate(1.57rad)  ;
+    font-size: 19px;
+}
+
+#step-13 img {
+    top: 94px; 
+    left: 1px; 
+    width: 789px; 
+    height: 566.15px;
+}
+#step-13 .cn1 {
+    top: 317px; 
+    left: 826px;
+    font-size: 24px;
+}
+#step-13 .cn2 {
+    top: 408px; 
+    left: 859px;
+    font-size: 24px;
+}
+#step-13 .en {
+    top: 428px; 
+    left: 763px; 
+    -webkit-transform: rotate(1.57rad)  ; 
+    -moz-transform: rotate(1.57rad)  ; 
+    transform: rotate(1.57rad)  ;
+    font-size: 19px;
+}
+
+#step-14 img {
+    top: 63px; 
+    left: 183px; 
+    width: 839px; 
+    height: 630.93px;
+}
+#step-14 .cn1 {
+    top: 283px; 
+    left: 83px; 
+    font-size: 24px;
+}
+#step-14 .cn2 {
+    top: 337px; 
+    left: 115px; 
+    font-size: 24px;
+}
+#step-14 .en {
+    top: 402px; 
+    left: -81px; 
+    -webkit-transform: rotate(1.57rad)  ; 
+    -moz-transform: rotate(1.57rad)  ; 
+    transform: rotate(1.57rad)  ;
+    font-size: 19px;
+}
+
+#step-15 img {
+    top: 3px; 
+    left: 2px; 
+    width: 924px; height: 663.02px
+}
+#step-15 .cn1 {
+    top: 577px; 
+    left: 30px;
+    font-size: 24px;
+}
+#step-15 .cn2 {
+    top: 604px; 
+    left: 102px; 
+    font-size: 24px;
+}
+#step-15 .en1 {
+    top: 672px; 
+    left: 403px;
+    font-size: 19px;
+}
+#step-15 .en2 {
+    top: 702px; 
+    left: 441px;
+    font-size: 19px;
+}
+
 #step-16 {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(10622.3px, 9999.36px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(89.9544deg) scale(2); 
-    transform-style: preserve-3d;
+    color:#eeeeee
 }
 #step-16 img {
     top: 5px; 
     left: -4px; 
     width: 1030px; height: 749.9px;
-    -webkit-transform: scale(0.89, 0.89);
-    -moz-transform: scale(0.89, 0.89);
-    transform: scale(0.89, 0.89);
 }
-#step-16 {
+#step-16 .cn1 {
+    top: 83px; 
+    left: 733px;
+    font-size: 24px;
+}
+#step-16 .cn2 {
+    top: 130px; 
+    left: 765px; 
+    font-size: 24px;
+}
+#step-16 .en {
+    top: 207px; 
+    left: 684px; 
+    -webkit-transform: rotate(1.57rad); 
+    -moz-transform: rotate(1.57rad); 
+    transform: rotate(1.57rad); 
+    font-size: 19px;
+}
 
-}
-#step-16 {
-
-}
-
-#step-17 {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(8465.07px, 9154.56px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(89.9544deg) scale(2); 
-    transform-style: preserve-3d;
-}
 #step-17 img {
     top: 68px; 
     left: 129px; 
     width: 893px; height: 640.78px;
-    -webkit-transform: scale(0.76, 0.76);
-    -moz-transform: scale(0.76, 0.76);
-    transform: scale(0.76, 0.76);
 }
 #step-17 .cn1 {
     top: 285px; 
     left: 58px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-17 .cn2 {
     top: 334px; 
     left: 95px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-17 .en {
@@ -531,25 +785,14 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 19px;
 }
 
-#step-18 {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(6321.49px, 7495.68px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(2); 
-    transform-style: preserve-3d;
-}
 #step-18 img {
     top: 65px; 
     left: 148px; 
     width: 875px; 
     height: 627.86px;
-    -webkit-transform: scale(0.74, 0.74);
-    -moz-transform: scale(0.74, 0.74);
-    transform: scale(0.74, 0.74);
 }
 #step-18 .en {
     top: 462px; 
@@ -557,63 +800,37 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 19px;
 }
 #step-18 .cn {
     top: 274px; 
     left: 50px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 
-#step-19 {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(5106.35px, 5544.96px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(89.9544deg) scale(2); 
-    transform-style: preserve-3d;
-}
 #step-19 img {
     top: 16px; 
     left: 1px; 
     width: 1020px; height: 731.91px;
-    -webkit-transform: scale(0.87, 0.87);
-    -moz-transform: scale(0.87, 0.87);
-    transform: scale(0.87, 0.87)
 }
 #step-19 .sign {
     top: 34px; 
     left: 424px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-19 .cn1 {
     top: 101px; 
     left: 416px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-19 .cn2 {
     top: 187px; 
     left: 387px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-19 .cn3 {
     top: 244px; 
     left: 417px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-19 .en {
@@ -622,71 +839,37 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 19px;
 }
 
-#step-20 {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(5010.77px, 3194.88px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(2); 
-    transform-style: preserve-3d;
-}
 #step-20 img {
     top: 9px; 
     left: 0px; 
     width: 1024px; 
     height: 734.78px;
-    -webkit-transform: scale(0.87, 0.87);
-    -moz-transform: scale(0.87, 0.87);
-    transform: scale(0.87, 0.87)
 }
 #step-20 .cn {
     top: 617px; 
     left: 805px; 
-    width: px; 
-    height: px;
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 24px;
 }
 #step-20 .en {
     top: 655px; 
     left: 712px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1);
     font-size: 19px;
 }
 
-#step-21 {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(11605.3px, 6712.32px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(2); 
-    transform-style: preserve-3d;
+#step-21 img {
     top: 3px; 
     left: 244px; 
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1)
 }
 
 #disqus_thread {
     top: 3px; 
     left: 544px; 
-    width: 500px;
-    -webkit-transform: scale(1, 1);
-    -moz-transform: scale(1, 1);
-    transform: scale(1, 1)
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(12305.3px, 6712.32px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(2); 
-    transform-style: preserve-3d;
+    width: 500px; 
 }
 
 #overview {
-    position: absolute; 
-    transform: translate(-50%, -50%) translate3d(10622.3px, 5399.04px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(14); 
-    transform-style: preserve-3d;
 }
 
