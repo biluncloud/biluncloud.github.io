@@ -352,7 +352,7 @@ a:focus {
 /*
     ... and we will show it when the first step (with id 'bored') is active.
 */
-.strut-slide-0 .hint {
+.impress-on-step-1 .hint {
     /*
         We remove the transparency and position the hint in its default fixed
         position.
@@ -373,11 +373,11 @@ a:focus {
         into its correct position and after that we fade it in with opacity 
         transition.
     */
-    -webkit-transition: opacity 1s 5s, -webkit-transform 0.5s 2.5s;
-    -moz-transition:    opacity 1s 5s,    -moz-transform 0.5s 2.5s;
-    -ms-transition:     opacity 1s 5s,     -ms-transform 0.5s 2.5s;
-    -o-transition:      opacity 1s 5s,      -o-transform 0.5s 2.5s;
-    transition:         opacity 1s 5s,         transform 0.5s 2.5s;
+    -webkit-transition: opacity 1s 3s, -webkit-transform 0.5s 2.5s;
+    -moz-transition:    opacity 1s 3s,    -moz-transform 0.5s 2.5s;
+    -ms-transition:     opacity 1s 3s,     -ms-transform 0.5s 2.5s;
+    -o-transition:      opacity 1s 3s,      -o-transform 0.5s 2.5s;
+    transition:         opacity 1s 3s,         transform 0.5s 2.5s;
 }
 
 /*

@@ -452,23 +452,14 @@ var innerBg = document.querySelector('.innerBg');
             window.scrollTo(0, 0);
             
             var step = stepsData["impress-" + el.id];
-
-            function updateSurface(step, operation) {
-                var state = step.dataset.state;
-                if (typeof state == 'string') {
-                    state = state.trim().split(' ');
-                    for (var i = 0; i < state.length; ++i) {
-                        innerBg.classList[operation](state[i]);
-                    }
-                }
-            }
             
             if ( activeStep ) {
                 activeStep.classList.remove("active");
-                updateSurface(activeStep, 'remove');
+                body.classList.remove("impress-on-" + activeStep.id);
             }
             el.classList.add("active");
-            updateSurface(el, 'add');
+            
+            body.classList.add("impress-on-" + el.id);
             
             // compute target state of the canvas based on given step
             var target = {
