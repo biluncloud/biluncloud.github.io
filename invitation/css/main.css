@@ -17,6 +17,7 @@ time, mark, audio, video {
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
+    font-family: Georgia, serif;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -70,7 +71,7 @@ body {
 */
 b, strong { 
     font-weight: bold;
-    font-family: 'sans-serif', '微软雅黑', 'Microsoft YaHei', '黑体';
+    font-family: "Arial", "Helvetica", "sans-serif", "微软雅黑", "Microsoft YaHei", "黑体";
 }
 i, em { font-style: italic }
 
@@ -111,7 +112,6 @@ a:focus {
 */
 
 .fallback-message {
-    font-family: sans-serif;
     line-height: 1.3;
     
     width: 780px;
@@ -198,7 +198,6 @@ a:focus {
     color: rgb(102, 102, 102);
     text-shadow: 0 2px 2px rgba(0, 0, 0, .1);
 
-    font-family: 'Open Sans', Arial, sans-serif;
     font-size: 30px;
     line-height: 36px;
     letter-spacing: -1px;
@@ -373,11 +372,11 @@ a:focus {
         into its correct position and after that we fade it in with opacity 
         transition.
     */
-    -webkit-transition: opacity 1s 3s, -webkit-transform 0.5s 2.5s;
-    -moz-transition:    opacity 1s 3s,    -moz-transform 0.5s 2.5s;
-    -ms-transition:     opacity 1s 3s,     -ms-transform 0.5s 2.5s;
-    -o-transition:      opacity 1s 3s,      -o-transform 0.5s 2.5s;
-    transition:         opacity 1s 3s,         transform 0.5s 2.5s;
+    -webkit-transition: opacity 1s 5s, -webkit-transform 0.5s 2.5s;
+    -moz-transition:    opacity 1s 5s,    -moz-transform 0.5s 2.5s;
+    -ms-transition:     opacity 1s 5s,     -ms-transform 0.5s 2.5s;
+    -o-transition:      opacity 1s 5s,      -o-transform 0.5s 2.5s;
+    transition:         opacity 1s 5s,         transform 0.5s 2.5s;
 }
 
 /*
@@ -455,9 +454,10 @@ a:focus {
 .step > * {
     position: absolute;
     line-height: normal;
-    /*-webkit-transform-origin: 135% 135%;
-    -moz-transform-origin: 135% 135%;
-    transform-origin: 135% 135%;*/
+    -webkit-transform-origin: left top;
+    -moz-transform-origin: left top;
+    -ms-transform-origin: left top;
+    transform-origin: left top;
 }
 
 #impress {
@@ -503,25 +503,26 @@ a:focus {
     font-size: 96px;
 }
 #step-4 .cn2 {
-    top: 319px;
-    left: 534px;
-    font-size: 29px;
+    top: 317px;
+    left: 540px;
+    font-size: 30px;
+    font-family: "Arial", "Helvetica", "sans-serif";
 }
 
 #step-5 .cn1 {
-    top: 100px; 
+    top: 82px; 
     left: 116px;
     font-size: 72px;
 }
 #step-5 .cn2 {
-    top: 195px; 
-    left: 125px;
+    top: 190px; 
+    left: 115px;
     font-size: 38px;
 }
 #step-5 .cn3 {
     top: 243px;
-    left: 251px;
-    font-size: 24px;
+    left: 238px;
+    font-size: 30px;
 }
 #dituContent {
     top: 100px;
@@ -543,8 +544,8 @@ a:focus {
     font-size: 27px;
 }
 #step-6 .en {
-    top: 366px;
-    left: 121px;
+    top: 240px;
+    left: 271px;
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
@@ -557,8 +558,8 @@ a:focus {
     font-size: 27px;
 }
 #step-7 .en {
-    top: 306px;
-    left: 690px;
+    top: 262px;
+    left: 754px;
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
@@ -577,8 +578,8 @@ a:focus {
     font-size: 27px;
 }
 #step-9 .en {
-    top: 357px;
-    left: 173px;
+    top: 258px;
+    left: 219px;
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
@@ -586,17 +587,17 @@ a:focus {
 }
 
 #step-10 .cn {
-    top: 256px;
+    top: 250px;
     left: 229px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-10 .en {
-    top: 408px; 
-    left: 84px; 
+    top: 252px; 
+    left: 219px; 
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
-    font-size: 19px;
+    font-size: 24px;
 }
 #step-10 img {
     top: -1px;
@@ -611,23 +612,18 @@ a:focus {
     width: 768px; height: 551.08px;
 }
 #step-11 .cn1 {
-    top: 209px; 
+    top: 207px; 
     left: 116px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-11 .cn2 {
     top: 275px;
     left: 156px;
-    font-size: 24px;
-}
-#step-11 .cn3 {
-    top: 377px; 
-    left: 150px;
-    font-size: 36px;
+    font-size: 27px;
 }
 #step-11 .en {
-    top: 400px; 
-    left: -21px; 
+    top: 209px; 
+    left: 106px; 
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ;
@@ -643,17 +639,20 @@ a:focus {
 #step-12 .cn {
     top: 238px; 
     left: 921px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-12 .en {
-    top: 391px; 
-    left: 742px; 
+    top: 240px; 
+    left: 911px; 
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
-    font-size: 19px;
+    font-size: 24px;
 }
 
+#step-13 {
+    width: 1100px; 
+}
 #step-13 img {
     top: 94px; 
     left: 1px; 
@@ -663,20 +662,20 @@ a:focus {
 #step-13 .cn1 {
     top: 317px; 
     left: 826px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-13 .cn2 {
     top: 408px; 
     left: 859px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-13 .en {
-    top: 428px; 
-    left: 763px; 
+    top: 440px; 
+    left: 770px; 
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ;
-    font-size: 19px;
+    font-size: 24px;
 }
 
 #step-14 img {
@@ -688,12 +687,12 @@ a:focus {
 #step-14 .cn1 {
     top: 283px; 
     left: 83px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-14 .cn2 {
     top: 337px; 
     left: 115px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-14 .en {
     top: 402px; 
@@ -701,7 +700,7 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ;
-    font-size: 19px;
+    font-size: 24px;
 }
 
 #step-15 img {
@@ -712,22 +711,22 @@ a:focus {
 #step-15 .cn1 {
     top: 577px; 
     left: 30px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-15 .cn2 {
     top: 604px; 
     left: 102px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-15 .en1 {
     top: 672px; 
     left: 403px;
-    font-size: 19px;
+    font-size: 24px;
 }
 #step-15 .en2 {
     top: 702px; 
-    left: 441px;
-    font-size: 19px;
+    left: 481px;
+    font-size: 24px;
 }
 
 #step-16 {
@@ -741,12 +740,12 @@ a:focus {
 #step-16 .cn1 {
     top: 83px; 
     left: 733px;
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-16 .cn2 {
     top: 130px; 
     left: 765px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-16 .en {
     top: 207px; 
@@ -754,7 +753,7 @@ a:focus {
     -webkit-transform: rotate(1.57rad); 
     -moz-transform: rotate(1.57rad); 
     transform: rotate(1.57rad); 
-    font-size: 19px;
+    font-size: 24px;
 }
 
 #step-17 img {
@@ -765,12 +764,12 @@ a:focus {
 #step-17 .cn1 {
     top: 285px; 
     left: 58px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-17 .cn2 {
     top: 334px; 
     left: 95px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-17 .en {
     top: 452px; 
@@ -778,7 +777,7 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    font-size: 19px;
+    font-size: 24px;
 }
 
 #step-18 img {
@@ -793,12 +792,12 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    font-size: 19px;
+    font-size: 24px;
 }
 #step-18 .cn {
     top: 274px; 
     left: 50px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 
 #step-19 img {
@@ -814,17 +813,17 @@ a:focus {
 #step-19 .cn1 {
     top: 101px; 
     left: 416px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-19 .cn2 {
     top: 187px; 
     left: 387px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-19 .cn3 {
     top: 244px; 
     left: 417px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-19 .en {
     top: 196px; 
@@ -832,7 +831,7 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    font-size: 19px;
+    font-size: 24px;
 }
 
 #step-20 img {
@@ -844,12 +843,12 @@ a:focus {
 #step-20 .cn {
     top: 617px; 
     left: 805px; 
-    font-size: 24px;
+    font-size: 27px;
 }
 #step-20 .en {
     top: 655px; 
-    left: 712px; 
-    font-size: 19px;
+    left: 710px; 
+    font-size: 24px;
 }
 
 #step-21 img {
