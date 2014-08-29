@@ -351,9 +351,9 @@
                     var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = src;
                     var e = document.getElementsByTagName('script')[0]; e.parentNode.insertBefore(s, e);
                 };
-                load('//' + disqus_shortname + '.disqus.com/count.js');
+                load('http://' + disqus_shortname + '.disqus.com/count.js');
                 if (document.getElementById('disqus_thread')) {
-                    load('//' + disqus_shortname + '.disqus.com/embed.js');
+                    load('http://' + disqus_shortname + '.disqus.com/embed.js');
                 }
             })();
 
