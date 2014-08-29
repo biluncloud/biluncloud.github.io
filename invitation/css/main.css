@@ -526,12 +526,12 @@ a:focus {
 }
 #step-5 .cn3 {
     top: 243px;
-    left: 238px;
-    font-size: 30px;
+    left: 230px;
+    font-size: 28px;
 }
 #dituContent {
     top: 100px;
-    left: 350px;
+    left: 355px;
     width:697px;
     height:550px;
     border:#ccc solid 1px;
@@ -539,14 +539,14 @@ a:focus {
 
 #step-6 img {
     top: 0px; 
-    left: 394px; 
-    width: 513px; 
+    left: 380px; 
+    width: 542px; 
     height: 769.5px;
 }
 #step-6 .cn {
     top: 238px;
     left: 281px;
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-6 .en {
     top: 240px;
@@ -554,7 +554,7 @@ a:focus {
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
-    font-size: 24px;
+    font-size: 19px;
 }
 
 #step-7 .cn {
@@ -591,147 +591,141 @@ a:focus {
     font-size: 24px;
 }
 
-#step-10 .cn {
-    top: 250px;
-    left: 229px;
-    font-size: 27px;
-}
-#step-10 .en {
-    top: 252px; 
-    left: 219px; 
-    -webkit-transform: rotate(1.57rad)  ;
-    -moz-transform: rotate(1.57rad)  ;
-    transform: rotate(1.57rad)  ;
-    font-size: 24px;
-}
 #step-10 img {
-    top: -1px;
-    left: 375px;
+    top: 0px;
+    left: 380px;
     width: 542px; 
     height: 769.35px;
 }
-
-#step-11 img {
-    top: 106px;
-    left: 254px;
-    width: 768px; height: 551.08px;
-}
-#step-11 .cn1 {
-    top: 207px; 
-    left: 116px;
-    font-size: 27px;
-}
-#step-11 .cn2 {
-    top: 275px;
-    left: 156px;
-    font-size: 27px;
-}
-#step-11 .en {
-    top: 209px; 
-    left: 106px; 
-    -webkit-transform: rotate(1.57rad)  ; 
-    -moz-transform: rotate(1.57rad)  ; 
-    transform: rotate(1.57rad)  ;
+#step-10 .cn {
+    top: 238px;
+    left: 281px;
     font-size: 24px;
 }
-
-#step-12 img {
-    top: 50px; 
-    left: 0px; 
-    width: 877px; 
-    height: 659.5px;
-}
-#step-12 .cn {
-    top: 238px; 
-    left: 921px;
-    font-size: 27px;
-}
-#step-12 .en {
+#step-10 .en {
     top: 240px; 
-    left: 911px; 
+    left: 271px; 
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
-    font-size: 24px;
+    font-size: 19px;
 }
 
-#step-13 {
-    width: 1100px; 
+#step-11 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
 }
-#step-13 img {
-    top: 94px; 
-    left: 1px; 
-    width: 789px; 
-    height: 566.15px;
+#step-11 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
 }
-#step-13 .cn1 {
-    top: 317px; 
-    left: 826px;
-    font-size: 27px;
+#step-11 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
 }
-#step-13 .cn2 {
-    top: 408px; 
-    left: 859px;
-    font-size: 27px;
-}
-#step-13 .en {
-    top: 440px; 
-    left: 770px; 
+#step-11 .en {
+    top: 209px; 
+    left: 116px; 
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ;
+    font-size: 19px;
+}
+
+#step-12 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
+}
+#step-12 .cn {
+    top: 207px; 
+    left: 66px;
     font-size: 24px;
+}
+#step-12 .en {
+    top: 209px; 
+    left: 56px; 
+    -webkit-transform: rotate(1.57rad)  ;
+    -moz-transform: rotate(1.57rad)  ;
+    transform: rotate(1.57rad)  ;
+    font-size: 19px;
+}
+
+#step-13 img {
+    top: 5px; 
+    left: 1px; 
+    width: 1030px; height: 749.9px;
+}
+#step-13 .cn1 {
+    top: 442px; 
+    left: 760px;
+    font-size: 24px;
+}
+#step-13 .cn2 {
+    top: 500px; 
+    left: 790px;
+    font-size: 24px;
+}
+#step-13 .en {
+    top: 445px; 
+    left: 740px; 
+    -webkit-transform: rotate(1.57rad)  ; 
+    -moz-transform: rotate(1.57rad)  ; 
+    transform: rotate(1.57rad)  ;
+    font-size: 19px;
 }
 
 #step-14 img {
-    top: 63px; 
+    top: 5px; 
     left: 183px; 
-    width: 839px; 
-    height: 630.93px;
+    width: 1030px; height: 749.9px;
 }
 #step-14 .cn1 {
     top: 283px; 
     left: 83px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-14 .cn2 {
     top: 337px; 
     left: 115px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-14 .en {
-    top: 402px; 
-    left: -81px; 
+    top: 285px; 
+    left: 63px; 
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ;
-    font-size: 24px;
+    font-size: 19px;
 }
 
 #step-15 img {
-    top: 3px; 
+    top: 5px; 
     left: 2px; 
-    width: 924px; height: 663.02px
+    width: 1030px; height: 749.9px;
 }
 #step-15 .cn1 {
-    top: 577px; 
+    top: 637px; 
     left: 30px;
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-15 .cn2 {
-    top: 604px; 
+    top: 664px; 
     left: 102px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-15 .en1 {
-    top: 672px; 
-    left: 403px;
-    font-size: 24px;
+    top: 692px; 
+    left: 34px;
+    font-size: 19px;
 }
 #step-15 .en2 {
-    top: 702px; 
-    left: 481px;
-    font-size: 24px;
+    top: 722px; 
+    left: 105px;
+    font-size: 19px;
 }
 
 #step-16 {
@@ -745,70 +739,69 @@ a:focus {
 #step-16 .cn1 {
     top: 83px; 
     left: 733px;
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-16 .cn2 {
     top: 130px; 
     left: 765px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-16 .en {
-    top: 207px; 
-    left: 684px; 
+    top: 85px; 
+    left: 713px; 
     -webkit-transform: rotate(1.57rad); 
     -moz-transform: rotate(1.57rad); 
     transform: rotate(1.57rad); 
-    font-size: 24px;
+    font-size: 19px;
 }
 
 #step-17 img {
-    top: 68px; 
+    top: 5px; 
     left: 129px; 
-    width: 893px; height: 640.78px;
+    width: 1030px; height: 749.9px;
 }
 #step-17 .cn1 {
     top: 285px; 
     left: 58px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-17 .cn2 {
     top: 334px; 
     left: 95px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-17 .en {
-    top: 452px; 
-    left: -25px; 
+    top: 287px; 
+    left: 165px; 
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    font-size: 24px;
+    font-size: 19px;
 }
 
 #step-18 img {
-    top: 65px; 
+    top: 5px; 
     left: 148px; 
-    width: 875px; 
-    height: 627.86px;
-}
-#step-18 .en {
-    top: 462px; 
-    left: -92px; 
-    -webkit-transform: rotate(1.57rad)  ; 
-    -moz-transform: rotate(1.57rad)  ; 
-    transform: rotate(1.57rad)  ; 
-    font-size: 24px;
+    width: 1030px; height: 749.9px;
 }
 #step-18 .cn {
     top: 274px; 
     left: 50px; 
-    font-size: 27px;
+    font-size: 24px;
+}
+#step-18 .en {
+    top: 276px; 
+    left: 120px; 
+    -webkit-transform: rotate(1.57rad)  ; 
+    -moz-transform: rotate(1.57rad)  ; 
+    transform: rotate(1.57rad)  ; 
+    font-size: 19px;
 }
 
 #step-19 img {
-    top: 16px; 
+    top: 5px; 
     left: 1px; 
-    width: 1020px; height: 731.91px;
+    width: 1030px; height: 749.9px;
 }
 #step-19 .sign {
     top: 34px; 
@@ -818,42 +811,41 @@ a:focus {
 #step-19 .cn1 {
     top: 101px; 
     left: 416px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-19 .cn2 {
     top: 187px; 
     left: 387px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-19 .cn3 {
     top: 244px; 
     left: 417px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-19 .en {
-    top: 196px; 
-    left: 349px; 
+    top: 103px; 
+    left: 369px; 
     -webkit-transform: rotate(1.57rad)  ; 
     -moz-transform: rotate(1.57rad)  ; 
     transform: rotate(1.57rad)  ; 
-    font-size: 24px;
+    font-size: 19px;
 }
 
 #step-20 img {
-    top: 9px; 
+    top: 5px; 
     left: 0px; 
-    width: 1024px; 
-    height: 734.78px;
+    width: 1030px; height: 749.9px;
 }
 #step-20 .cn {
     top: 617px; 
     left: 805px; 
-    font-size: 27px;
+    font-size: 24px;
 }
 #step-20 .en {
     top: 655px; 
     left: 710px; 
-    font-size: 24px;
+    font-size: 19px;
 }
 
 #step-21 img {
