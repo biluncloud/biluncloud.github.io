@@ -483,6 +483,12 @@ a:focus {
     transform: rotateZ(0deg) rotateY(0deg) rotateX(0deg) translate3d(-9434.45px, -6696.96px, 0px);
 }
 
+img {
+    border-radius: 25px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+}
+
 #step-1 img {
     top: 0px; 
     left: 235px; 
@@ -502,34 +508,69 @@ a:focus {
     height: 764.33px;
 }
 
-#step-4 .cn1 {
+#step-4-0 .cn1 {
     top: 296px;
     left: 303px;
     font-size: 96px;
 }
-#step-4 .cn2 {
+#step-4-0 .cn2 {
     top: 317px;
     left: 540px;
     font-size: 30px;
     font-family: "Arial", "Helvetica", "sans-serif";
 }
 
-#step-5 .cn1 {
+#step-4-1 .cn1 {
     top: 82px; 
     left: 116px;
     font-size: 72px;
 }
-#step-5 .cn2 {
+#step-4-1 .cn2 {
     top: 190px; 
     left: 115px;
     font-size: 38px;
 }
-#step-5 .cn3 {
+#step-4-1 .cn3 {
     top: 243px;
     left: 230px;
     font-size: 28px;
 }
-#dituContent {
+#shuidong {
+    top: 100px;
+    left: 355px;
+    width:697px;
+    height:550px;
+    border:#ccc solid 1px;
+}
+
+#step-5-0 .cn1 {
+    top: 296px;
+    left: 303px;
+    font-size: 96px;
+}
+#step-5-0 .cn2 {
+    top: 317px;
+    left: 540px;
+    font-size: 30px;
+    font-family: "Arial", "Helvetica", "sans-serif";
+}
+
+#step-5-1 .cn1 {
+    top: 82px; 
+    left: 116px;
+    font-size: 72px;
+}
+#step-5-1 .cn2 {
+    top: 190px; 
+    left: 115px;
+    font-size: 38px;
+}
+#step-5-1 .cn3 {
+    top: 243px;
+    left: 230px;
+    font-size: 28px;
+}
+#chidong {
     top: 100px;
     left: 355px;
     width:697px;
