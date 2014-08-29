@@ -151,7 +151,12 @@ a:focus {
     -ms-box-sizing:     border-box;
     -o-box-sizing:      border-box;
     box-sizing:         border-box;
+
+    display: none; /* Start by not showing slides to prevent mobile Crash at the start */
 }
+
+.desktop .step { display:block; } /* Desktops should be able to handle all slides */
+.step.active,.step.present,.step.active + .step,.step.prev { display:block; } /* Limit mobile to only show the current slide, the next slide, and the previous slide */
 
 .impress-enabled .strut-slide-overview .step {
     opacity: 1;
