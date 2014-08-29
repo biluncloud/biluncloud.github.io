@@ -25,6 +25,7 @@
         <script type="text/javascript" src="js/baidumap.js"></script>
         <script type="text/javascript" src="js/onready.js"></script>
         <script type="text/javascript" src="js/loadPresentation.js"></script>
+        <script language="JavaScript" src="js/share.js" type="text/javascript" ></script>
         <script>
             // Taken from https://gist.github.com/KZeni/6735287, to solve the 
             // impress.js crashing on mobile problem.
@@ -54,6 +55,13 @@
                 prev = getPreviousSibling(current); // Get prev slide
                 prev.className += ' prev'; // Mark prev slide with class
             });
+
+            // 微信
+            var contentModel = {
+                "img_url": "http://feihu.me/invitation/img/cover.jpg",
+                "title": "我们结婚啦！袁飞虎 & 王婷",
+                "src": "2014-10-01，安徽省宣城市水东镇，期待您的见证!" 
+            };
 
             ready(function() {
                 if (document.getElementById('launched-placeholder'))
