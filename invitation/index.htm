@@ -64,6 +64,14 @@
                 "src": "2014-09-29，湖北省蕲春县赤东镇; 2014-10-01，安徽省宣城市水东镇。期待您的见证!" 
             };
 
+            // play the song for mobiles, autoplay would not work on iOS
+            document.addEventListener("touchstart", function ( event ) {
+                var audio = document.getElementById("bgsound");
+                if (audio.paused) {
+                    audio.play();
+                }
+            }, false);
+
             ready(function() {
                 if (document.getElementById('launched-placeholder'))
                     loadPresentation();
