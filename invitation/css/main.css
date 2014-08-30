@@ -131,6 +131,10 @@ a:focus {
     display: none;
 }
 
+.impress-not-supported .fallback-message {
+    display: block;
+}
+
 /*
     Now let's style the presentation steps.
     
