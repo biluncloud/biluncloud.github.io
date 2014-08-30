@@ -474,7 +474,7 @@ a:focus {
     transition: all 0ms ease-in-out 0ms;
     transform-style: preserve-3d;
     top: 50%;
-    left: 50%;
+    left: 20%;
     transform: perspective(2000px) scale(0.5);
 }
 
