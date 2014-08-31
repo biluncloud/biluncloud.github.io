@@ -17,7 +17,7 @@ time, mark, audio, video {
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
-    font-family: Georgia, serif;
+    font-family: Georgia, "KaiTi_GB2312", "STKaiti", serif;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -532,11 +532,13 @@ img {
     top: 190px; 
     left: 115px;
     font-size: 38px;
+    font-family: "Arial", "Helvetica", "sans-serif";
 }
 #step-4-1 .cn3 {
     top: 243px;
     left: 230px;
     font-size: 28px;
+    font-family: "Arial", "Helvetica", "sans-serif";
 }
 #shuidong {
     top: 100px;
@@ -567,11 +569,13 @@ img {
     top: 190px; 
     left: 115px;
     font-size: 38px;
+    font-family: "Arial", "Helvetica", "sans-serif";
 }
 #step-5-1 .cn3 {
     top: 243px;
     left: 230px;
     font-size: 28px;
+    font-family: "Arial", "Helvetica", "sans-serif";
 }
 #chidong {
     top: 100px;
@@ -581,6 +585,37 @@ img {
     border:#ccc solid 1px;
 }
 
+#step-6 .invitee1 {
+    top: 133px;
+    left: 310px;
+    font-size: 24px;
+    font-family: sans-serif;
+}
+#step-6 .invitee2 {
+    top: 133px;
+    left: 340px;
+    font-size: 24px;
+    font-family: sans-serif;
+}
+#step-6 hr {
+    color: #5151A2;
+}
+#step-6 .horizon {
+    left: 270px;
+    top: 220px;
+}
+.horizon hr {
+    width: 50px;
+    height: 1px;
+}
+#step-6 .vertical {
+    left: 300px;
+    top: 178px;
+}
+.vertical hr {
+    width: 2px;
+    height: 60px;
+}
 #step-6 img {
     top: 0px; 
     left: 380px; 
@@ -589,12 +624,12 @@ img {
 }
 #step-6 .cn {
     top: 238px;
-    left: 281px;
+    left: 271px;
     font-size: 24px;
 }
 #step-6 .en {
     top: 240px;
-    left: 271px;
+    left: 261px;
     -webkit-transform: rotate(1.57rad)  ;
     -moz-transform: rotate(1.57rad)  ;
     transform: rotate(1.57rad)  ;
