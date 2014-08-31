@@ -351,6 +351,9 @@ a:focus {
     -o-transition:      opacity 1s,      -o-transform 0.5s 1s;
     transition:         opacity 1s,         transform 0.5s 1s;
 }
+.hint p {
+    font-family: "Arial", "Helvetica", "sans-serif";
+}
 
 /*
     Now we 'enable' the hint when presentation is initialized ...
