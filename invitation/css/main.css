@@ -663,6 +663,43 @@ img {
     font-size: 24px;
 }
 
+#story-1 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
+}
+#story-1 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-1 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+
+#story-2 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
+}
+#story-2 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-2 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+#story-2 .cn3 {
+    top: 340px;
+    left: 96px;
+    font-size: 24px;
+}
+
 #step-8 img {
     top: 22px;
     left: -9px;
