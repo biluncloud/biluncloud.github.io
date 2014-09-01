@@ -700,6 +700,134 @@ img {
     font-size: 24px;
 }
 
+#story-3 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
+}
+#story-3 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-3 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+
+#story-4 img {
+    top: 5px; 
+    left: 150px;
+    height: 770px;
+}
+#story-4 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-4 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+
+#story-5 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
+}
+#story-5 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-5 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+
+#story-5-1 .cn {
+    top: 260px;
+    left: 764px;
+    font-size: 24px;
+}
+
+#story-5-2 .cn1 {
+    top: 200px;
+    left: 764px;
+    font-size: 24px;
+}
+#story-5-2 .cn2 {
+    top: 200px;
+    left: 724px;
+    font-size: 24px;
+}
+#story-5-2 .cn3 {
+    top: 200px;
+    left: 684px;
+    font-size: 24px;
+}
+#story-5-2 .cn4 {
+    top: 200px;
+    left: 644px;
+    font-size: 24px;
+}
+#story-5-3 .cn1 {
+    top: 296px;
+    left: 303px;
+    font-size: 96px;
+}
+#story-5-3 .cn2 {
+    top: 317px;
+    left: 540px;
+    font-size: 30px;
+    font-family: "Arial", "Helvetica", "sans-serif";
+}
+
+#story-6 img {
+    top: 5px; 
+    left: 150px;
+    width: 1030px; height: 749.9px;
+}
+#story-6 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-6 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+#story-6 .cn3 {
+    top: 340px;
+    left: 96px;
+    font-size: 24px;
+}
+
+#story-7 img {
+    top: 5px; 
+    left: 150px;
+    height: 749.9px;
+}
+#story-7 .cn1 {
+    top: 207px; 
+    left: 16px;
+    font-size: 24px;
+}
+#story-7 .cn2 {
+    top: 275px;
+    left: 56px;
+    font-size: 24px;
+}
+#story-7 .cn3 {
+    top: 340px;
+    left: 96px;
+    font-size: 24px;
+}
+
 #step-8 img {
     top: 22px;
     left: -9px;
