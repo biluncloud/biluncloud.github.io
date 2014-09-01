@@ -543,12 +543,17 @@ img {
     font-size: 28px;
     font-family: "Arial", "Helvetica", "sans-serif";
 }
-#shuidong {
+#chidong {
     top: 100px;
     left: 355px;
     width:697px;
     height:550px;
     border:#ccc solid 1px;
+}
+#chidong img {
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
 }
 
 #step-5-0 .cn1 {
@@ -580,12 +585,17 @@ img {
     font-size: 28px;
     font-family: "Arial", "Helvetica", "sans-serif";
 }
-#chidong {
+#shuidong {
     top: 100px;
     left: 355px;
     width:697px;
     height:550px;
     border:#ccc solid 1px;
+}
+#shuidong img {
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
 }
 
 #step-6 .invitee1 {
