@@ -10,7 +10,7 @@ function initMap(){
             content:"安徽省宣城市水东镇",
             point:"118.969299|30.800684",
             isOpen:0,
-            icon:{w:21,h:21,l:0,t:0,x:6,lb:5}
+            icon:{w:23,h:25,l:46,t:21,x:9,lb:12}
         }
      ];
     addMarker(shuidong, markerArr);//向地图中添加marker
@@ -25,7 +25,7 @@ function initMap(){
             content:"湖北省黄冈市蕲春县赤东镇",
             point:"115.488247|30.150454",
             isOpen:0,
-            icon:{w:21,h:21,l:0,t:0,x:6,lb:5}
+            icon:{w:23,h:25,l:46,t:21,x:9,lb:12}
         }
      ];
     addMarker(chidong, markerArr);//向地图中添加marker
