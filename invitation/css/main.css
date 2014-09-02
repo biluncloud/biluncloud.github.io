@@ -674,25 +674,41 @@ img {
     font-size: 24px;
 }
 .story > .cn2 {
-    top: 275px;
+    top: 207px;
     left: 56px;
     font-size: 24px;
 }
 .story > .cn3 {
-    top: 340px;
+    top: 207px;
     left: 96px;
     font-size: 24px;
 }
-.story > .cn4 {
-    top: 340px;
-    left: 56px;
+
+.vertical > img {
+    top: 5px; 
+    left: 250px;
+    height: 770px;
+}
+.vertical > .cn1 {
+    top: 207px; 
+    left: 116px;
+    font-size: 24px;
+}
+.vertical > .cn2 {
+    top: 207px;
+    left: 156px;
+    font-size: 24px;
+}
+.vertical > .cn3 {
+    top: 207px;
+    left: 196px;
     font-size: 24px;
 }
 
 #story-5-1 .cn {
     top: 260px;
     left: 764px;
-    font-size: 24px;
+    font-size: 44px;
 }
 
 #story-5-2 .cn1 {
@@ -716,16 +732,68 @@ img {
     font-size: 24px;
 }
 #story-5-3 .cn1 {
+    top: 317px;
+    left: 243px;
+    font-family: "Arial", "Helvetica", "sans-serif";
+    font-size: 30px;
+}
+#story-5-3 .cn2 {
     top: 296px;
     left: 303px;
     font-size: 96px;
 }
-#story-5-3 .cn2 {
+#story-5-3 .cn3 {
     top: 317px;
     left: 540px;
     font-size: 30px;
     font-family: "Arial", "Helvetica", "sans-serif";
 }
+
+#story-8 .cn1 {
+    top: 207px; 
+    left: 0px;
+    font-size: 24px;
+}
+#story-8 .cn2 {
+    top: 207px;
+    left: 35px;
+    font-size: 24px;
+}
+#story-8 .cn3 {
+    top: 207px;
+    left: 70px;
+    font-size: 24px;
+}
+#story-8 .cn4 {
+    top: 207px;
+    left: 105px;
+    font-size: 24px;
+}
+
+#story-10 {
+    color:#eeeeee
+}
+#story-10 img {
+    top: 5px; 
+    left: 0px;
+    height: 700px;
+}
+#story-10 .cn1 {
+    top: 157px; 
+    left: 96px;
+    font-size: 24px;
+}
+#story-10 .cn2 {
+    top: 157px;
+    left: 136px;
+    font-size: 24px;
+}
+#story-10 .cn3 {
+    top: 157px;
+    left: 176px;
+    font-size: 24px;
+}
+
 #story-13 .cn1 {
     top: 256px;
     left: 229px;
