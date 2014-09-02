@@ -663,88 +663,24 @@ img {
     font-size: 24px;
 }
 
-#story-1 img {
-    top: 5px; 
-    left: 150px;
-    width: 1030px; height: 749.9px;
-}
-#story-1 .cn1 {
-    top: 207px; 
-    left: 16px;
-    font-size: 24px;
-}
-#story-1 .cn2 {
-    top: 275px;
-    left: 56px;
-    font-size: 24px;
-}
-
-#story-2 img {
-    top: 5px; 
-    left: 150px;
-    width: 1030px; height: 749.9px;
-}
-#story-2 .cn1 {
-    top: 207px; 
-    left: 16px;
-    font-size: 24px;
-}
-#story-2 .cn2 {
-    top: 275px;
-    left: 56px;
-    font-size: 24px;
-}
-#story-2 .cn3 {
-    top: 340px;
-    left: 96px;
-    font-size: 24px;
-}
-
-#story-3 img {
-    top: 5px; 
-    left: 150px;
-    width: 1030px; height: 749.9px;
-}
-#story-3 .cn1 {
-    top: 207px; 
-    left: 16px;
-    font-size: 24px;
-}
-#story-3 .cn2 {
-    top: 275px;
-    left: 56px;
-    font-size: 24px;
-}
-
-#story-4 img {
+.story > img {
     top: 5px; 
     left: 150px;
     height: 770px;
 }
-#story-4 .cn1 {
+.story > .cn1 {
     top: 207px; 
     left: 16px;
     font-size: 24px;
 }
-#story-4 .cn2 {
+.story > .cn2 {
     top: 275px;
     left: 56px;
     font-size: 24px;
 }
-
-#story-5 img {
-    top: 5px; 
-    left: 150px;
-    width: 1030px; height: 749.9px;
-}
-#story-5 .cn1 {
-    top: 207px; 
-    left: 16px;
-    font-size: 24px;
-}
-#story-5 .cn2 {
-    top: 275px;
-    left: 56px;
+.story > .cn3 {
+    top: 340px;
+    left: 96px;
     font-size: 24px;
 }
 
@@ -785,47 +721,15 @@ img {
     font-size: 30px;
     font-family: "Arial", "Helvetica", "sans-serif";
 }
-
-#story-6 img {
-    top: 5px; 
-    left: 150px;
-    width: 1030px; height: 749.9px;
+#story-13 .cn1 {
+    top: 256px;
+    left: 229px;
+    font-size: 27px;
 }
-#story-6 .cn1 {
-    top: 207px; 
-    left: 16px;
-    font-size: 24px;
-}
-#story-6 .cn2 {
-    top: 275px;
-    left: 56px;
-    font-size: 24px;
-}
-#story-6 .cn3 {
-    top: 340px;
-    left: 96px;
-    font-size: 24px;
-}
-
-#story-7 img {
-    top: 5px; 
-    left: 150px;
-    height: 749.9px;
-}
-#story-7 .cn1 {
-    top: 207px; 
-    left: 16px;
-    font-size: 24px;
-}
-#story-7 .cn2 {
-    top: 275px;
-    left: 56px;
-    font-size: 24px;
-}
-#story-7 .cn3 {
-    top: 340px;
-    left: 96px;
-    font-size: 24px;
+#story-13 .cn2 {
+    top: 256px;
+    left: 189px;
+    font-size: 27px;
 }
 
 #step-8 img {
