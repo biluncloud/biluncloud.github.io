@@ -945,6 +945,12 @@ img {
     left: 244px; 
 }
 
+#step-22 {
+    height: 750px; 
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
 #disqus_thread {
     top: 3px; 
     left: 544px; 
