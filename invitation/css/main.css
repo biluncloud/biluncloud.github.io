@@ -950,6 +950,7 @@ img {
     height: 750px; 
     overflow-x: hidden;
     overflow-y: scroll;
+    -webkit-overflow-scrolling: touch
 }
 
 #disqus_thread {
