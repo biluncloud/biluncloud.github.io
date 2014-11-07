@@ -10,7 +10,7 @@ image:  vim-sudo.png
 
     ~/myscript.sh: line n: xxx: command not found
 
-xxx是一个新安装的程序，安装路径明明已通过/etc/profile文件被加到环境变量中，如果直接登陆远程机器并执行`~/myscript.sh`时，完全正确。但为什么使用了ssh远程执行同样的脚本就出错了呢？两种方式执行脚本到底有何不同？
+xxx是一个新安装的程序，安装路径明明已通过/etc/profile文件被加到环境变量中，为何会找不到？如果直接登陆远程机器并执行`~/myscript.sh`时，完全没有任何问题。但为什么使用了ssh远程执行同样的脚本就出错了呢？两种方式执行脚本到底有何不同？
 
 {{ more }}
 
@@ -22,44 +22,26 @@ xxx是一个新安装的程序，安装路径明明已通过/etc/profile文件�
 
 -----
 
-说明，本文所使用的机器是：SUSE Linux Enterprise。
+__说明__，本文所使用的机器是：SUSE Linux Enterprise。
 
 ## 问题定位
 
-为确信是环境变量引起的问题，我们首先在init.sh脚本执行`xxx`命令之前先打印出来当前的`$PATH`，结果得到：
+这看起来像是环境变量引起的问题。于是我在这条命令之前加了一句：`which xxx`。在本机上执行脚本时，它会得到正确的路径。但再次用ssh来执行时，却遇到下面的问题：
+
+    which: no xxx in (/usr/bin:/bin:/usr/sbin:/sbin)
+
+这很奇怪，怎么括号中的环境变量没有了`xxx`程序的安装路径呢？环境变量不对。再次在脚本中加入`echo $PATH`并以ssh执行，这才发现，环境变量是系统初始化时的结果：
 
     /usr/bin:/bin:/usr/sbin:/sbin
 
-这是系统默认的的环境变量，那么可以确认是由于/etc/profile未被加载所致。接下来需要弄清楚Hadoop到底是以何方式来调用远程机器上的脚本？因为init.sh的调用是写在hadoop-env.sh中，我们需要知道哪里调用了此命令并让每台机器执行，最终确认是在bin/slaves.sh中：
+这证明/etc/profile根本没有被调用。到底为什么呢？
 
-{% highlight bash linenos %}
-for slave in `cat "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
-   ssh $HADOOP_SSH_OPTS $slave $"${@// /\\ }" \
-   2>&1 | sed "s/^/$slave: /" &
- if [ "$HADOOP_SLAVE_SLEEP" != "" ]; then
-   sleep $HADOOP_SLAVE_SLEEP
- fi
-done
-{% endhighlight %}
+我又尝试了将上面的ssh分解成下面两步：
 
-这是一个循环语句，它将slave列表中的主机名都取了出来，然后调用ssh命令来在远程执行命令。为看得更加清楚一些，我们把ssh这行打印出来：
+    user@local > ssh user@remote
+    user@remote> ~/myscript.sh
 
-{% highlight bash linenos %}
-ssh remote cd /home/user/hadoop-1.1.2/libexec/.. ; /home/user/hadoop-1.1.2/bin/hadoop-daemon.sh --config /home/user/hadoop-1.1.2/libexec/../conf stop datanode
-{% endhighlight %}
-
-注意看，这句是先ssh到remote机器上，切换目录后接着执行hadoop-daemon.sh脚本，而后者内部调用了包含init.sh的hadoop-env.sh。现在我们弄清楚了Hadoop是通过ssh来在远程机器上执行命令。那么究竟哪一步出了问题呢？
-
-先来怀疑是否是slaves.sh这里出问题。于是直接将上述ssh命令拿出来在shell上执行，得到了一样的结果。这证明并不是slaves.sh出现了问题。接着我们在remote机器上的hadoop-daemon.sh调用hadoop-env.sh之前打印一下当前的`$PATH`，结果发现仍然与上面的结果一样，没有加载/etc/profile文件。那么便可以将问题定位到ssh命令本身了。
-
-先来试试如果将上面的步骤分解会怎样，即先ssh到远程机器上，然后再执行后面的命令。于是：
-
-{% highlight bash linenos %}
-user@local> ssh remote
-user@remote> cd /home/user/hadoop-1.1.2/libexec/.. ; /home/user/hadoop-1.1.2/bin/hadoop-daemon.sh --config /home/user/hadoop-1.1.2/libexec/../conf stop datanode
-{% endhighlight %}
-
-结果竟然成功了，打印出来的`$PATH`也是加载了/etc/profile的结果。那么这两种方式执行的命令有何不同呢？带着这个问题去查询了`man bash`，得到了答案。
+结果竟然成功了。那么这两种方式执行的命令有何不同呢？带着这个问题去查询了`man bash`，得到了答案。
 
 ## bash的四种模式
 
