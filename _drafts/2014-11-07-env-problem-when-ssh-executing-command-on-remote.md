@@ -8,9 +8,9 @@ image:  vim-sudo.png
 
 近日在使用ssh命令`ssh user@remote ~/myscript.sh`登陆到远程机器remote上执行命令时，遇到一个奇怪的问题：
 
-    ~/myscript.sh: line n: xxx: command not found
+    ~/myscript.sh: line n: app: command not found
 
-xxx是一个新安装的程序，安装路径明明已通过/etc/profile文件被加到环境变量中，为何会找不到？如果直接登陆远程机器并执行`~/myscript.sh`时，完全没有任何问题。但为什么使用了ssh远程执行同样的脚本就出错了呢？两种方式执行脚本到底有何不同？
+app是一个新安装的程序，安装路径明明已通过/etc/profile配置文件被加到环境变量中，为何会找不到？如果直接登陆机器remote并执行`~/myscript.sh`时，app程序可以找到并顺利完成。但为什么使用了ssh远程执行同样的脚本就出错了呢？两种方式执行脚本到底有何不同？请跟随我一起来揭开谜底。
 
 {{ more }}
 
@@ -26,63 +26,207 @@ __说明__，本文所使用的机器是：SUSE Linux Enterprise。
 
 ## 问题定位
 
-这看起来像是环境变量引起的问题。于是我在这条命令之前加了一句：`which xxx`。在本机上执行脚本时，它会得到正确的路径。但再次用ssh来执行时，却遇到下面的问题：
+这看起来像是环境变量引起的问题。于是我在这条命令之前加了一句：`which app`，查看app的安装路径。在remote本机上执行脚本时，它会得到app正确的安装路径。但再次用ssh来执行时，却遇到下面的问题：
 
-    which: no xxx in (/usr/bin:/bin:/usr/sbin:/sbin)
+    which: no app in (/usr/bin:/bin:/usr/sbin:/sbin)
 
-这很奇怪，怎么括号中的环境变量没有了`xxx`程序的安装路径呢？环境变量不对。再次在脚本中加入`echo $PATH`并以ssh执行，这才发现，环境变量是系统初始化时的结果：
+这很奇怪，怎么括号中的环境变量没有了`app`程序的安装路径？再次在脚本中加入`echo $PATH`并以ssh执行，这才发现，环境变量是系统初始化时的结果：
 
     /usr/bin:/bin:/usr/sbin:/sbin
 
-这证明/etc/profile根本没有被调用。到底为什么呢？
+这证明/etc/profile根本没有被调用。为什么？是ssh命令的问题么？
 
 我又尝试了将上面的ssh分解成下面两步：
 
-    user@local > ssh user@remote
-    user@remote> ~/myscript.sh
+    user@local > ssh user@remote    # 先远程登陆到remote上
+    user@remote> ~/myscript.sh      # 然后执行脚本
 
-结果竟然成功了。那么这两种方式执行的命令有何不同呢？带着这个问题去查询了`man bash`，得到了答案。
+结果竟然成功了。那么ssh的这两种方式执行的命令有何不同？带着这个问题去查询了`man ssh`，可以得到：
+
+> If command is specified, it is executed on the remote host instead of a login shell.
+
+这说明指定command的情况下命令会在远程主机上执行，返回结果后退出。而未指定时，会直接返回一个登陆的shell。但到这里还是无法理解，直接在远程主机上执行和返回一个登陆的shell再执行有什么区别？即使在远程主机上执行不也是通过shell来执行的么？难道是这两种方式使用的shell有什么不同？
+
+因为我们通常使用的是`bash`，所以我又去查询了`man bash`，才得到了答案。
 
 ## bash的四种模式
 
-在开始揭晓谜底之前，我们需要先介绍bash的四种模式。bash会依据这四种模式而加载不同的配置文件，而且加载的顺序也有所不同，这些配置文件有：
+在man page的__INVOCATION__一节讲述了`bash`的四种模式，`bash`会依据这四种模式而选择加载不同的配置文件，而且加载的顺序也有所不同。ssh问题的答案就在这几种模式当中，所以在我们揭开谜底之前先来介绍这些模式。
 
-- /etc/profile
-- ~/.bash_profile
-- ~/.bash_login
-- ~/.profile
-- /etc/bash.bashrc
-- ~/.bashrc
-- $BASH_ENV
+### interactive, login shell
 
-会不会有点晕，为什么会有这么多的配置文件？
-http://tristram.squarespace.com/home/2012/7/20/why-profile-bash_profile-and-bash_login.html解释了为什么有这么多种
-.bash_profile is for making sure that both the things in .profile and .bashrc are loaded for login shells. For example, .bash_profile could be something simple like
+第一种模式是交互式的登陆shell，这里面有两个概念需要解释：interactive和login。我们先来介绍什么是login：
 
+login故名思义，即登陆，所以login shell是指用户以非图形化界面或者以ssh登陆到机器上时获得的shell，简单些说就是需要输入用户名和密码的shell。因此一般来说，启动机器后用户获得的第一个shell就是login shell。
 
+interactive意为交互式，这也很好理解，interactive shell会有一个提示符，并且它的标准输入，输出和错误输出都会显示在控制台上。所以一般来说只要是需要用户交互的，即一个命令一个命令的输入的shell都是交互式的shell，而如果无须用户交互，通常来说`bash script.sh`此类就是非交互式的shell，因为执行完命令它便退出，不再需要与用户进行交互。
 
+那么这第一种模式最简单的两个例子便是：
 
-    ~/.bash_profile should be super-simple and just load .profile and .bashrc (in that order)
+1. 用户登陆到机器获得的第一个shell
+2. 用户使用`ssh user@remote`获得的shell
 
-    ~/.profile has the stuff NOT specifically related to bash, such as environment variables (PATH and friends)
+#### 加载配置文件
 
-    ~/.bashrc has anything you'd want at an interactive command line. Command prompt, EDITOR variable, bash aliases for my use
+这种模式下，shell首先加载/etc/profile，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
 
-A few other notes:
+1. ~/.bash_profile
+2. ~/.bash_login
+3. ~/.profile
 
-    Anything that should be available to graphical applications OR to sh (or bash invoked as sh) MUST be in ~/.profile
+所以这个查找的伪代码看起来像这样：
 
-    ~/.bashrc must not output anything: 只在non-interactive下输出
+    execute /etc/profile
+    IF ~/.bash_profile exists THEN
+        execute ~/.bash_profile
+    ELSE
+        IF ~/.bash_login exist THEN
+            execute ~/.bash_login
+        ELSE
+            IF ~/.profile exist THEN
+                execute ~/.profile
+            END IF
+        END IF
+    END IF
 
-    Anything that should be available only to login shells should go in ~/.profile
+#### 配置文件存在的意义
 
-    Ensure that ~/.bash_login does not exist.
+/etc/profile很好理解，它是一个全局的配置文件。后面三个位于用户主目录中的配置文件都针对用户个人，也许你会问为什么要有这么多，只用一个~/.profile不好么？究竟每个文件有什么意义呢？这是个好问题。
 
-我们来一一分析这几咱模式。
+Cameron Newham和Bill Rosenblatt的大作《[Learning the bash Shell, 2nd Edition](http://book.douban.com/subject/3296982/)》在59页解释了原因：
 
+>     bash allows two synonyms for .bash_profile: .bash_login, derived from the C shell's file named .login, and .profile, derived from the Bourne shell and Korn shell files named .profile. Only one of these three is read when you log in. If .bash_profile doesn't exist in your home directory, then bash will look for .bash_login. If that doesn't exist it will look for .profile.
+> 
+>     One advantage of bash's ability to look for either synonym is that you can retain your .profile if you have been using the Bourne shell. If you need to add bash-specific commands, you can put them in .bash_profile followed by the command source .profile. When you log in, all the bash-specific commands will be executed and bash will source .profile, executing the remaining commands. If you decide to switch to using the Bourne shell you don't have to modify your existing files. A similar approach was intended for .bash_login and the C shell .login, but due to differences in the basic syntax of the shells, this is not a good idea.
 
-http://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/
-    For Bash, they work as follows. Read down the appropriate column. Executes A, then B, then C, etc. The B1, B2, B3 means it executes only the first of those files found.
+原来一切都是为了兼容，这么设计是为了更好的应付在不同shell之间切换的场景。因为bash完全兼容Bourne shell，所以.bash_profile和.profile可以很好的处理bash和Bourne shell之间的切换。但是由于C shell和bash之间的基本语法存在着差异，作者认为引入.bash_login并不是个好主意。所以我们可以得出这样的最佳实践：
+
+#TODO
+1. 应该尽量杜绝使用.bash_login，如果已经创建，那么需要创建.bash_profile来屏蔽它被调用
+2. .bash_profile适合放置bash的专属命令，可以在其最后读取.profile，如此一来，login shell就可以同时读取两个文件的内容了
+
+#### 测试
+
+为验证这个理论，我们来做一些测试。首先设计每个配置文件的内容如下：
+
+{% highlight bash linenos %}
+user@remote > cat /etc/profile
+echo @ /etc/profile
+user@remote > cat ~/.bash_profile
+echo @ ~/.bash_profile
+user@remote > cat ~/.bash_login
+echo @ ~/.bash_login
+user@remote > cat ~/.profile
+echo @ ~/.profile
+{% endhighlight %}
+
+然后打开一个login shell，注意，这里可以使用`bash -l`命令，这是打开一个login shell的快捷方式，在man page中可以看到此参数的解释：
+
+ -l        Make bash act as if it had been invoked as a login shell 
+
+进入这个新的login shell，便会得到以下输出：
+
+    @ /etc/profile
+    @ /home/user/.bash_profile
+
+果然如猜想的一样，首先会加载全局的配置文件/etc/profile，然后去查找~/.bash_profile。接下来移除~/.bash_profile，得到结果如下：
+
+    @ /etc/profile
+    @ /home/user/.bash_login
+
+~/.bash_login被加载。再次移除~/.bash_login，结果为：
+
+    @ /etc/profile
+    @ /home/user/.profile
+
+~/.profile被加载。通过以上三个实验可以验证前面的结论，除去/etc/profile首先被加载外，其余三个文件的加载顺序为：~/.bash_profile > ~/.bash_login > ~/.profile，只要找到一个便终止查找。
+
+前面说过，使用ssh也会得到一个login shell，所以如果在另外一台机器上运行`ssh user@remote`时，也会得到上面一样的结论。
+
+### non-interactive, login shell
+
+第二种模式的shell为non-interactive login shell，即非交互式的登陆shell，这种是不太常见的情况。一种创建此shell的方法为：`bash -l script.sh`，前面提到过-l参数是将shell作为一个login shell。
+
+对于这种类型的shell，配置文件的加载顺序与第一种完全一样。
+
+### interactive, non-login shell
+
+第三种模式为交互式的非登陆shell，这种模式最常见的情况为在一个已有shell中运行`bash`，此时会打开一个交互式的shell，而因为不再需要登陆，因此属于此种模式的shell。
+
+#### 加载配置文件
+
+对于此种情况，启动shell时会去查找并加载/etc/bash.bashrc和~/.bashrc文件。
+
+#### 为什么又多了一种配置文件
+
+从这两个文件的存放路径可以很容易的判断，第一个文件是全局性的，第二个文件是当前用户的。在前面的模式当中，已经出现了几种配置文件，多数是以profile命名的，那么为什么这里又增加两个配置呢？这样不会增加复杂度么？我们来看看此处的文件和前面模式中的文件的区别。
+
+首先看第一种模式中的profile文件，它是某个用户唯一的用来设置全局环境变量的地方, 因为用户可以有多个shell比如bash, sh, zsh之类的, 但像环境变量这种其实只需要在统一的一个地方初始化就可以了, 而这个地方就是profile，所以启动一个login shell会加载此文件，后面由此shell中启动的shell如bash，sh，zsh等都可以由login shell中继承环境变量等。
+
+接下来看bashrc，其后缀`rc`的意思为[Run Commands](http://en.wikipedia.org/wiki/Run_commands)，由名字可以推断出，是存放bash需要运行的命令，但一般只用于交互式的shell。通常在这里会设置交互所需要的初始化信息，比如bash的补全、alias、颜色、提示符等等。
+
+#### 验证
+
+为了验证，与第一种模式一样，设计各配置文件内容如下：
+
+{% highlight bash linenos %}
+user@remote > cat /etc/bash.bashrc
+echo @ /etc/bash.bashrc
+user@remote > cat ~/.bashrc
+echo @ ~/.bashrc
+{% endhighlight %}
+
+然后我们启动一个交互式的非登陆shell：`bash`，可以得到以下结果：
+
+    @ /etc/bash.bashrc
+    @ ~/.bashrc
+
+由此验证了前面的结论。
+
+### non-interactive, non-login shell
+
+最后一种模式为非交互非登陆的shell，典型有两种方式：
+
+1. bash script.sh
+2. ssh user@remote command
+
+这两种都是启动一个shell，执行完命令之后便退出，不再需要与用户交互。
+
+#### 加载配置文件
+
+对于这种模式而言，它会去寻找环境变量`BASH_ENV`，将变量的值作为文件名查找，如果找到便加载它。
+
+#### 验证
+
+首先，我们测试没有该环境变量情况下的加载情况。先需要一个测试脚本：
+
+{% highlight bash linenos %}
+user@remote > cat ~/script.sh
+echo Hello World
+{% endhighlight %}
+
+然后运行`bash script.sh`，将得到以下结果：
+
+    Hello World
+
+并没有加载前面提到的所有配置文件。接下来设置环境变理`BASH_ENV`：
+
+{% highlight bash linenos %}
+user@remote > export BASH_ENV=~/.bashrc
+{% endhighlight %}
+
+再次执行`bash script.sh`，结果为：
+
+    @ ~/.bashrc
+    Hello World
+
+果然，~/.bashrc被加载，而它是由环境变量`BASH_ENV`设定的。
+
+### 用图来总结
+
+至此，四种模式下配置文件如何加载已经介绍完，因为涉及的配置文件有些多，我们再以两个图来更为直接的进行描述：
+
+借用这篇文章中的[图](http://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/)，对于bash而言，它会读取其所在列的内容，首先执行A，然后是B，C。而B1，B2和B3表示bash只会执行第一个存在的文件。
 
 +----------------+-----------+-----------+------+
 |                |Interactive|Interactive|Script|
@@ -102,271 +246,103 @@ http://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-b
 +----------------+-----------+-----------+------+
 |BASH_ENV        |           |           |  A   |
 +----------------+-----------+-----------+------+
-|                |           |           |      |
-+----------------+-----------+-----------+------+
-|                |           |           |      |
-+----------------+-----------+-----------+------+
-|~/.bash_logout  |    C      |           |      |
-+----------------+-----------+-----------+------+
 
-插个图
-Typically, most users will encounter a login shell only if either:
-* they logged in from a tty, not through a GUI
-* they logged in remotely, such as through ssh.
+[这篇文章](http://www.solipsys.co.uk/new/BashInitialisationFiles.html)给出了一个更直观的图：
 
-profile
+![Bash加载文件顺序](http://www.solipsys.co.uk/images/BashStartupFiles1.png)
 
-其实看名字就能了解大概了, profile 是某个用户唯一的用来设置环境变量的地方, 因为用户可以有多个 shell 比如 bash, sh, zsh 之类的, 但像环境变量这种其实只需要在统一的一个地方初始化就可以了, 而这就是 profile.
-bashrc
+在上图中，情况稍稍复杂一些，因为它使用了几个关于配置文件的参数。不过总体来说，和我们前面的讨论无异。
 
-bashrc 也是看名字就知道, 是专门用来给 bash 做初始化的比如用来初始化 bash 的设置, bash 的代码补全, bash 的别名, bash 的颜色. 以此类推也就还会有 shrc, zshrc 这样的文件存在了, 只是 bash 太常用了而已.
-
-### login, interactive
-execute /etc/profile
-IF ~/.bash_profile exists THEN
-    execute ~/.bash_profile
-ELSE
-    IF ~/.bash_login exist THEN
-        execute ~/.bash_login
-    ELSE
-        IF ~/.profile exist THEN
-            execute ~/.profile
-        END IF
-    END IF
-END IF
-#### 控制台login
-#### 远程login
-### login, non-interactive
-上面两种一样
-### non-login, interactive
-### non-login, non-interactive
 ### 典型模式总结
+
+为了更好的理清前面几种模式，下面我们总结一下一些典型的启动方式各属于什么模式：
+
+- 通过ssh登陆到远程主机：login + interactive
+- 远程执行脚本，如`ssh user@remote script.sh`：non-login + non-interactive
+- 远程执行脚本，同时请求控制台，如`ssh user@remote -t 'echo $PWD'`：non-login + interactive
+- 新启动一个shell进程，如运行`bash`：non-login + interactive
+- 执行脚本，如`bash script.sh`：non-login + non-interactive
+- 运行头部有`#!/usr/bin/env bash`的可执行文件，如`./executable`：non-login + non-interactive
+- 在图形化界面中打开terminal：
+ - Linux上: non-login + interactive
+ - Mac OS X上: login + interactive
+
+理解了login和interactive的含义之后，应该会很容易区分开。
+
 ### 实践建议
 
 ## 再次尝试
-仍然失败
-### bash的sh模式
-### 问题解决
-#!/bin/bash --login
 
-## 文件内容的建议
-http://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/
-http://superuser.com/questions/183870/difference-between-bashrc-and-bash-profile/183980#183980
+在理解bash的这些模式之后，我们再回头来看文章开头的问题，`ssh user@remote ~/myscript.sh`属于哪一种模式？也许你可以非常容易的回答出来：non-login + non-interactive模式。对于这种模式，bash会选择加载`$BASH_ENV`的值所对应的文件，于是我们设定：
 
------
-上面再遇到一个问题，启用hadoop时里面显示无法找到cleartool，但是我直接去一台机器上面去执行时，却能够找得到，调试了半天，最终定位到环境变量上。找到两篇文章：
-http://blog.javachen.com/2014/01/18/bash-problem-when-ssh-access/#
-http://blog.csdn.net/aeh129/article/details/8109940
-https://github.com/sstephenson/rbenv/wiki/Unix-shell-initialization
-把环境写到.bashrc里面去即可解决->待测试
-试了一下不行，原因是sh其实是软连接到bash上，而当bash以sh为名启动时，它的读取策略就不行了，所以这里必须要改变ssh的登陆sh，让它使用bash，而不是sh
-在脚本的最上面加上#!/bin/bash --login即可
-或者这样也可以，前提上test.sh上面是用的bash，而不是sh，ssh cnszn02x14 'export BASH_ENV="~/.bashrc" ; ~/test.sh'
-可以以此作为一篇博文来写，注意当sh是默认shell时
-
-1. 介绍问题来源
-2. 分析问题找到根源
-3. 介绍bash的几种工作方式，明确每种方式的代表方法：分为普通用户和root用户么？
-3.1 实验验证
-
-4. 当sh是默认shell时的工作方式
-5. 本机名为local，远程机用remote，用户都叫user，所以是ssh user@remote command
-
-login shell:
--sh
--bash
-
-https://github.com/sstephenson/rbenv/wiki/Unix-shell-initialization
-介绍一下login的流程
-login shell:
-/etc/profile
-~/.bash_profile->~./.bash_login->~/.profile只取第一个出现的
-注意：这里没有调用~/.bashrc，所以你应该一直在~/.bash_profile的最后source ~/.bashrc
-
-ssh一样
-
- ssh cnszn02x14 'BASH_ENV="~/.bashrc"  ~/test.sh'
- ssh cnszn02x14 'export BASH_ENV="~/.bashrc" ;  ~/test.sh'
-
-每种文件适合放什么内容：
-~/.profile
-~/.bashrc
------
-在Linux上工作的朋友很可能遇到过这样一种情况，当你用Vim编辑完一个文件时，运行`:wq`保存退出，突然蹦出一个错误：
-
-    E45: 'readonly' option is set (add ! to override)
-
-{{ more }}
-这表明文件是只读的，按照提示，加上`!`强制保存：`:w!`，结果又一个错误出现：
-
-    "readonly-file-name" E212: Can't open file for writing
-
-文件明明存在，为何提示无法打开？这错误又代表什么呢？查看文档`:help E212`：
-
-    For some reason the file you are writing to cannot be created or overwritten.
-    The reason could be that you do not have permission to write in the directory
-    or the file name is not valid.
-
-原来是可能没有权限造成的。此时你才想起，这个文件需要root权限才能编辑，而当前登陆的只是普通用户，在编辑之前你忘了使用`sudo`来启动Vim，所以才保存失败。于是为了防止修改丢失，你只好先把它保存为另外一个临时文件`temp-file-name`，然后退出Vim，再运行`sudo mv temp-file-name readonly-file-name`覆盖原文件。
-
-### 目录
-{:.no_toc}
-
-* Table of Contents Placeholder
-{:toc}
-
------
-
-但这样操作过于繁琐。而且如果只是想暂存此文件，还需要接着修改，则希望保留Vim的工作状态，比如编辑历史，buffer状态等等，该怎么办？能不能在不退出Vim的情况下获得root权限来保存这个文件？
-
-## 解决方案
-
-答案是可以，执行这样一条命令即可：
-
-    :w !sudo tee %
-
-接下来我们来分析这个命令为什么可以工作。首先查看文档`:help :w`，向下滚动一点可以看到：
-
-    							*:w_c* *:write_c*
-    :[range]w[rite] [++opt] !{cmd}
-    			Execute {cmd} with [range] lines as standard input
-    			(note the space in front of the '!').  {cmd} is
-    			executed like with ":!{cmd}", any '!' is replaced with
-    			the previous command |:!|.
-    
-    The default [range] for the ":w" command is the whole buffer (1,$)
-
-把这个使用方法对应前面的命令，如下所示：
-
-    :       w               !sudo tee %
-    |       |               |  |
-    :[range]w[rite] [++opt] !{cmd}
-
-我们并未指定`range`，参见帮助文档最下面一行，当`range`未指定时，默认情况下是整个文件。此外，这里也没有指定`opt`。
-
-### Vim中执行外部命令
-
-接下来是一个叹号`!`，它表示其后面部分是外部命令，即`sudo tee %`。文档中说的很清楚，这和直接执行`:!{cmd}`是一样的效果。后者的作用是打开shell执行一个命令，比如，运行`:!ls`，会显示当前工作目录下的所有文件，这非常有用，任何可以在shell中执行的命令都可以在不退出Vim的情况下运行，并且可以将结果读入到Vim中来。试想，如果你要在Vim中插入当前工作路径或者当前工作路径下的所有文件名，你可以运行：
-
-    :r !pwd或:r !ls
-
-此时所有的内容便被读入至Vim，而不需要退出Vim，执行命令，然后拷贝粘贴至Vim中。有了它，Vim可以自由的操作shell而无需退出。
-
-### 命令的另一种表示形式
-
-再看前面的文档:
-
-    Execute {cmd} with [range] lines as standard input
-
-所以实际上这个`:w`并未真的保存当前文件，就像执行`:w new-file-name`时，它将当前文件的内容保存到另外一个`new-file-name`的文件中，在这里它相当于一个**另存为**，而不是**保存**。它将当前文档的内容写到后面`cmd`的标准输入中，再来执行`cmd`，所以整个命令可以转换为一个具有相同功能的普通shell命令：
-
-    $ cat readonly-file-name | sudo tee %
-
-这样看起来”正常”些了。其中`sudo`很好理解，意为切换至root执行后面的命令，`tee`和`%`是什么呢？
-
-### %的意义
-
-我们先来看`%`，执行`:help cmdline-special`可以看到：
-
-    In Ex commands, at places where a file name can be used, the following
-    characters have a special meaning.  These can also be used in the expression
-    function expand() |expand()|.
-    	%	Is replaced with the current file name.		  *:_%* *c_%*
-
-在执行外部命令时，`%`会扩展成当前文件名，所以上述的`cmd`也就成了`sudo tee readonly-file-name`。此时整个命令即：
-
-    $ cat readonly-file-name | sudo tee readonly-file-name
-
-**注意**：在另外一个地方我们也经常用到`%`，没错，替换。但是那里`%`的作用不一样，执行`:help :%`查看文档：
-
-    Line numbers may be specified with:		*:range* *E14* *{address}*
-    	{number}	an absolute line number
-    	...
-    	%		equal to 1,$ (the entire file)		  *:%*
-
-在替换中，`%`的意义是代表整个文件，而不是文件名。所以对于命令`:%s/old/new/g`，它表示的是替换整篇文档中的old为new，而不是把文件名中的old换成new。
-
-### tee的作用
-
-现在只剩一个难点: tee。它究竟有何用？[维基百科](http://en.wikipedia.org/wiki/Tee_%28command%29)上对其有一个详细的解释，你也可以查看man page。下面这幅图很形象的展示了`tee`是如何工作的：
-
-![tee的作用](/img/posts/tee.png)
-
-`ls -l`的输出经过管道传给了`tee`，后者做了两件事，首先拷贝一份数据到文件`file.txt`，同时再拷贝一份到其标准输出。数据再次经过管道传给`less`的标准输入，所以它在不影响原有管道的基础上对数据作了一份拷贝并保存到文件中。看上图中间部分，它很像大写的字母**T**，给数据流动增加了一个分支，`tee`的名字也由此而来。
-
-现在上面的命令就容易理解了，`tee`将其标准输入中的内容写到了`readonly-file-name`中，从而达到了更新只读文件的目的。当然这里其实还有另外一半数据：`tee`的标准输出，但因为后面没有跟其它的命令，所以这份输出相当于被抛弃。当然也可以在后面补上`> /dev/null`，以显式的丢弃标准输出，但是这对整个操作没有影响，而且会增加输入的字符数，因此只需上述命令即可。
-
-### 命令执行之后
-
-运行完上述命令后，会出现下面的提示：
-
-    W12: Warning: File "readonly-file-name" has changed and the buffer was changed in Vim as well
-    See ":help W12" for more info.
-    [O]K, (L)oad File:
-
-Vim提示文件更新，询问是确认还是重新加载文件。建议直接输入`O`，因为这样可以保留Vim的工作状态，比如编辑历史，buffer等，撤消等操作仍然可以继续。而如果选择`L`，文件会以全新的文件打开，所有的工作状态便丢失了，此时无法执行撤消，buffer中的内容也被清空。
-
-## 更简单的方案：映射
-
-上述方式非常完美的解决了文章开始提出的问题，但毕竟命令还是有些长，为了避免每次输入一长串的命令，可以将它[映射](http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work/2600852#2600852)为一个简单的命令加到`.vimrc`中：
-
-{% highlight vim linenos %}
-" Allow saving of files as sudo when I forgot to start vim using sudo.
-cmap w!! w !sudo tee > /dev/null %
+{% highlight bash linenos %}
+user@local > export BASH_ENV=/etc/profile
 {% endhighlight %}
 
-这样，简单的运行`:w!!`即可。命令后半部分`> /dev/null`在前面已经解释过，作用为显式的丢掉标准输出的内容。
+然后执行上面的命令，发现错误依旧。这是怎么回事？仔细查看之后才发现在脚本`myscript.sh`的第一行有一句`#!/usr/bin/env sh`，注意看，它和前面提到的`#!/usr/bin/env bash`不一样，我们先尝试把它改成`#!/usr/bin/env bash`，再次执行，发现错误消失了。这与我们前面的分析一致。
 
-## 另一种思路
+现在撤消刚才的修改，第一行的这个语句有什么用？同样查看`man bash`：
 
-至此，一个比较完美但很tricky的方案已经完成。你可能会问，为什么不用下面这样更常见的命令呢？这不是更容易理解，更简单一些么？
+> If the program is a file beginning with #!, the remainder of the first line specifies an interpreter for the program.
 
-    :w !sudo cat > %
+它表示这个文件的解释器，即用什么程序来打开此文件。而这里不是`bash`，而是`sh`，那么我们前面讨论的都不复有效了，真糟糕。但是请耐心，我们来看看这个`sh`的路径，运行`which sh`：
 
-### 重定向的问题
-
-我们来分析一遍，像前面一样，它可以被转换为相同功能的shell命令：
-
-    $ cat readonly-file-name | sudo cat > %
-
-这条命令看起来一点问题没有，可一旦运行，又会出现另外一个错误：
-
-    /bin/sh: readonly-file-name: Permission denied
-    
-    shell returned 1
-
-这是怎么回事？不是明明加了`sudo`么，为什么还提示说没有权限？稍安勿躁，原因在于重定向，它是由shell执行的，在一切命令开始之前，shell便会执行重定向操作，所以重定向并未受`sudo`影响，而当前的shell本身也是以普通用户身份启动，也没有权限写此文件，因此便有了上面的错误。
-
-### 重定向方案
-
-[这里](http://stackoverflow.com/questions/82256/how-do-i-use-sudo-to-redirect-output-to-a-location-i-dont-have-permission-to-wr)介绍了几种解决重定向无权限错误的方法，当然除了`tee`方案以外，还有一种比较方便的方案：以`sudo`打开一个shell，然后在该具有root权限的shell中执行含重定向的命令，如：
-
-    :w !sudo sh -c 'cat > %'
-
-可是这样执行时，由于单引号的存在，所以在Vim中`%`并不会展开，它被原封不动的传给了shell，而在shell中，一个单独的`%`相当于`nil`，所以文件被重定向到了`nil`，所有内容丢失，保存文件失败。
-
-既然是由于`%`没有展开导致的错误，那么试着将单引号`'`换成双引号`"`再试一次：
-
-    :w !sudo sh -c "cat > %"
-
-成功！这是因为在将命令传到shell去之前，`%`已经被扩展为当前的文件名。有关单引号和双引号的区别可以参考[这里](http://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash)，简单的说就是单引号会将其内部的内容原封不动的传给命令，但是双引号会展开一些内容，比如变量，转义字符等。
-
-当然，也可以像前面一样将它映射为一个简单的命令并添加到.vimrc中：
-
-{% highlight vim linenos %}
-" Allow saving of files as sudo when I forgot to start vim using sudo.
-cmap w!! w !sudo sh -c "cat > %"
+{% highlight bash linenos %}
+user@remote > ll `which sh`
+lrwxrwxrwx 1 root root 9 Apr 25  2014 /usr/bin/sh -> /bin/bash
 {% endhighlight %}
 
-注意：这里不再需要把输出重定向到`/dev/null`中。
+原来`sh`只是`bash`的一个软链接，既然如此，`BASH_ENV`应该是有效的啊？为何此处无效？带着疑问我们再次查看`man bash`，同样在__INVOCATION__一节的下部看到了这样的说明：
+
+>       If  bash is invoked with the name sh, it tries to mimic the startup behavior of historical versions of sh
+>       as closely as possible, while conforming to the POSIX standard as well.  When invoked as  an  interactive
+>       login  shell,  or  a non-interactive shell with the --login option, it first attempts to read and execute
+>       commands from /etc/profile and ~/.profile, in that order.  The --noprofile option may be used to  inhibit
+>       this  behavior.   When invoked as an interactive shell with the name sh, bash looks for the variable ENV,
+>       expands its value if it is defined, and uses the expanded value as the name of a file to  read  and  exe-
+>       cute.   Since  a shell invoked as sh does not attempt to read and execute commands from any other startup
+>       files, the --rcfile option has no effect.  A non-interactive shell invoked with  the  name  sh  does  not
+>       attempt  to  read  any other startup files.  When invoked as sh, bash enters posix mode after the startup
+>       files are read.
+
+简而言之，当bash以是`sh`命启动时，即我们此处的情况，`bash`会尽可能的模仿`sh`，所以配置文件的加载变成了下面这样：
+
+- interactive + login: 读取/etc/profile和~/.profile
+- non-interactive + login: 同上
+- interactive + non-login: 读取`ENV`环境变量对应的文件
+- non-interactive + non-login: 不读取任何文件
+
+这样便可以解释为什么出错了，因为我们属于non-interactive + non-login，所以不会读取任何文件，故而即使设置了`BASH_ENV`也不会起作用了。
+
+我们还可以将参数加到第一行中，如`#!/bin/bash --login`，如此一来，`bash`便会强制为login shell。
+
+## 配置文件建议
+
+我们再次来总结一下前面提到的所有配置文件，总共有以下几种：
+
+- /etc/profile
+- ~/.bash_profile
+- ~/.bash_login
+- ~/.profile
+- /etc/bash.bashrc
+- ~/.bashrc
+- $BASH_ENV
+- $ENV
+
+会不会有点晕，为什么会有这么多的配置文件？究竟每个文件里面应该包含什么配置，`PATH`应该在哪？提示符应该在哪配置？等等。下面是一些常见的建议。（这里只讨论属于用户个人的配置文件）
+
+- ~/.bash_profile：应该尽可能的简单，通常只在这里加载.profile和.bashrc(注意顺序)
+- ~/.bash_login：在前面讨论过，尽量别用它
+- ~/.profile：此文件用于login shell，所有你想在整个用户会话期间都有效的内容都应该放置于此，比如启动进程，环境变量等
+- ~/.bashrc：只放置与bash有关的命令，所有与交互有关的命令都应该出现在此，比如bash的补全、alias、颜色、提示符等等。特别注意：别在这里输出任何内容（我们前面只是为了演示）
 
 ## 写在结尾
 
-至此，借助Vim强大的灵活性，实现了两种方案，可以在以普通用户启动的Vim中保存需root权限的文件。两者的原理类似，都是利用了Vim可以执行外部命令这一特性，区别在于使用不同的shell命令。如果你还有其它的方案，欢迎给我留言。
+至此，我们详细的讨论完了bash的几种工作模式，并且给出了配置文件内容的建议。通过这些模式的介绍，本文开始遇到的问题也很容易的得到了解决。以前虽然一直把完bash，但真的不清楚里面包含了如此多的内容，同时感受到Linux的文档的确做得非常细致，完全在不需要其它的安装包的情况下，你就可以得到一个非常完善的开发环境，这也曾是Eric S. Raymond在其著作《UNIX编程艺术》中提到的UNIX天生是一个非常完善的开发机器。本文几乎所有的内容你都可以通过阅读man page得到，不可不为之叹服。
 
 (全文完)
 
 feihu
 
-2014.07.30 于 Shenzhen
+2014.11.10 于 Shenzhen
 
