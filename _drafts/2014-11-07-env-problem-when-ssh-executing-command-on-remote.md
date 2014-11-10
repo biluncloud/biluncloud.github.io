@@ -1,16 +1,16 @@
 ---
 layout: post
 title:  ssh连接远程主机执行脚本的环境变量问题
-description: ssh连接远程主机直接执行脚本时，会出现脚本中的命令找不到的问题，本文深入分析了问题的根源，并详细讲解了bash的四种工作模式，以及在这几种模式下bash以什么顺序加载配置文件
-tags:   Linux，ssh, bash, sh, login, interactive, /etc/profile, ~/.bash_profile, ~/.bash_login, ~/.profile, /etc/bash.bashrc, ~/.bashrc
+description: ssh连接远程主机直接执行脚本时，会出现脚本中的命令找不到的问题，本文深入分析了问题的根源，并详细讲解了bash的四种工作模式，以及在这几种模式下bash如何加载配置文件
+tags:   Linux，ssh, bash, sh, login, interactive, /etc/profile, ~/.bash_profile, ~/.bash_login, ~/.profile, /etc/bash.bashrc, ~/.bashrc, BASH_ENV
 image:  vim-sudo.png
 ---
 
-近日在使用ssh命令`ssh user@remote ~/myscript.sh`登陆到远程机器remote上执行命令时，遇到一个奇怪的问题：
+近日在使用ssh命令`ssh user@remote ~/myscript.sh`登陆到远程机器remote上执行脚本时，遇到一个奇怪的问题：
 
     ~/myscript.sh: line n: app: command not found
 
-app是一个新安装的程序，安装路径明明已通过/etc/profile配置文件被加到环境变量中，为何会找不到？如果直接登陆机器remote并执行`~/myscript.sh`时，app程序可以找到并顺利完成。但为什么使用了ssh远程执行同样的脚本就出错了呢？两种方式执行脚本到底有何不同？请跟随我一起来揭开谜底。
+app是一个新安装的程序，安装路径明明已通过`/etc/profile`配置文件被加到环境变量中，为何会找不到？如果直接登陆机器remote并执行`~/myscript.sh`时，app程序可以找到并顺利执行。但为什么使用了ssh远程执行同样的脚本就出错了呢？两种方式执行脚本到底有何不同？如果你也心存疑问，请跟随我一起来展开分析之旅。
 
 {{ more }}
 
@@ -26,40 +26,40 @@ __说明__，本文所使用的机器是：SUSE Linux Enterprise。
 
 ## 问题定位
 
-这看起来像是环境变量引起的问题。于是我在这条命令之前加了一句：`which app`，查看app的安装路径。在remote本机上执行脚本时，它会得到app正确的安装路径。但再次用ssh来执行时，却遇到下面的问题：
+这看起来像是环境变量引起的问题，为了证实，我在这条命令之前加了一句：`which app`，来查看app的安装路径。在remote本机上执行脚本时，它会打印出app正确的安装路径。但再次用ssh来执行时，却遇到下面的错误：
 
     which: no app in (/usr/bin:/bin:/usr/sbin:/sbin)
 
-这很奇怪，怎么括号中的环境变量没有了`app`程序的安装路径？再次在脚本中加入`echo $PATH`并以ssh执行，这才发现，环境变量是系统初始化时的结果：
+这很奇怪，怎么括号中的环境变量没有了`app`程序的安装路径？不是已通过`/etc/profile`设置到`PATH`中了？再次在脚本中加入`echo $PATH`并以ssh执行，这才发现，环境变量仍是系统初始化时的结果：
 
     /usr/bin:/bin:/usr/sbin:/sbin
 
-这证明/etc/profile根本没有被调用。为什么？是ssh命令的问题么？
+这证明`/etc/profile`根本没有被调用。为什么？是ssh命令的问题么？
 
-我又尝试了将上面的ssh分解成下面两步：
+随后我又尝试了将上面的ssh分解成下面两步：
 
     user@local > ssh user@remote    # 先远程登陆到remote上
-    user@remote> ~/myscript.sh      # 然后执行脚本
+    user@remote> ~/myscript.sh      # 然后在返回的shell中执行脚本
 
-结果竟然成功了。那么ssh的这两种方式执行的命令有何不同？带着这个问题去查询了`man ssh`，可以得到：
+结果竟然成功了。那么ssh以这两种方式执行的命令有何不同？带着这个问题去查询了`man ssh`：
 
 > If command is specified, it is executed on the remote host instead of a login shell.
 
-这说明指定command的情况下命令会在远程主机上执行，返回结果后退出。而未指定时，会直接返回一个登陆的shell。但到这里还是无法理解，直接在远程主机上执行和返回一个登陆的shell再执行有什么区别？即使在远程主机上执行不也是通过shell来执行的么？难道是这两种方式使用的shell有什么不同？
+这说明在指定命令的情况下，命令会在远程主机上执行，返回结果后退出。而未指定时，ssh会直接返回一个登陆的shell。但到这里还是无法理解，直接在远程主机上执行和在返回的登陆shell中执行有什么区别？即使在远程主机上执行不也是通过shell来执行的么？难道是这两种方式使用的shell有什么不同？
 
-因为我们通常使用的是`bash`，所以我又去查询了`man bash`，才得到了答案。
+暂时还没有头绪，但隐隐感到应该与shell有关。因为我通常使用的是`bash`，所以又去查询了`man bash`，才得到了答案。
 
 ## bash的四种模式
 
-在man page的__INVOCATION__一节讲述了`bash`的四种模式，`bash`会依据这四种模式而选择加载不同的配置文件，而且加载的顺序也有所不同。ssh问题的答案就在这几种模式当中，所以在我们揭开谜底之前先来介绍这些模式。
+在man page的__INVOCATION__一节讲述了`bash`的四种模式，`bash`会依据这四种模式而选择加载不同的配置文件，而且加载的顺序也有所不同。本文ssh问题的答案就存在于这几种模式当中，所以在我们揭开谜底之前先来介绍这些模式。
 
-### interactive, login shell
+### interactive + login shell
 
 第一种模式是交互式的登陆shell，这里面有两个概念需要解释：interactive和login。我们先来介绍什么是login：
 
 login故名思义，即登陆，所以login shell是指用户以非图形化界面或者以ssh登陆到机器上时获得的shell，简单些说就是需要输入用户名和密码的shell。因此一般来说，启动机器后用户获得的第一个shell就是login shell。
 
-interactive意为交互式，这也很好理解，interactive shell会有一个提示符，并且它的标准输入，输出和错误输出都会显示在控制台上。所以一般来说只要是需要用户交互的，即一个命令一个命令的输入的shell都是交互式的shell，而如果无须用户交互，通常来说`bash script.sh`此类就是非交互式的shell，因为执行完命令它便退出，不再需要与用户进行交互。
+interactive意为交互式，这也很好理解，interactive shell会有一个提示符，并且它的标准输入，输出和错误输出都会显示在控制台上。所以一般来说只要是需要用户交互的，即一个命令一个命令的输入的shell都是交互式的shell。而如果无须用户交互，它便是non-interactive shell。通常来说如`bash script.sh`此类执行脚本的命令就会启动一个非交互式的shell，它不需要与用户进行交互，执行完后它便会退出启动的shell。
 
 那么这第一种模式最简单的两个例子便是：
 
@@ -68,7 +68,7 @@ interactive意为交互式，这也很好理解，interactive shell会有一个�
 
 #### 加载配置文件
 
-这种模式下，shell首先加载/etc/profile，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
+这种模式下，shell首先加载`/etc/profile`，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
 
 1. ~/.bash_profile
 2. ~/.bash_login
