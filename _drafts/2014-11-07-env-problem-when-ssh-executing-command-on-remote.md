@@ -51,7 +51,7 @@ __说明__，本文所使用的机器是：SUSE Linux Enterprise。
 
 ## bash的四种模式
 
-在man page的__INVOCATION__一节讲述了`bash`的四种模式，`bash`会依据这四种模式而选择加载不同的配置文件，而且加载的顺序也有所不同。本文ssh问题的答案就存在于这几种模式当中，所以在我们揭开谜底之前先来介绍这些模式。
+在man page的**INVOCATION**一节讲述了`bash`的四种模式，`bash`会依据这四种模式而选择加载不同的配置文件，而且加载的顺序也有所不同。本文ssh问题的答案就存在于这几种模式当中，所以在我们揭开谜底之前先来介绍这些模式。
 
 ### interactive + login shell
 
@@ -101,7 +101,6 @@ Cameron Newham和Bill Rosenblatt的大作《[Learning the bash Shell, 2nd Editio
 
 原来一切都是为了兼容，这么设计是为了更好的应付在不同shell之间切换的场景。因为bash完全兼容Bourne shell，所以.bash_profile和.profile可以很好的处理bash和Bourne shell之间的切换。但是由于C shell和bash之间的基本语法存在着差异，作者认为引入.bash_login并不是个好主意。所以我们可以得出这样的最佳实践：
 
-#TODO
 1. 应该尽量杜绝使用.bash_login，如果已经创建，那么需要创建.bash_profile来屏蔽它被调用
 2. .bash_profile适合放置bash的专属命令，可以在其最后读取.profile，如此一来，login shell就可以同时读取两个文件的内容了
 
@@ -228,24 +227,24 @@ user@remote > export BASH_ENV=~/.bashrc
 
 借用这篇文章中的[图](http://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/)，对于bash而言，它会读取其所在列的内容，首先执行A，然后是B，C。而B1，B2和B3表示bash只会执行第一个存在的文件。
 
-+----------------+-----------+-----------+------+
-|                |Interactive|Interactive|Script|
-|                |login      |non-login  |      |
-+----------------+-----------+-----------+------+
-|/etc/profile    |   A       |           |      |
-+----------------+-----------+-----------+------+
-|/etc/bash.bashrc|           |    A      |      |
-+----------------+-----------+-----------+------+
-|~/.bashrc       |           |    B      |      |
-+----------------+-----------+-----------+------+
-|~/.bash_profile |   B1      |           |      |
-+----------------+-----------+-----------+------+
-|~/.bash_login   |   B2      |           |      |
-+----------------+-----------+-----------+------+
-|~/.profile      |   B3      |           |      |
-+----------------+-----------+-----------+------+
-|BASH_ENV        |           |           |  A   |
-+----------------+-----------+-----------+------+
+    +----------------+-----------+-----------+------+
+    |                |Interactive|Interactive|Script|
+    |                |login      |non-login  |      |
+    +----------------+-----------+-----------+------+
+    |/etc/profile    |   A       |           |      |
+    +----------------+-----------+-----------+------+
+    |/etc/bash.bashrc|           |    A      |      |
+    +----------------+-----------+-----------+------+
+    |~/.bashrc       |           |    B      |      |
+    +----------------+-----------+-----------+------+
+    |~/.bash_profile |   B1      |           |      |
+    +----------------+-----------+-----------+------+
+    |~/.bash_login   |   B2      |           |      |
+    +----------------+-----------+-----------+------+
+    |~/.profile      |   B3      |           |      |
+    +----------------+-----------+-----------+------+
+    |BASH_ENV        |           |           |  A   |
+    +----------------+-----------+-----------+------+
 
 [这篇文章](http://www.solipsys.co.uk/new/BashInitialisationFiles.html)给出了一个更直观的图：
 
@@ -269,8 +268,6 @@ user@remote > export BASH_ENV=~/.bashrc
 
 理解了login和interactive的含义之后，应该会很容易区分开。
 
-### 实践建议
-
 ## 再次尝试
 
 在理解bash的这些模式之后，我们再回头来看文章开头的问题，`ssh user@remote ~/myscript.sh`属于哪一种模式？也许你可以非常容易的回答出来：non-login + non-interactive模式。对于这种模式，bash会选择加载`$BASH_ENV`的值所对应的文件，于是我们设定：
@@ -292,18 +289,9 @@ user@remote > ll `which sh`
 lrwxrwxrwx 1 root root 9 Apr 25  2014 /usr/bin/sh -> /bin/bash
 {% endhighlight %}
 
-原来`sh`只是`bash`的一个软链接，既然如此，`BASH_ENV`应该是有效的啊？为何此处无效？带着疑问我们再次查看`man bash`，同样在__INVOCATION__一节的下部看到了这样的说明：
+原来`sh`只是`bash`的一个软链接，既然如此，`BASH_ENV`应该是有效的啊？为何此处无效？带着疑问我们再次查看`man bash`，同样在**INVOCATION**一节的下部看到了这样的说明：
 
->       If  bash is invoked with the name sh, it tries to mimic the startup behavior of historical versions of sh
->       as closely as possible, while conforming to the POSIX standard as well.  When invoked as  an  interactive
->       login  shell,  or  a non-interactive shell with the --login option, it first attempts to read and execute
->       commands from /etc/profile and ~/.profile, in that order.  The --noprofile option may be used to  inhibit
->       this  behavior.   When invoked as an interactive shell with the name sh, bash looks for the variable ENV,
->       expands its value if it is defined, and uses the expanded value as the name of a file to  read  and  exe-
->       cute.   Since  a shell invoked as sh does not attempt to read and execute commands from any other startup
->       files, the --rcfile option has no effect.  A non-interactive shell invoked with  the  name  sh  does  not
->       attempt  to  read  any other startup files.  When invoked as sh, bash enters posix mode after the startup
->       files are read.
+> If  bash is invoked with the name sh, it tries to mimic the startup behavior of historical versions of sh as closely as possible, while conforming to the POSIX standard as well.  When invoked as  an  interactive login  shell,  or  a non-interactive shell with the --login option, it first attempts to read and execute commands from /etc/profile and ~/.profile, in that order.  The --noprofile option may be used to  inhibit this  behavior.   When invoked as an interactive shell with the name sh, bash looks for the variable ENV, expands its value if it is defined, and uses the expanded value as the name of a file to  read  and  execute.   Since  a shell invoked as sh does not attempt to read and execute commands from any other startup files, the --rcfile option has no effect.  A non-interactive shell invoked with  the  name  sh  does  not attempt  to  read  any other startup files.  When invoked as sh, bash enters posix mode after the startup files are read.
 
 简而言之，当bash以是`sh`命启动时，即我们此处的情况，`bash`会尽可能的模仿`sh`，所以配置文件的加载变成了下面这样：
 

@@ -12,7 +12,7 @@ relative_permalinks: false
 excerpt_separator: "{{ more }}"
 
 safe:     true
-pygments: true
+highlighter: pygments
 markdown: 'kramdown'
 timezone: 'Asia/Shanghai'
 
