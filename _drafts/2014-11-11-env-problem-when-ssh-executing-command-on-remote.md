@@ -3,7 +3,7 @@ layout: post
 title:  ssh连接远程主机执行脚本的环境变量问题
 description: ssh连接远程主机直接执行脚本时，会出现脚本中的命令找不到的问题，本文深入分析了问题的根源，并详细讲解了bash的四种工作模式，以及在这几种模式下bash如何加载配置文件
 tags:   Linux，ssh, bash, sh, login, interactive, /etc/profile, ~/.bash_profile, ~/.bash_login, ~/.profile, /etc/bash.bashrc, ~/.bashrc, BASH_ENV
-image:  vim-sudo.png
+image:  ssh.png
 ---
 
 近日在使用ssh命令`ssh user@remote ~/myscript.sh`登陆到远程机器remote上执行脚本时，遇到一个奇怪的问题：
@@ -331,7 +331,7 @@ lrwxrwxrwx 1 root root 9 Apr 25  2014 /usr/bin/sh -> /bin/bash
 
 ## 写在结尾
 
-至此，我们详细的讨论完了bash的几种工作模式，并且给出了配置文件内容的建议。通过这些模式的介绍，本文开始遇到的问题也很容易的得到了解决。以前虽然一直使用bash，但真的不清楚里面包含了如此多的内容。同时感受到Linux的文档的确做得非常细致，在完全不需要其它安装包的情况下，你就可以得到一个非常完善的开发环境，这也曾是Eric S. Raymond在其著作《UNIX编程艺术》中提到的：UNIX天生是一个非常完善的开发机器。本文几乎所有的内容你都可以通过阅读man page得到。
+至此，我们详细的讨论完了bash的几种工作模式，并且给出了配置文件内容的建议。通过这些模式的介绍，本文开始遇到的问题也很容易的得到了解决。以前虽然一直使用bash，但真的不清楚里面包含了如此多的内容。同时感受到Linux的文档的确做得非常细致，在完全不需要其它安装包的情况下，你就可以得到一个非常完善的开发环境，这也曾是Eric S. Raymond在其著作《UNIX编程艺术》中提到的：UNIX天生是一个非常完善的开发机器。本文几乎所有的内容你都可以通过阅读man page得到。最后，希望在这样一个被妖魔化的特殊日子里，这篇文章能够为你带去一丝帮助。
 
 (全文完)
 
