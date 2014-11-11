@@ -63,16 +63,16 @@ interactive意为交互式，这也很好理解，interactive shell会有一个�
 
 那么此模式最简单的两个例子为：
 
-1. 用户直接登陆到机器获得的第一个shell
-2. 用户使用`ssh user@remote`获得的shell
+- 用户直接登陆到机器获得的第一个shell
+- 用户使用`ssh user@remote`获得的shell
 
 #### 加载配置文件
 
 这种模式下，shell首先加载`/etc/profile`，然后再尝试依次去加载下列三个配置文件之一，**一旦找到其中一个便不再接着寻找**：
 
-1. ~/.bash_profile
-2. ~/.bash_login
-3. ~/.profile
+- ~/.bash_profile
+- ~/.bash_login
+- ~/.profile
 
 下面给出这个加载过程的伪代码：
 
@@ -102,7 +102,7 @@ user@remote > cat ~/.profile
 echo @ ~/.profile
 {% endhighlight %}
 
-然后打开一个login shell，注意，为方便起见，这里使用`bash -l`命令，会打开一个login shell，在`man bash`中可以看到此参数的解释：
+然后打开一个login shell，注意，为方便起见，这里使用`bash -l`命令，它会打开一个login shell，在`man bash`中可以看到此参数的解释：
 
 > -l        Make bash act as if it had been invoked as a login shell 
 
@@ -111,12 +111,16 @@ echo @ ~/.profile
     @ /etc/profile
     @ /home/user/.bash_profile
 
-果然一致，首先会加载全局的配置文件`/etc/profile`，然后去查找`~/.bash_profile`，因为已经存在，所以剩下的两个文件不再会被查找。接下来移除`~/.bash_profile`，得到结果如下：
+果然与文档一致，bash首先会加载全局的配置文件`/etc/profile`，然后去查找`~/.bash_profile`，因为其已经存在，所以剩下的两个文件不再会被查找。
+
+接下来移除`~/.bash_profile`，启动login shell得到结果如下：
 
     @ /etc/profile
     @ /home/user/.bash_login
 
-因为没有了`~/.bash_profile`的屏蔽，`~/.bash_login`被加载，但最后一个`~/.profile`仍未加载。再次移除`~/.bash_login`，结果为：
+因为没有了`~/.bash_profile`的屏蔽，所以`~/.bash_login`被加载，但最后一个`~/.profile`仍被忽略。
+
+再次移除`~/.bash_login`，启动login shell的输出结果为：
 
     @ /etc/profile
     @ /home/user/.profile
@@ -133,14 +137,14 @@ echo @ ~/.profile
 
 Cameron Newham和Bill Rosenblatt在他们的著作《[Learning the bash Shell, 2nd Edition](http://book.douban.com/subject/3296982/)》的59页解释了原因：
 
->     bash allows two synonyms for .bash_profile: .bash_login, derived from the C shell's file named .login, and .profile, derived from the Bourne shell and Korn shell files named .profile. Only one of these three is read when you log in. If .bash_profile doesn't exist in your home directory, then bash will look for .bash_login. If that doesn't exist it will look for .profile.
+> bash allows two synonyms for .bash_profile: .bash_login, derived from the C shell's file named .login, and .profile, derived from the Bourne shell and Korn shell files named .profile. Only one of these three is read when you log in. If .bash_profile doesn't exist in your home directory, then bash will look for .bash_login. If that doesn't exist it will look for .profile.
 > 
->     One advantage of bash's ability to look for either synonym is that you can retain your .profile if you have been using the Bourne shell. If you need to add bash-specific commands, you can put them in .bash_profile followed by the command source .profile. When you log in, all the bash-specific commands will be executed and bash will source .profile, executing the remaining commands. If you decide to switch to using the Bourne shell you don't have to modify your existing files. A similar approach was intended for .bash_login and the C shell .login, but due to differences in the basic syntax of the shells, this is not a good idea.
+> One advantage of bash's ability to look for either synonym is that you can retain your .profile if you have been using the Bourne shell. If you need to add bash-specific commands, you can put them in .bash_profile followed by the command source .profile. When you log in, all the bash-specific commands will be executed and bash will source .profile, executing the remaining commands. If you decide to switch to using the Bourne shell you don't have to modify your existing files. A similar approach was intended for .bash_login and the C shell .login, but due to differences in the basic syntax of the shells, this is not a good idea.
 
 原来一切都是为了兼容，这么设计是为了更好的应付在不同shell之间切换的场景。因为bash完全兼容Bourne shell，所以`.bash_profile`和`.profile`可以很好的处理bash和Bourne shell之间的切换。但是由于C shell和bash之间的基本语法存在着差异，作者认为引入`.bash_login`并不是个好主意。所以由此我们可以得出这样的最佳实践：
 
-1. 应该尽量杜绝使用`.bash_login`，如果已经创建，那么需要创建`.bash_profile`来屏蔽它被调用
-2. `.bash_profile`适合放置bash的专属命令，可以在其最后读取`.profile`，如此一来，便可以很好的在Bourne shell和bash之间切换了
+- 应该尽量杜绝使用`.bash_login`，如果已经创建，那么需要创建`.bash_profile`来屏蔽它被调用
+- `.bash_profile`适合放置bash的专属命令，可以在其最后读取`.profile`，如此一来，便可以很好的在Bourne shell和bash之间切换了
 
 ### non-interactive + login shell
 
@@ -186,8 +190,8 @@ echo @ ~/.bashrc
 
 最后一种模式为非交互非登陆的shell，创建这种shell典型有两种方式：
 
-1. bash script.sh
-2. ssh user@remote command
+- bash script.sh
+- ssh user@remote command
 
 这两种都是创建一个shell，执行完脚本之后便退出，不再需要与用户交互。
 
@@ -246,7 +250,7 @@ user@remote > export BASH_ENV=~/.bashrc
 
 上图只给出了三种模式，原因是第一种login实际上已经包含了两种，因为这两种模式下对配置文件的加载是一致的。
 
-[这篇文章](http://www.solipsys.co.uk/new/BashInitialisationFiles.html)给出了一个更直观的图：
+另外一篇[文章](http://www.solipsys.co.uk/new/BashInitialisationFiles.html)给出了一个更直观的图：
 
 ![Bash加载文件顺序](http://www.solipsys.co.uk/images/BashStartupFiles1.png)
 
@@ -277,20 +281,20 @@ user@remote > export BASH_ENV=~/.bashrc
 user@local > export BASH_ENV=/etc/profile
 {% endhighlight %}
 
-然后执行上面的命令，但是很遗憾，发现错误依旧存在。这是怎么回事？别着急，这并不是我们前面的介绍出错了。仔细查看之后才发现脚本`myscript.sh`的第一行为`#!/usr/bin/env sh`，注意看，它和前面提到的`#!/usr/bin/env bash`不一样，可能就是这里出了问题。我们先尝试把它改成`#!/usr/bin/env bash`，再次执行，错误果然消失了，这与我们前面的分析一致。
+然后执行上面的命令，但是很遗憾，发现错误依旧存在。这是怎么回事？别着急，这并不是我们前面的介绍出错了。仔细查看之后才发现脚本`myscript.sh`的第一行为`#!/usr/bin/env sh`，注意看，它和前面提到的`#!/usr/bin/env bash`不一样，可能就是这里出了问题。我们先尝试把它改成`#!/usr/bin/env bash`，再次执行，错误果然消失了，这与我们前面的分析结果一致。
 
 第一行的这个语句有什么用？设置成sh和bash有什么区别？带着这些疑问，再来查看`man bash`：
 
 > If the program is a file beginning with #!, the remainder of the first line specifies an interpreter for the program.
 
-它表示这个文件的解释器，即用什么程序来打开此文件，就好比Windows上双击一个文件时会以什么程序打开一样。因为这里不是`bash`，而是`sh`，那么我们前面讨论的都不复有效了，真糟糕。我们来看看这个`sh`的路径：
+它表示这个文件的解释器，即用什么程序来打开此文件，就好比Windows上双击一个文件时会以什么程序打开一样。因为这里不是bash，而是sh，那么我们前面讨论的都不复有效了，真糟糕。我们来看看这个sh的路径：
 
 {% highlight bash linenos %}
 user@remote > ll `which sh`
 lrwxrwxrwx 1 root root 9 Apr 25  2014 /usr/bin/sh -> /bin/bash
 {% endhighlight %}
 
-原来sh只是bash的一个软链接，既然如此，`BASH_ENV`应该是有效的啊？为何此处无效？还是回到`man bash`，同样在**INVOCATION**一节的下部看到了这样的说明：
+原来sh只是bash的一个软链接，既然如此，`BASH_ENV`应该是有效的啊，为何此处无效？还是回到`man bash`，同样在**INVOCATION**一节的下部看到了这样的说明：
 
 > If bash is invoked with the name sh, it tries to mimic the startup behavior of historical versions of sh as closely as possible, while conforming to the POSIX standard as well. When invoked as an interactive login shell, or a non-interactive shell with the --login option, it first attempts to read and execute commands from /etc/profile and ~/.profile, in that order. The --noprofile option may be used to inhibit this behavior. When invoked as an interactive shell with the name sh, bash looks for the variable ENV, expands its value if it is defined, and uses the expanded value as the name of a file to read and execute. Since a shell invoked as sh does not attempt to read and execute commands from any other startup files, the --rcfile option has no effect. A non-interactive shell invoked with the name sh does not attempt to read any other startup files. When invoked as sh, bash enters posix mode after the startup files are read.
 
@@ -301,7 +305,7 @@ lrwxrwxrwx 1 root root 9 Apr 25  2014 /usr/bin/sh -> /bin/bash
 - interactive + non-login: 读取`ENV`环境变量对应的文件
 - non-interactive + non-login: 不读取任何文件
 
-这样便可以解释为什么出错了，因为我们属于non-interactive + non-login，所以不会读取任何文件，故而即使设置了`BASH_ENV`也不会起作用。所以为了解决问题，只需要把sh换成bash，再设置环境变量`BASH_ENV`即可。
+这样便可以解释为什么出错了，因为这里属于non-interactive + non-login，所以bash不会读取任何文件，故而即使设置了`BASH_ENV`也不会起作用。所以为了解决问题，只需要把sh换成bash，再设置环境变量`BASH_ENV`即可。
 
 另外，其实我们还可以设置参数到第一行的解释器中，如`#!/bin/bash --login`，如此一来，bash便会强制为login shell，所以`/etc/profile`也会被加载。相比上面那种方法，这种更为简单。
 
