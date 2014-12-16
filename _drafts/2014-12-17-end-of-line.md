@@ -3,10 +3,9 @@ layout: post
 title:  回车换行的故事
 description: 本文介绍了回车换行的故事，分析了其在各平台上的不同，并比较了C语言文件操作的文本模式和二进制模式的区别。
 tags:   CR, LF, EOL, carriage return, line feed, 回车，换行，fopen, \r\n, text mode, binary mode
-image:  ssh.png
+image:  end-of-line.png
 ---
 
-图片用一个老的打字机
 不知各位有没有过这样的经历：
 
 - Linux上创建的文件在Windows上打开时，结果所有内容会挤成一行。而Windows上创建的文件在Linux上打开时，每一行的结尾又多了一个奇怪字符`^M`。
