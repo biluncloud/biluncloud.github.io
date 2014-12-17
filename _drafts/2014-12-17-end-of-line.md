@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  回车换行的故事
+title:  知无涯之回车换行的故事
 description: 本文介绍了回车换行的故事，分析了其在各平台上的不同，并比较了C语言文件操作的文本模式和二进制模式的区别。
 tags:   CR, LF, EOL, carriage return, line feed, 回车，换行，fopen, \r\n, text mode, binary mode
 image:  end-of-line.png
@@ -12,7 +12,7 @@ image:  end-of-line.png
 - 在安装Windows版的git时，安装向导在某一步会提示你选择"Configuring the line ending conversions"，里面提到了Windows-style和unix-style的line endings，为什么会有这些呢？
 - 调用C语言的API `fopen`时，会有text mode和binary mode，这两者有什么区别？
 
-其实这一切都和我们常说的回车换行有关，但你有没有很奇怪，什么是回车？直接用换行不就好了，为什么要分开两个词？我们使用的键盘上的键明明起得是换行的作用，为什么叫回车？千万别被绕晕了，本文将和大家讨论有关回车换行的一段有趣的历史。
+其实这一切都和我们常说的回车换行有关，但你有没有很奇怪，什么是回车？直接用换行不就好了，为什么要分开两个词？我们使用的键盘上的键明明起得是换行的作用，为什么叫回车？千万别被绕晕了，本文将和大家讨论有关回车换行的一段有趣的历史，随后将回答这些问题。
 
 {{ more }}
 
@@ -30,7 +30,7 @@ image:  end-of-line.png
 
 ### 打字机
 
-回车换行严格说起来是两个独立的概念，回车和换行，它们的出现要追溯到计算机出现之前，那时有一种电传打字机：Teletype Model 33 ASR，如下图：
+回车换行严格说起来是两个独立的概念，即回车和换行，它们的出现要追溯到计算机出现之前，那时有一种电传打字机：Teletype Model 33 ASR，如下图：
 
 ![Teletype Model 33 ASR](http://bytecollector.com/images/asr-33_vcf_02.jpg)
 
@@ -43,25 +43,25 @@ image:  end-of-line.png
 
 ![键盘布局](http://upload.wikimedia.org/wikipedia/commons/e/ea/Mappa_Teletype_ASR-33.jpg)
 
-键盘的右方有一个`Line Feed`和`Return`，这分别对应着前面提到的两个操作。所以`EOL = CR + LF`。然而，通常一个回车操作不能够在一个字符打印的时间内完成，所以你可以想象，如果在在其移动的过程中按下了其它的键，打印的内容将变得十分混乱。所以在`Carriage Return`和`Line Feed`之后，有时会有1~3个NUL字符(即相当于汇编语言中的空指令，仅起占位作用)，以等待前两个操作的完成。
+键盘的右方有一个`Line Feed`和`Return`，从名字可以看出，这分别对应着前面提到的两个操作。然而，通常一个回车操作不能够在一个字符打印的时间内完成，所以可以利用`Carriage`移动的时间，去完成另外一个完全独立的操作`Line Feed`，这也是通常`Carriage Return`会被放在`Line Feed`前面的原因。你可以想象，如果在在`Carriage`和纸移动的过程中按下了其它的字符键，打印的内容将变得十分混乱。所以在`Carriage Return`和`Line Feed`之后，有时会有1~3个NUL字符(即相当于汇编语言中的空指令，仅起占位作用)，以等待前两个操作的完成。所以实际上打字机的`EOL`为：`EOL = CR + LF + 1~3NUL`。
 
 ### 分歧出现
 
 等到早期的计算机发明时，很自然的这两个概念被拿了过来。但是由于那时的存储设备非常昂贵，一些人认为在每行的结尾加两个字符用于换行，实在是极大的浪费，于是各个厂商在这一点上便出现了分歧。
 
-由于一些早期的微型计算机还没有用于隐藏底层硬件细节的设备驱动，所以它们直接沿用了打字机的惯例，使用不带NUL的`CRLF`作为一个`EOL`。而CP/M为了和这些微型计算机使用同一个终端，也采用了这种设计。所以它的克隆MS-DOS也同样使用`CRLF`，由于Windows又是基于MS-DOS，为保持兼容性，所以就导致了如今的Windows是采用`CRLF`作为`EOL`，即`\r\n`。
+由于一些早期的微型计算机还没有用于隐藏底层硬件细节的设备驱动，所以它们直接沿用了打字机的惯例，使用不带NUL的`CRLF`作为一个`EOL`。而CP/M为了和这些微型计算机使用同一个终端，也采用了这种设计。所以它的克隆MS-DOS也同样使用`CRLF`，由于Windows又是基于MS-DOS，为保持兼容性，所以就导致了如今的Windows是采用`CRLF`作为`EOL`，即`\r\n`(或`0x0D 0x0A`)。
 
-而Multics在被设计之时就非常认真的考虑了这一问题，设计者们觉得只需一个字符便完全足够来表示`EOL`，这样更加合理。那么选择`CR`还是`LF`呢？本来由于那时的键盘上都有一个Return键，所以可能更好的选择是`CR`。但当时考虑到`CR`可以用来重写一行，以完成如**粗体**和<s>删除线</s>等效果，所以他们选择了稍稍难以理解的`LF`。然后自己设计了一个设备驱动程序来将`LF`转换为各种打字机所需要的`EOL`，这个方案非常完美，当然除了`LF`稍微奇怪一些。随后一脉相承的Unix和Linux们都继承了这个选择，于是你在这些操作系统上可以发现每一行的结尾是一个`LF`，即`\n`。
+而Multics在被设计之时就非常认真的考虑了这一问题，设计者们觉得只需一个字符便完全足够来表示`EOL`，这样更加合理。那么选择`CR`还是`LF`呢？本来由于那时的键盘上都有一个`Return`键，所以可能更好的选择是`CR`。但当时考虑到`CR`可以用来重写一行，以完成如**粗体**和<s>删除线</s>等效果，所以他们选择了稍稍难以理解的`LF`。然后自己设计了一个设备驱动程序来将`LF`转换为各种打字机所需要的`EOL`，这个方案非常完美，当然除了`LF`稍微奇怪一些。随后一脉相承的Unix和Linux们都继承了这个选择，于是你在这些操作系统上可以发现每一行的结尾是一个`LF`，即`\n`(或`0x0A`)。
 
-Mac系统的选择就更加复杂一些。Apple在设计Mac OS时，他们采用了一个最容易理解的选择：`CR`，即`\r`。但这只维持到Mac OS 9，后一个版本的Mac OSX基于Mach-BSD内核，所以此后版本的Mac OSX在每行的结尾存储了与Linux一样的`LF`，`\n`。
+Mac系统的选择就更加复杂一些。Apple在设计Mac OS时，他们采用了一个最容易理解的选择：`CR`，即`\r`(或`0x0D`)。但这只维持到Mac OS 9，后一个版本的Mac OSX基于Mach-BSD内核，所以此后版本的Mac OSX在每行的结尾存储了与Linux一样的`LF`，即`\n`(或`0x0A`)。
 
 ### 混乱的状况
 
-还有很多其它的操作系统[采用更加不同的方案](http://en.wikipedia.org/wiki/Newline#Representations)，这也导致了混乱的产生。对于文章开始提出的问题，因为Linux和Mac OSX上使用的是`LF`，而Windows上使用的是`CRLF`，那么Linux和Mac OSX上创建的文件在Windows上打开时，由于每一行的结尾只有一个`LF`，但Windows只认识`CRLF`，所以便不会有逻辑上的换行处理，故所有的文字被挤到了一行。反过来，如果Windows上的文件在Linux和Mac OSX上打开时，仅需`LF`便可换行，那么每一行的结尾便多了一个`CR`，它相当于键盘上的Enter键，即`^M`。
+还有很多其它的操作系统[采用更加不同的方案](http://en.wikipedia.org/wiki/Newline#Representations)，这也导致了混乱的产生，文章开始提出的几个问题便由该混乱引起。因为Linux和Mac OSX上使用的是`LF`，而Windows上使用的是`CRLF`，那么Linux和Mac OSX上创建的文件在Windows上打开时，由于每一行的结尾只有一个`LF`，但Windows只认识`CRLF`，所以便不会有逻辑上的换行处理，故所有的文字被挤到了一行。反过来，如果Windows上的文件在Linux和Mac OSX上打开时，仅需`LF`便可换行，那么每一行的结尾便多了一个`CR`，对应的ASCII码为`^M`。
 
-而git的安装向导会特意有一个这样的提醒页面也出于此，因为一个项目可能有多个开发者，每个开发者可能使用的是不同的系统，那么开发者checkout代码时，如果不作换行符的转换，有可能就会出现只有一行或者行尾多了`^M`的情况。当然，如果你有一个可以识别多种`EOL`的现代文本编辑器，那么不做转换也无妨(notepad不行)。
+而git的安装向导会特意有一个这样的提醒页面也出于此，因为一个项目可能有多个开发者，每个开发者可能使用的是不同的系统，那么开发者checkout代码时，如果不做换行符的转换，有可能就会出现只有一行或者行尾多了`^M`的情况。当然，如果你有一个可以识别多种`EOL`的[现代文本编辑器]({% post_url 2014-01-07-intro-to-vim %})，那么不做转换也无妨(notepad不行)。
 
-如果出现了上面的转换问题时，可以[对文件进行转换](http://en.wikipedia.org/wiki/Newline#Conversion_utilities)。但这只是治标不治本，如何才能从根本上避免这样情况？像隐藏硬件细节的驱动程序一样，我们只有寄希望于高级语言。
+如果出现了上面的转换问题时，也别着急，可以[对文件进行转换](http://en.wikipedia.org/wiki/Newline#Conversion_utilities)。那在我们写程序时如何正确的处理这些问题？像隐藏硬件细节的驱动程序一样，我们可寄希望于高级语言。
 
 ## 统一
 
@@ -76,20 +76,20 @@ printf("This is the first line! \nThis is a new line!");
     This is the first line!
     This is a new line!
 
-为什么C语言选择了`\n`而不是`\r`？这绝非偶然。熟悉C语言历史的朋友可能知道当初C语言是Dennis Ritchie为开发Unix而设计，所以它沿用了Unix上`EOL`的惯例便很容易理解了。而我们知道Linux使用的`LF`的ASCII码为`0x0A`，转义符为`\n`，因此C语言中也使用`\n`作为换行。
+为什么C语言选择了`\n`而不是`\r`？这绝非偶然。熟悉C语言历史的朋友可能知道当初C语言是Dennis Ritchie为开发Unix而设计，所以它沿用了Unix上`EOL`的惯例便很容易理解了。而我们知道Unix使用的`LF`的ASCII码为`0x0A`，转义符为`\n`，因此C语言中也使用`\n`作为换行。
 
-### Text Mode VS Binary Mode
+## Text Mode VS Binary Mode
 
-但是，千万别简单的认为上面的`\n`最终写到文件中就一定是其ASCII码`0x0A`，或者文件中的`0x0A`被读到内存中就是其转义符`\n`。这取决于C语言打开文件的方式。在C语言中，在对文件进行读取操作之前，都需要先打开文件，可以使用下面的函数：
+但是，千万别简单的认为上面的`\n`最终写到文件中就一定是其ASCII码`0x0A`，或者文件中的`0x0A`被读到内存中就是其转义符`\n`。这取决于你打开文件的方式。在C语言中，在对文件进行读取操作之前，都需要先打开文件，可以使用下面的函数：
 
 {% highlight cpp linenos %}
 #inlcude <stdio.h>
 FILE *fopen(const char *path, const char *mode);
 {% endhighlight %}
 
-注意看第二个参数`mode`，通常可以为读(r)，写(w)，追加(a)或者读写(r+, w+, a+)，仅指定这些参数时，文件将被当成是文本文件来操作，即`Text Mode`，而如果在这些参数之外再指定一个额外的`b`时，文件便会被当成是二进制文件，即`Binary Mode`。这两种模式的区别在哪里呢？这里稍稍有些复杂，因为它们在不同的平台上表现不同。
+注意看第二个参数`mode`，它是一个字符指针，通常可以为读(r)，写(w)，追加(a)或者读写(r+, w+, a+)，仅指定这些参数时，文件将被当成是文本文件来操作，即`Text Mode`，而如果在这些参数之外再指定一个额外的`b`时，文件便会被当成是二进制文件，即`Binary Mode`。这两种模式的区别在哪里呢？这里稍稍有些复杂，因为它们在不同的平台上表现不同。
 
-#### Windows平台
+### Windows平台
 
 对于Windows平台，因为其使用`CRLF`来表示`EOL`，故对于`Text Mode`需要做一定的转换才能够与C语言保持一致。接下来的两个图可以给出最为直观的描述。
 
@@ -97,40 +97,40 @@ FILE *fopen(const char *path, const char *mode);
 
 ![读操作](/img/posts/eol-read.png)
 
-`Text Mode`下，C语言会尝试去"理解"这些回车与换行，它会知道`LF`和`CRLF`都可能是`EOL`，所以不管文件中是`LF`还是`CRLF`，被读进内存时都会变成`LF`。而二进制模式下，C语言不会做任何的"理解"，所以这些字符在文件中什么样，读到内存中依然那样。
+`Text Mode`下，C语言会尝试去“理解”这些回车与换行，它会知道`LF`和`CRLF`都可能是`EOL`，所以不管文件中是`LF`还是`CRLF`，被读进内存时都会变成`LF`。而`Binary Mode`下，C语言不会做任何的“理解”，所以这些字符在文件中什么样，读到内存中依然那样。
 
 接下来是写操作的区别：
 
 ![写操作](/img/posts/eol-write.png)
 
-文本模式下，内存中的每一个`LF`写入文件中时都会变为`CRLF`，当然，如果不幸内存中为`CRLF`，以此种模式写入到文件中时就会变成`CRCRLF`（**注意**：这里不是`CRLF`）。而二进制模式下，内存中的内容会被原封不动的写到文件中。
+`Text Mode`下，内存中的每一个`LF`写入文件中时都会变为`CRLF`，当然，如果不幸内存中为`CRLF`，以此种模式写入到文件中时就会变成`CRCRLF`（**注意**：这里不是`CRLF`。原因我想大概是如果你认为内存中的数据是文本，那么它一定是以`LF`作为`EOL`，`CR`也一定是你有意而为之，是个有意义的字符，所以它并不会处理。）。而`Binary Mode`下，内存中的内容会被原封不动的写到文件中。
 
 所以为了保证一致性，一定需要注意配套使用读和写，即**读和写采用同一种模式打开文件**。
 
-#### Linux和Mac OSX平台
+### Linux和Mac OSX平台
 
-因为Linux和Mac OSX平台与C语言对待`EOL`的方式完全一致，所以`Text Mode`和`Binary Mode`在这些平台下没有任何区别，可以参考`fopen`的[man page](http://man7.org/linux/man-pages/man3/fopen.3.html)。其际上，所有遵循POSIX的平台都忽略了`b`这个参数。
+因为Linux和Mac OSX平台与C语言对待`EOL`的方式完全一致，所以`Text Mode`和`Binary Mode`在这些平台下没有任何区别，可以参考`fopen`的[man page](http://man7.org/linux/man-pages/man3/fopen.3.html)。实际上，所有遵循POSIX的平台都忽略了`b`这个参数。
 
 虽说在这些平台上处理`EOL`非常简单，但是如果你的程序需要移植到其它非POSIX平台上时，请务必正确对待`b`参数。
 
 ## 更多资料
 
-如果你还有兴趣，可以看看下面这些有趣的资料：
+如果还有兴趣，可以看看下面这些有趣的资料：
 
 - 阮一峰的[《回车与换行》](http://www.ruanyifeng.com/blog/2006/04/post_213.html)
 - [The End of Line Puzzle](http://www.oualline.com/practical.programmer/eol.html)，也即上面那篇文章的出处
 - 关于[What is the ASCII code for newline character?](http://www.quora.com/What-is-the-ASCII-code-for-newline-character)的一个回答
-- 维基百科上关于[换行](http://en.wikipedia.org/wiki/Newline)的解释
+- 维基百科上关于[Newline](http://en.wikipedia.org/wiki/Newline)的解释
 - 从网络的角度讲述了[End-of-Line的故事](http://www.rfc-editor.org/EOLstory.txt)
 - 打字机的一段[视频](https://www.youtube.com/watch?v=LJvGiU_UyEQ)，需梯子
 
 ## 结尾
 
-2014年即将过去，自从[libFeihu](http://feihu.me)创建以来，这已是第十篇文章，也会是2014年的最后一篇。速度不快，产量不高，差不多一个月左右一篇，但我非常满足，这达到了年初给自己定下的目标。现在随手转载，几乎不费吹灰之力，于是网络上充斥着大量未经调查考证，未经授权，未经版面调整的内容。我不想做网络上的拿来主义者。希望能够保证每一篇文章的质量，保证每一篇文章都花了大量的时间来进行调查，并以一种最为通俗的，深入浅出的方式表达出来。这对自己的知识是一个非常好的总结，通过调查也会让自己避免浮于问题表面，能够更加深入的剖析遇到的问题，同时也使表达能力得到锻炼。坚持写下去。
+这样一个小小的`EOL`便如此复杂，给人们带来了极大的困扰，但就如我在[知无涯之C++ typename的起源与用法]({% post_url 2014-05-08-the-origin-and-usage-of-typename %})最后讨论过的一样，这个决定是经历过无数决断、波折与妥协才有了现在的结果。你可以选择保守，为向后兼容而作出妥协，那么你得面对不断累加的“不完美”，甚至“丑陋”的设计；你也可大胆尝试，破旧立新，牺牲向后兼容换取进步，那你也许得忍受人们的“唾骂”，或许还需承担被人们抛弃的风险。如何在这之间作出选择，没有明确的答案，恐怕一切就只有靠自己去判断了吧。
 
 (全文完)
 
 feihu
 
-2014.12.16 于 Shenzhen
+2014.12.17 于 Shenzhen
 
