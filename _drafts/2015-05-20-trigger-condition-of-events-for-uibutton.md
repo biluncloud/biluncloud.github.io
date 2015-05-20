@@ -6,11 +6,11 @@ tags:   iOS, UIButton, UIControl, UIControlEventTouchDragExit, UIControlEventTou
 image:  uibutton.png
 ---
 
-最近在使用`UIButton`的过程中遇到一个问题，我想要获得手指拖动button并离开button时的事件，于是监听`UIControlEventTouchDragExit`事件，如文档所述：
+最近在使用`UIButton`的过程中遇到一个问题，我想要获得手指拖动button并离开button边界时的回调，于是监听`UIControlEventTouchDragExit`事件，如文档所述：
 
 > An event where a finger is dragged from within a control to outside its bounds.
 
-这个事件正是我所需要的，可是最后却发现当手指离开button边界时，事件并没有触发，而是到了远离button近**70**个像素时才收到事件。
+这个事件正是我所需要的，可是最后却发现当手指离开button边界时，事件并没有触发，而是到了远离button近**70**个像素时才收到回调。
 
 {{ more }}
 
@@ -22,11 +22,13 @@ image:  uibutton.png
 
 -----
 
-为了更好的说明问题，我做了一个示例，见下图，当手指离开button时会将button的内容改为`离开`，进入时改为`进入`。另外在手指的位置给出了手指距离button最上端的像素差。
+为了更好的说明问题，我做了一个示例，见下图。所期待的行为是：当手指离开button边界时会将button的内容改为`离开`，进入时改为`进入`。另外在手指的位置给出手指距离button最上端的像素差。
 
 ![问题展示](/img/posts/uibutton-problem.gif)
 
-可见，当手指离开button时，`UIControlEventTouchDragExit`事件并没有立刻触发，而是在距button顶端`70`像素左右时才会触发事件。
+当手指离开button边界时，button的内容并没有改变。当手指距离button顶端`70`像素时才变为`离开`。由此可以看出，`UIControlEventTouchDragExit`事件并不是在离开button边界时立刻触发，而是在距button顶端`70`像素时才会。
+
+在这里我只是演示了手指向上移动的情况，其实向另外三个方向移动时，也会有一样的效果，有兴趣的同学可以自己尝试一番。
 
 而且并不仅仅是`UIControlEventTouchDragExit`这一个事件，所有与边界有关的事件都有这一问题：
 
@@ -37,17 +39,17 @@ image:  uibutton.png
 - `UIControlEventTouchUpInside`
 - `UIControlEventTouchUpOutside`
 
-不知道苹果为什么要这样设定，一直没有查到相关的资料。猜测可能是苹果觉得人的手指比较粗，和屏幕的接触面积比较大，所以设定了一个这么大的外部区域吧。
+不知道苹果为什么要这样设定，一直没有查到相关的资料。猜测可能是苹果觉得人的手指比较粗，和屏幕的接触面积比较大，定位也不需要那么精准，所以设定了一个这么大的外部区域吧。
 
-但是很多情况下，如果我们需要精确一些来控制的话，这70个像素就不行了。那么有没有办法来消除这70个像素呢？
+但是很多情况下，如果我们需要更为精确的控制时，这70个像素的扩张就不行了。那么有没有办法来消除这70个像素呢？
 
+## 来自StackOverflow的答案
 
-## StackOverflow上的答案
-
-经过一番查找，在[StackOverflow](http://stackoverflow.com/a/14400040/973315)上面找到了一个答案，它建议覆盖`UIControl`的`continueTrackingWithTouch:withEvent`方法，由于`UIButton`是派生自`UIControl`，因此也继承了此方法。方法声明为：
+经过一番查找，在[StackOverflow](http://stackoverflow.com/a/14400040/973315)上面找到了一个答案，它是通过覆盖`UIControl`的`continueTrackingWithTouch:withEvent`方法，由于`UIButton`是派生自`UIControl`，因此也继承了此方法。方法声明为：
 
 {% highlight objc linenos %}
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+/*
 Description	
   Sent continuously to the control as it tracks a touch related to the given event within the control’s bounds.
 Parameters	
@@ -57,9 +59,10 @@ Parameters
     An event object encapsulating the information specific to the user event
 Returns	
   YES if touch tracking should continue; otherwise NO.
+*/
 {% endhighlight %}
 
-这是判断是否保持追踪当前的触摸事件。在这个方法中根据得到的位置来判断是否正在button的范围内，进而发送对应的事件。相应的代码为：
+这个方法判断是否保持追踪当前的触摸事件。这里根据得到的位置来判断是否正处于button的范围内，进而发送对应的事件。相应的代码为：
 
 {% highlight objc linenos %}
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
@@ -93,9 +96,9 @@ Returns
 - `UIControlEventTouchDragExit`会响应两次，分别为：
   - 手指离开button边界`25`个像素时触发
   - 第二次依然是`70`个像素时触发，这是`UIButton`的默认行为
-- 第二个问题是在事件的回调函数中，从`UIEvent`参数中计算得到的位置始终是`(0, 0)`，它并未正确的初始化
+- 第二个问题是在事件的回调函数：<br>`- (void)callback:(UIButton *)sender withEvent:(UIEvent *)event`<br>中，由`UIEvent`参数计算得到的位置始终是`(0, 0)`，它并未正确的初始化
 
-仔细一想，显然易见，在覆盖的函数中我们进行判断之后触发了对应的事件，但这并没有取消原来`UIControl`本应该触发的事件，这便导致了两次响应。并且在我们的处理中，仅仅只是触发了这事件，这里并没有涉及到`UIEvent`的初始化工作，因此最后得到的位置不对也便容易理解了。
+仔细一想便能理解，在覆盖的函数中我们进行判断之后触发了对应的事件，但这并没有取消原来`UIControl`本应该触发的事件，这便导致了两次响应。并且在我们的处理中，仅仅只是触发了事件，这里并没有涉及到`UIEvent`的初始化工作，因此最后得到的位置肯定不对了。
 
 对于重复响应的问题，有人可能会猜，会不会上面最后一行调用父类方法有影响：
 {% highlight objc linenos %}
@@ -106,13 +109,13 @@ Returns
 
 ## 换个思路
 
-由于上面两个问题的缘故，导致前面的方法不能采用。那还有别的办法么？
+由于上面两个问题的缘故，这个答案不可取。那还有别的办法么？
 
-我们仔细看下前面的方法，用前半部分的代码，可以很容易的判断出当前位置是否位于button之内，那么我们是否可以不在底层中去处理，而是在上层的回调函数中去判断呢？于是我做了这样的尝试：
+我们来仔细观察前面的方法，用前半部分的代码，可以很容易的判断出当前位置是否位于button之内。那么我们是否可以不在底层处理，而是在上层的回调函数中去判断？基于这一思路，我又做了这样的尝试：
 
 ### 注册回调
 
-第一步仍然是注册回调函数，但是注意看，这里两个事件注册的是同一个回调函数`btnDragged:withEvent:`。而且并没有注册`UIControlEventTouchDragExit`和`UIControlEventTouchDragEnter`，为什么呢？请接着向下看。
+第一步仍然是注册回调函数，但是注意看，这里两个事件注册的是同一个回调函数`btnDragged:withEvent:`。而且并没有注册`UIControlEventTouchDragExit`和`UIControlEventTouchDragEnter`，为什么？请接着向下看。
 
 {% highlight objc linenos %}
 // to get the drag event
@@ -122,7 +125,7 @@ Returns
 
 ### 回调函数
 
-回调函数里面采用了前面判断的方法，可以根据当前和之前的位置判断出是否在button内部。然后就可以判断出此时到底属于哪一个事件，如下面的注释所示。至此，我们便可以在每一个分支中做对应的处理了。
+回调函数里面采用了前面答案中的判断方法，可以根据当前和之前的位置判断出是否在button内部。然后就可以判断出此时到底属于哪一个事件，如下面的注释所示。至此，我们便可以在每一个分支中做对应的处理了。
 
 {% highlight objc linenos %}
 - (void)btnDragged:(UIButton *)sender withEvent:(UIEvent *)event {
