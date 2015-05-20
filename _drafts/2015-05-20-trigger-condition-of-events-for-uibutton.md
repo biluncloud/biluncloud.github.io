@@ -3,7 +3,7 @@ layout: post
 title:  UIButton不会立即触发事件的问题
 description: 当监听UIControlEventTouchDragExit/DragEnter这类事件时，很奇怪的是手指离开Button时并不会立刻触发事件，本文找到了原因并给出了解决方案。
 tags:   iOS, UIButton, UIControl, UIControlEventTouchDragExit, UIControlEventTouchDragEnter
-image:  debug-stdout.png
+image:  uibutton.png
 ---
 
 最近在使用`UIButton`的过程中遇到一个问题，我想要获得手指拖动button并离开button时的事件，于是监听`UIControlEventTouchDragExit`事件，如文档所述：
