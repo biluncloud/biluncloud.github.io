@@ -185,6 +185,8 @@ Returns
 
 ## 结尾
 
+因为`UIButton`的`addTarget:action:forControlEvents`方法是继承自`UIControl`，因此上面的办法对于所有`UIControl`的子类都同样适用，比如`UISwitch`，`UISlider`等等。
+
 我也在StackOverflow原来的问题上作了[补充](http://stackoverflow.com/a/30320206/973315)。如果你有更好的办法，或者知道为何苹果如此处理，请给我留言或者在原问题上回答。
 
 (全文完)
