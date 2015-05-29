@@ -302,6 +302,7 @@ void foo() {
 3. [A Description of the C++ typename keyword](http://pages.cs.wisc.edu/~driscoll/typename.html)
 4. [维基百科typename](http://zh.wikipedia.org/wiki/Typename)
 5. 另外关于`typename`的历史，Stan Lippman写过一篇[文章](http://blogs.msdn.com/b/slippman/archive/2004/08/11/212768.aspx)，Stan Lippman何许人，也许你不知道他的名字，但看完这些你一定会发出，“哦，原来是他！”：他是 _C++ Primer, Inside the C++ Object Model, Essential C++, C# Primer_ 等著作的作者，另外他也曾是Visual C++的架构师。
+6. 在[StackOverflow](http://stackoverflow.com/a/613132/973315)上有一个非常深入的回答，感谢@Emer 在本文评论中提供此链接。
 
 ## 写在结尾
 
