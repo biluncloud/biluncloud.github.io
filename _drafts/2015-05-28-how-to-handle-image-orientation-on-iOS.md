@@ -3,7 +3,7 @@ layout: post
 title:  如何处理iOS中的照片方向
 description: 对于在iOS设备中拍得的照片，导出到Windows上打开时，经常会发现照片是横的或者颠倒的，需要旋转才适合观看。而在Mac上则完全不需要，本文解释了造成这一现象的原因并给出了开发过程中的解决方案。
 tags:   iOS, UIImage，JPEG，EXIF，UIImagePickerController，orientation
-image:  uibutton.png
+image:  orientation.png
 ---
 
 使用过iPhone或者iPad的朋友在拍照时不知是否遇到过这样的问题，将设备中的照片导出到Windows上时，经常发现导出的照片方向会有问题，要么横着，要么颠倒着，需要旋转才适合观看。而如果直接在这些设备上浏览时，照片会始终显示正确的方向，在Mac上也能正确显示。最近在iOS的开发中也遇到了同样的问题，将拍摄的照片上传到服务器后，再由Windows端下载该照片，发现手机上完全正常的照片到了这里也不正常了。同一张照片为什么在不同的设备上表现的不同？如何能够避免这种情况？本文将一一解开这些问题。
@@ -101,16 +101,16 @@ image:  uibutton.png
 然后用Mac上的`预览`程序查看其`EXIF`属性，通过`预览-工具-显示检查器`打开对话框，即可查看到图片中关于方向的详细信息，下面四张图分别展示了上面四种方向下拍得照片的Orientation值：
 
 - Home键位于右侧时，即相机的默认方向，值为1。
- ![Home键在右侧](/img/posts/orientation-home-right.png)
+ ![Home键在右侧](/img/posts/orientation-home-right.jpg)
 
 - Home键位于上侧时，值为8。
- ![Home键在上侧](/img/posts/orientation-home-up.png)
+ ![Home键在上侧](/img/posts/orientation-home-up.jpg)
 
 - Home键位于左侧时，值为3。
- ![Home键在左侧](/img/posts/orientation-home-left.png)
+ ![Home键在左侧](/img/posts/orientation-home-left.jpg)
 
 - Home键位于下侧时，即正常手持手机的方向，值为6。
- ![Home键在下侧](/img/posts/orientation-home-bottom.png)
+ ![Home键在下侧](/img/posts/orientation-home-bottom.jpg)
 
 对照前面的分析，果然保持一致。而且照片显示正常。
 
@@ -118,7 +118,9 @@ image:  uibutton.png
 
 ### Windows
 
-前面提到过，被写在图片元数据中的方向信息并没有被全部支持，Windows的图片查看器便是其中之一，也是Windows上的用户最常使用的工具。因为没有自动去读取方向信息，所以图片被读入之后，便全部是其保存的图片本身，这样便出现了横向，或者颠倒。
+前面提到过，被写在图片元数据中的方向信息并没有被全部支持，Windows的照片查看器便是其中之一，这也是Windows用户最常使用的照片浏览工具。因为没有读取方向信息，照片被读入之后，完全按照其存储方式来显示，这样便出现了横向，或者颠倒的情况，下面四张图便分别是前面拍得的照片在Windows上的显示效果，注意看方向。
+
+![Windows上的情况](/img/posts/orientation-windows.jpg)
 
 ## 开发时如何避免
 
@@ -157,7 +159,7 @@ StackOverflow上给出了很好的答案，比如[这个](http://stackoverflow.c
 
 ### 直观的解决方案
 
-首先，为UIImage创建一个category，其中包含`fixOrientation`方法：
+首先，为`UIImage`创建一个category，其中包含`fixOrientation`方法：
 
 UIImage+fixOrientation.h
 {% highlight objc linenos %}
@@ -257,22 +259,16 @@ UIImage+fixOrientation.m
 
 代码有些长，不过却非常直观。这里面涉及到图片矩阵变换的操作，理解起来可能稍稍有些困难，接下来，我会有另外一篇文章专门来介绍图像变换。现在，记住下面两点便能够很好的帮助理解：
 
-- 图片的原点在左下角
-- 矩阵变换时，后面的矩阵先作用，前面的矩阵后作用
+1. 图片的原点在左下角
+2. 矩阵变换时，后面的矩阵先作用，前面的矩阵后作用
 
-以UIImageOrientationDown方向为例，苹果的开发文档中给出一张图片：![UIImageOrientationDown](/img/posts/orientation-UIImageOrientationDown.png)，对它的旋转需要两步，第一步是以左下方为原点旋转180度，
-
-![旋转180度后](/img/posts/orientation-after-rotate.png)
-
-于是便有了：
+以`UIImageOrientationDown`方向为例，前面说到它是翻转了180度。苹果的开发文档中给出一张图片很直观：![UIImageOrientationDown](/img/posts/orientation-UIImageOrientationDown.png)。对它的旋转需要两步，第一步是以左下方为原点旋转180度，旋转后上图变为：![旋转180度后](/img/posts/orientation-transform-rotate.png) 。于是便有了下面的代码：
 
 {% highlight objc linenos %}
 transform = CGAffineTransformRotate(transform, M_PI);
 {% endhighlight %}
 
-因为是以左下方为原点旋转的，所以整幅图被移到了第三象限，第二步需要向右上方进行平移，即x方向上移动图片的宽度，y方向上移动图片的高度，所以有了：
-
-![平移后](/img/posts/orientation-after-transition.png)
+因为是以左下方为原点旋转的，所以整幅图被移到了第三象限，第二步需要向右上方进行平移，即x方向上移动图片的宽度，y方向上移动图片的高度，所以平移后图像变为：![平移后](/img/posts/orientation-transform-transition.png)。代码为：
 
 {% highlight objc linenos %}
 transform = CGAffineTransformTranslate(transform, self.size.width, self.size.height);
@@ -289,7 +285,7 @@ transform = CGAffineTransformRotate(transform, M_PI);
 
 ### 第二种简单的方法
 
-同样也是StackOverflow上的[答案](http://stackoverflow.com/a/10611036/973315)，非常简单，但是没有那么直观：
+同样也是StackOverflow上的[答案](http://stackoverflow.com/a/10611036/973315)，没那么直观，但非常简单：
 
 {% highlight objc linenos %}
 - (UIImage *)normalizedImage {
@@ -303,7 +299,7 @@ transform = CGAffineTransformRotate(transform, M_PI);
 }
 {% endhighlight %}
 
-这里是利用了系统提供的UIImage中的`drawInRect`方法，它自动的考虑到了图片的方向，其文档如下：
+这里是利用了`UIImage`中的`drawInRect`方法，它会将图像绘制到画布上，并且已经考虑好了图片的方向，其文档如下：
 
 {% highlight objc linenos %}
 - drawInRect:
