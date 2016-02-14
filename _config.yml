@@ -4,6 +4,7 @@ author: 'feihu'
 
 include:  ['_pages']
 
+gems: [jekyll-paginate]
 paginate:      10
 paginate_path: '/blog/page:num/'
 permalink:     '/blog/:year/:title/'
@@ -11,7 +12,6 @@ relative_permalinks: false
 
 excerpt_separator: "{{ more }}"
 
-safe:     true
 highlighter: pygments
 markdown: 'kramdown'
 timezone: 'Asia/Shanghai'
@@ -22,3 +22,4 @@ analytics:
         tracking_id: 'UA-48817497-1'
 
 enable_disqus: true
+
