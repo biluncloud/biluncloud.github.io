@@ -47,7 +47,7 @@ image:  uibutton.png
 
 经过一番查找，在[StackOverflow](http://stackoverflow.com/a/14400040/973315)上面找到了一个答案，它是通过覆盖`UIControl`的`continueTrackingWithTouch:withEvent`方法，由于`UIButton`是派生自`UIControl`，因此也继承了此方法。先来看看它的声明：
 
-{% highlight objc linenos %}
+{% highlight objc %}
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 /*
 Description	
@@ -64,7 +64,7 @@ Returns
 
 这个方法判断是否保持追踪当前的触摸事件。这里根据得到的位置来判断是否正处于button的范围内，进而发送对应的事件。相应的代码为：
 
-{% highlight objc linenos %}
+{% highlight objc %}
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
     CGFloat boundsExtension = 25.0f;
@@ -101,7 +101,7 @@ Returns
 仔细一想便能理解，在覆盖的函数中我们进行判断之后触发了对应的事件，但这并没有取消原来`UIControl`本应该触发的事件，这便导致了两次响应；并且在我们的处理中，仅仅只是触发了事件，这里并没有涉及到`UIEvent`的初始化工作，因此最后得到的位置肯定不对了。
 
 对于重复响应的问题，有人可能会猜，会不会上面最后一行调用父类方法有影响：
-{% highlight objc linenos %}
+{% highlight objc %}
     return [super continueTrackingWithTouch:touch withEvent:event];
 {% endhighlight %}
 
@@ -115,7 +115,7 @@ Returns
 
 ### 注册回调
 
-{% highlight objc linenos %}
+{% highlight objc %}
 // to get the drag event
 [btn addTarget:self action:@selector(btnDragged:withEvent:) forControlEvents:UIControlEventTouchDragInside];
 [btn addTarget:self action:@selector(btnDragged:withEvent:) forControlEvents:UIControlEventTouchDragOutside];
@@ -127,7 +127,7 @@ Returns
 
 回调函数里面采用了前面答案中的判断方法，可以根据当前和之前的位置判断出是否在button内部。然后就可以判断出此时到底属于哪一个事件，如下面的注释所示。至此，我们便可以在每一个分支中做对应的处理了。
 
-{% highlight objc linenos %}
+{% highlight objc %}
 - (void)btnDragged:(UIButton *)sender withEvent:(UIEvent *)event {
     UITouch *touch = [[event allTouches] anyObject];
     CGFloat boundsExtension = 25.0f;
@@ -161,7 +161,7 @@ Returns
 
 先为两个事件注册同一个回调函数：
 
-{% highlight objc linenos %}
+{% highlight objc %}
 // to get the touch up event
 [btn addTarget:self action:@selector(btnTouchUp:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 [btn addTarget:self action:@selector(btnTouchUp:withEvent:) forControlEvents:UIControlEventTouchUpOutside];
@@ -169,7 +169,7 @@ Returns
 
 然后处理回调函数：
 
-{% highlight objc linenos %}
+{% highlight objc %}
 - (void)btnTouchUp:(UIButton *)sender withEvent:(UIEvent *)event {
     UITouch *touch = [[event allTouches] anyObject];
     CGFloat boundsExtension = 25.0f;

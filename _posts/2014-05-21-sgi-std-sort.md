@@ -62,7 +62,7 @@ SGI版本的STL一直是评价最高的一个STL实现，在技术层次、源�
 
 std::sort的代码如下：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator>
 inline void sort(RandomAccessIterator first, RandomAccessIterator last) {
     if (first != last) {
@@ -74,7 +74,7 @@ inline void sort(RandomAccessIterator first, RandomAccessIterator last) {
 
 它是一个模板函数，只接受随机访问迭代器。`if`语句先判断区间有效性，接着调用`__introsort_loop`，它就是STL的Introspective Sort实现。在该函数结束之后，最后调用插入排序。我们来揭开该算法的面纱：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator, class T, class Size>
 void __introsort_loop(RandomAccessIterator first,
                       RandomAccessIterator last, T*,
@@ -100,7 +100,7 @@ void __introsort_loop(RandomAccessIterator first,
 
 可以看出它是一个递归函数，因为我们说过，Introspective Sort在数据量很大的时候采用的是正常的快速排序，因此除了处理恶化情况以外，它的结构应该和快速排序一致。但仔细看以上代码，先不管循环条件和`if`语句(它们便是处理恶化情况所用)，循环的后半部分是用来递归调用快速排序。但它与我们平常写的快速排序有一些不同，对比来看，以下是我们平常所写的快速排序的[伪代码](http://en.wikipedia.org/wiki/Quicksort)：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 function quicksort(array, left, right)
     // If the list has 2 or more items
     if left < right
@@ -130,7 +130,7 @@ function quicksort(array, left, right)
 
 主循环中另外一个重要的函数是`__unguarded_partition`，这其实就是我们平常所使用的快速排序主体部分，用于根据pivot将区间分割为两个子序列。其源码如下：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator, class T>
 RandomAccessIterator __unguarded_partition(RandomAccessIterator first, 
                                            RandomAccessIterator last, 
@@ -162,7 +162,7 @@ RandomAccessIterator __unguarded_partition(RandomAccessIterator first,
 
 现在我们来关注循环条件和`if`语句。`__introsort_loop`的最后一个参数`depth_limit`是前面所提到的判断分割行为是否有恶化倾向的阈值，即允许递归的深度，调用者传递的值为`2logN`。注意看`if`语句，当递归次数超过阈值时，函数调用`partial_sort`，它便是堆排序:
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator, class T, class Compare>
 void __partial_sort(RandomAccessIterator first, RandomAccessIterator middle,
                     RandomAccessIterator last, T*, Compare comp) {
@@ -187,7 +187,7 @@ inline void partial_sort(RandomAccessIterator first,
 
 除了递归深度阈值以外，Introspective Sort还用到另外一个阈值。注意看`__introsort_loop`中的`while`语句，其中有一个变量`__stl_threshold`，其定义为：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 const int __stl_threshold = 16;
 {% endhighlight %}
 
@@ -199,7 +199,7 @@ const int __stl_threshold = 16;
 
 现在终于来到std::sort的最后一步——插入排序。将它作为单独的一章是因为它使用了些优化技巧，让人难以理解，我花了些时间才弄懂它，这也正是为何会有本文的根本原因。我们先来看看其定义：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator>
 void __final_insertion_sort(RandomAccessIterator first, 
                             RandomAccessIterator last) {
@@ -228,7 +228,7 @@ void __final_insertion_sort(RandomAccessIterator first,
 
 插入排序很简单，本文前面的动态图可以很直观的展示它的原理。这里是摘自[维基百科](http://en.wikipedia.org/wiki/Insertion_sort)的一段伪代码：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 for i ← 1 to length(A)
     j ← i
     while j > 0 and A[j-1] > A[j]
@@ -242,7 +242,7 @@ for i ← 1 to length(A)
 
 那么同样都是插入排序，`__insertion_sort`和`__unguarded_insertion_sort`有何不同，为什么叫unguarded？接下来看看STL的实现：（注：这里取得都是采用默认比较函数的版本）：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator, class T>
 void __unguarded_linear_insert(RandomAccessIterator last, T value) {
     RandomAccessIterator next = last;
@@ -285,7 +285,7 @@ void __insertion_sort(RandomAccessIterator first, RandomAccessIterator last) {
 
 最后再来看看`__unguarded_insertion_sort`在STL中的实现，同样这里只是默认比较函数版本：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator, class T>
 void __unguarded_insertion_sort_aux(RandomAccessIterator first, 
                                     RandomAccessIterator last, T*) {
@@ -312,7 +312,7 @@ inline void __unguarded_insertion_sort(RandomAccessIterator first,
 
 对于标准插入排序，它需要的操作次数为：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // 标准插入排序伪代码
 while j > 0 and A[j-1] > A[j]   // 2N次比较运算，N次减法运算
     swap A[j] and A[j-1]        // N次交换运算（通常理解为3N次赋值运算)
@@ -325,7 +325,7 @@ while j > 0 and A[j-1] > A[j]   // 2N次比较运算，N次减法运算
 
 再来看`__insertion_sort`，因为这里出现了分支，因此需要分开来对待。我们取两种极端情况，先假设每次都是取第一个分支，即`value < *first`，那么此时`N=i`：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // __linear_insert函数
 if (value < *first) {           // 1次比较运算
     copy_backward(first, last, last + 1);   
@@ -336,7 +336,7 @@ if (value < *first) {           // 1次比较运算
 
 因为`copy_backward`最后调用的是`memmove`，它在C标准库中实现为：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // memmove函数
 for (; 0 < n; --n)              // N次比较运算，N次自减运算
     *sc1++ = *sc2++;            // 2N次自增运算，N次赋值运算
@@ -346,7 +346,7 @@ for (; 0 < n; --n)              // N次比较运算，N次自减运算
 
 如果假设每次`__insertion_sort`都不取第一个分支，即首位的元素已经是最小值，此时：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // __linear_insert函数
 if (value < *first) {       // 1次比较
     // ...
@@ -391,7 +391,7 @@ while (value < *next) {     // N次比较
 
 让我们回到`__final_insertion_sort`函数，为了唤醒你的记忆，再贴一次它的源代码：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator>
 void __final_insertion_sort(RandomAccessIterator first, 
                             RandomAccessIterator last) {
@@ -426,7 +426,7 @@ void __final_insertion_sort(RandomAccessIterator first,
 
 再来看一眼`__introsort_loop`：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class RandomAccessIterator, class T, class Size>
 void __introsort_loop(RandomAccessIterator first,
                       RandomAccessIterator last, T*,

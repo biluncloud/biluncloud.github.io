@@ -113,13 +113,6 @@ hr {
 	margin:0 0 20px;
 }
 
-blockquote {
-	border-left:1px solid #e5e5e5;
-	margin:0;
-	padding:0 0 0 20px;
-	font-style:italic;
-}
-
 #table-of-contents {
 	margin-bottom: 0.5em;
 }
@@ -136,45 +129,80 @@ blockquote {
 	margin-bottom: 0;
 }
 
-code, pre {
-	font-family: Menlo, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
-	color: #333;
-	font-size: 13px;
-	background: #f8f8f8;
-	border-radius: 5px;
-	border: 1px solid #e5e5e5;
-	padding: 2px 4px;
-	line-height:1.2em;
-}
-
+/* Code */
+code,
 pre {
-	padding: 8px 15px;
-	overflow-x: auto;
+  font-family: Menlo, Monaco, "Courier New", monospace;
 }
-pre > code {
-	background: transparent;
-	border: none;
-	padding: 0;
+code {
+  padding: .25em .5em;
+  font-size: 85%;
+  color: #bf616a;
+  background-color: #f9f9f9;
+  border-radius: 3px;
+}
+pre {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding: 5px;
+  font-size: .8rem;
+  line-height: 1.4;
+  overflow-x: auto;
+ # white-space: pre;
+ # white-space: pre-wrap;
+ # word-break: break-all;
+ # word-wrap: break-word;
+  background-color: #f9f9f9;
+}
+pre code {
+  padding: 0;
+  font-size: 100%;
+  color: inherit;
+  background-color: transparent;
+}
+.highlight {
+  -webkit-margin-start: 0;
+  -webkit-margin-end: 0;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+.highlight pre {
+  margin-bottom: 0;
 }
 
+/* Quotes */
+blockquote {
+  padding: .5rem 1rem;
+  margin: .8rem 0;
+  color: #7a7a7a;
+  border-left: .25rem solid #e5e5e5;
+}
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+@media (min-width: 30rem) {
+  blockquote {
+    padding-right: 5rem;
+    padding-left: 1.25rem;
+  }
+}
+
+/* Tables */
 table {
-	width:100%;
-	border-collapse:collapse;
+  margin-bottom: 1rem;
+  width: 100%;
+  border: 1px solid #e5e5e5;
+  border-collapse: collapse;
 }
-
-th, td {
-	text-align:left;
-	padding:5px 10px;
-	border-bottom:1px solid #e5e5e5;
-}
-
-dt {
-	color:#444;
-	font-weight:700;
-}
-
+td,
 th {
-	color:#444;
+  padding: .25rem .5rem;
+  border: 1px solid #e5e5e5;
+}
+tbody tr:nth-child(odd) td,
+tbody tr:nth-child(odd) th {
+  background-color: #f9f9f9;
 }
 
 /* Header / Sidebar Top */

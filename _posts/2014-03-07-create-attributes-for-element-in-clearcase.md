@@ -33,7 +33,7 @@ image:  version-ctrl.png
 
 使用[cleartool mkattr](http://www.ipnom.com/ClearCase-Commands/mkattr.html)命令可以创建这些属性，但由于这两个属性必须带上一些有用的信息，比如时间，执行者，所以为了方便起见，我们通常不直接调用，而是采用一个脚本`reviewed_by_me.bat`(这里只讨论review，unittest的处理完全一样)去得到执行者与当前时间的信息，这个脚本里面的内容大致如下：
 
-{% highlight bat linenos %}
+{% highlight bat %}
 set element="%1"
 rem get time for var %time%
 ...
@@ -216,7 +216,7 @@ call cleartool mkattr reviewed_by_%user% \"%time%\" %element%
 
 看到这里想必大家都明白我要做什么了，没错，这个奇怪的"目录"其实就差一个`版本号`就可以构成一个完整的节点路径，而`clearvtree`传过来的`%1`参数就包含了这个`版本号`，截取之后拼在上面的目录后就可以得到完整的路径，这里是最终的`reviewed_by_me.bat`代码：
 
-{% highlight bat linenos %}
+{% highlight bat %}
 set element="%1"
 rem get time for var %time%
 ...
@@ -254,7 +254,7 @@ call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
 
 所以，最终版本的`reviewed_by_me.bat`代码变为：
 
-{% highlight bat linenos %}
+{% highlight bat %}
 set element="%1"
 rem get time for var %time%
 ...
@@ -274,7 +274,7 @@ call cleartool mkattr reviewed_by_%user% \"%time%\" %element_path%
 
 因为有时会不使用`SendTo`快捷方式来打标签，而是直接调用脚本，此时，当前工作目录可能会出错，为了避免这种情况，脚本又做了以下更新：
 
-{% highlight bat linenos %}
+{% highlight bat %}
 set element="%1"
 rem get time for var %time%
 ...

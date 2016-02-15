@@ -37,7 +37,7 @@ image:  debug-stdout.png
 
 我们使用下面的代码(定义在hello.c中)来演示如何用GDB在`"Hello World!\n"`写入stdout时中断。(feihu注：代码作了一定的修改，增加了另外一个输出字符串的函数，以更好的演示捕获特定字符串)
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 #include <stdio.h>
 
 void test()

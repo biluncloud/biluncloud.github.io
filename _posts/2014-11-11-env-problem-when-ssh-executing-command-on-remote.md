@@ -91,7 +91,7 @@ interactive意为交互式，这也很好理解，interactive shell会有一个�
 
 为了验证这个过程，我们来做一些测试。首先设计每个配置文件的内容如下：
 
-{% highlight bash linenos %}
+{% highlight bash %}
 user@remote > cat /etc/profile
 echo @ /etc/profile
 user@remote > cat ~/.bash_profile
@@ -162,7 +162,7 @@ Cameron Newham和Bill Rosenblatt在他们的著作《[Learning the bash Shell, 2
 
 为了进行验证，与第一种模式一样，设计各配置文件内容如下：
 
-{% highlight bash linenos %}
+{% highlight bash %}
 user@remote > cat /etc/bash.bashrc
 echo @ /etc/bash.bashrc
 user@remote > cat ~/.bashrc
@@ -201,7 +201,7 @@ echo @ ~/.bashrc
 
 同样，我们对其进行验证。首先，测试该环境变量未定义时配置文件的加载情况，这里需要一个测试脚本：
 
-{% highlight bash linenos %}
+{% highlight bash %}
 user@remote > cat ~/script.sh
 echo Hello World
 {% endhighlight %}
@@ -212,7 +212,7 @@ echo Hello World
 
 从输出结果可以得知，这个新启动的bash进程并没有加载前面提到的任何配置文件。接下来设置环境变量`BASH_ENV`：
 
-{% highlight bash linenos %}
+{% highlight bash %}
 user@remote > export BASH_ENV=~/.bashrc
 {% endhighlight %}
 
@@ -277,7 +277,7 @@ user@remote > export BASH_ENV=~/.bashrc
 
 在介绍完bash的这些模式之后，我们再回头来看文章开头的问题。`ssh user@remote ~/myscript.sh`属于哪一种模式？相信此时你可以非常轻松的回答出来：non-login + non-interactive。对于这种模式，bash会选择加载`$BASH_ENV`的值所对应的文件，所以为了让它加载`/etc/profile`，可以设定：
 
-{% highlight bash linenos %}
+{% highlight bash %}
 user@local > export BASH_ENV=/etc/profile
 {% endhighlight %}
 
@@ -289,7 +289,7 @@ user@local > export BASH_ENV=/etc/profile
 
 它表示这个文件的解释器，即用什么程序来打开此文件，就好比Windows上双击一个文件时会以什么程序打开一样。因为这里不是bash，而是sh，那么我们前面讨论的都不复有效了，真糟糕。我们来看看这个sh的路径：
 
-{% highlight bash linenos %}
+{% highlight bash %}
 user@remote > ll `which sh`
 lrwxrwxrwx 1 root root 9 Apr 25  2014 /usr/bin/sh -> /bin/bash
 {% endhighlight %}

@@ -12,8 +12,11 @@ relative_permalinks: false
 
 excerpt_separator: "{{ more }}"
 
-highlighter: pygments
 markdown: 'kramdown'
+kramdown:
+    input: GFM
+    syntax_highlighter: rouge
+
 timezone: 'Asia/Shanghai'
 
 analytics:

@@ -38,7 +38,7 @@ image:  typename.png
 
 对于`typename`这个关键字，如果你熟悉C++的模板，一定会知道它有这样一种最常见的用法(代码摘自C++ Primer)：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // implement strcmp-like generic compare function
 // returns 0 if the values are equal, 1 if v1 is larger, -1 if v1 is smaller
 template <typename T>
@@ -62,7 +62,7 @@ Stroustrup在最初起草模板规范时，他曾考虑到为模板的类型参�
 
 但是对很多人来说，总是不习惯`class`，因为从其本来存在的目的来说，是为了区别于语言的内置类型，用于声明一个用户自定义类型。那么对于下面这个模板函数的定义（相对于上例，仅将`typename`换成了`class`）：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class T>
 int compare(const T &v1, const T &v2)
 {
@@ -74,7 +74,7 @@ int compare(const T &v1, const T &v2)
 
 从表面上看起来就好像这个模板的参数应该只支持**用户自定义类型**，所以使用语言内置类型或者指针来调用该模板函数时总会觉得有一丝奇怪（虽然并没有错误）：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 int v1 = 1, v2 = 2;
 int ret = compare(v1, v2);
 
@@ -94,7 +94,7 @@ ret = compare(pv1, pv2);
 
 限定名(qualified name)，故名思义，是限定了命名空间的名称。看下面这段代码，`cout`和`endl`就是限定名：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 #include <iostream>
 
 int main()  {
@@ -110,7 +110,7 @@ int main()  {
 
 依赖名(dependent name)是指依赖于模板参数的名称，而非依赖名(non-dependent name)则相反，指不依赖于模板参数的名称。看下面这段代码：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class T>
 class MyClass {
     int i;
@@ -131,7 +131,7 @@ class MyClass {
 
 在类外部访问类中的名称时，可以使用类作用域操作符，形如`MyClass::name`的调用通常存在三种：静态数据成员、静态成员函数和嵌套类型：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 struct MyClass {
     static int A;
     static int B();
@@ -149,7 +149,7 @@ struct MyClass {
 
 在Stroustrup起草了最初的模板规范之后，人们更加无忧无虑的使用了`class`很长一段时间。可是，随着标准化C++工作的到来，人们发现了模板这样一种定义：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class T>
 void foo() {
     T::iterator * iter;
@@ -159,7 +159,7 @@ void foo() {
 
 这段代码的目的是什么？多数人第一反应可能是：作者想定义一个指针`iter`，它指向的类型是包含在类作用域`T`中的`iterator`。可能存在这样一个包含`iterator`类型的结构：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 struct ContainsAType {
     struct iterator { /*...*/ };
     // ...
@@ -168,7 +168,7 @@ struct ContainsAType {
 
 然后像这样实例化`foo`：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 foo<ContainsAType>();
 {% endhighlight %}
 
@@ -186,7 +186,7 @@ foo<ContainsAType>();
 
 前面例子中的`ContainsAType::iterator`是嵌套类型，完全没有问题。可如果是静态数据成员呢？如果实例化`foo`模板函数的类型是像这样的：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 struct ContainsAnotherType {
     static int iterator;
     // ...
@@ -195,7 +195,7 @@ struct ContainsAnotherType {
 
 然后如此实例化`foo`的类型参数：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 foo<ContainsAnotherType>();
 {% endhighlight %}
 
@@ -217,7 +217,7 @@ foo<ContainsAnotherType>();
 
 因此，如果你想直接告诉编译器`T::iterator`是类型而不是变量，只需用`typename`修饰：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class T>
 void foo() {
     typename T::iterator * iter;
@@ -261,7 +261,7 @@ g++在`ContainsAnotherType`中没有找到`iterator`类型，所以直接报错�
 
 对于不会引起歧义的情况，仍然需要在前面加`typename`，比如：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class T>
 void foo() {
     typename T::iterator iter;
@@ -273,7 +273,7 @@ void foo() {
 
 再看下面这种：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 template <class T>
 void foo() {
     typedef typename T::iterator iterator_type;

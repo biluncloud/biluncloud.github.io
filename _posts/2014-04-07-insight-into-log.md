@@ -36,7 +36,7 @@ _后面就用**log4me**作为我们使用的库的名称_
 
 代码中经常会需要打印一些提示信息用于显示程序工作流程，或者反馈错误信息，这就是所谓的log，就像船员的航海日志一样，我想`log`也是由此得名吧。为了输出这些信息，在C/C++中最简单的方法是用`printf`或者`std::cout`：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // I want to print a log:
 printf("I'm a message\n");
 {% endhighlight %}
@@ -45,7 +45,7 @@ printf("I'm a message\n");
 
 我们本可在每处需要打印log信息时都采用这种方式，但不妨先停下来试想一下，如果在一个log文件中你看到满屏幕的这种信息，但是却无法知道是谁，在什么时候，什么位置输出这条信息，那这种log的价值便大大折扣。于是，你会需要在每条log中增加一些额外有用的信息：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // I want to add more information:
 printf("%s %s %d: I'm a message\n", time, __FILE__, __LINE__);
 {% endhighlight %}
@@ -56,7 +56,7 @@ printf("%s %s %d: I'm a message\n", time, __FILE__, __LINE__);
 
 但是，这样会不会太麻烦？每次在写代码时，打印一条简单的log你需要加这么多无关的内容，万一忘了怎么办，这简直无法接受。你想要把所有的注意力都放在log本身上，不想关注其它的细技末节，怎么办？注意看，上面的函数调用中，后三个参数都是固定的，于是你可以对它进行这样简单的封装：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // Too complicated:
 #define printf0(message) \
     printf("%s %s %d %s", time, __FILE__, __LINE__, message);
@@ -72,7 +72,7 @@ printf0("I'm a message\n");
 
 log信息并不是千篇一律只起一种作用，有的是纪录程序的流程，有的是错误信息，还有一些是警告信息。为了让log更有可读性，你可能想要把不同的信息区分开来，比如这样：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // I want to distinguish different kinds of message:
 printf0("Normal: I'm a normal message\n");
 printf0("Warning: I'm a warning message\n");
@@ -83,7 +83,7 @@ printf0("Error: I'm an error message\n");
 
 但是，这些Normal、Warning以及Error关键字需要你每次都加在要输出的字符串中，同前面一样，你还是只想关注log本身，不愿意log和其它的信息混在一起。于是可以这样做：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // It's too complicated, I want something like this:
 enum TraceLevel {
     Normal,
@@ -107,7 +107,7 @@ printf1(Error, "I'm an error message\n");
 
 可以进一步简化：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // To be more convenient:
 void printf_out(const char *message) {
     printf1(Normal, message);
@@ -129,7 +129,7 @@ printf_error("I'm an error message\n");
 
 根据这一思路，代码可以这样改变：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // I want to add a control which level should be printed:
 TraceLevel getLevel1();
 void printf2(TraceLevel level, const char *message) {
@@ -149,7 +149,7 @@ _这里暂时没有采用前面简化的方法。_
 
 再来考虑这样一种情况，如果你的文件非常大，中间要输出的Normal log非常多，分为不同层次，比如：粗略的流程，详细一些的，十分详细的。和很多命令的`-verbose`参数一样。由于都是Normal类型的log，所以不能够用前面的`TraceLevel`，这时需要引入另外一层控制：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // My class is too big, I want a filter to determine which
 // logs should be generated
 const int SUB     = 0;
@@ -170,7 +170,7 @@ printf3(TRACE_2, Normal, "I'm a normal message\n");
 
 注意到这里定义的四级控制是可以通过位来操作的，能够任意组合。如果想要`TRACE_1`和`TRACE_2`都能够输出，那么只需要设置：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 int marker = TRACE_1 | TRACE_2;
 printf3(marker, Normal, "I'm a normal message\n");
 {% endhighlight %}
@@ -183,7 +183,7 @@ printf3(marker, Normal, "I'm a normal message\n");
 
 放弃这种硬编码的方法吧，你可以想到一种更加灵活，可以像前面`TraceLevel`和`Marker`一样容易配置的方法，能够更加优雅的控制log输出的目的地，但不需要硬编码在代码中，而是可以配置的。一起来看下面这段代码：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // I want my logs to go to console, files, eventlog
 class Appender {
     void printf(TraceLevel level, const char *message) = 0;
@@ -216,7 +216,7 @@ printf4(TRACE_2, Normal, "I'm a normal message\n");
 
 现在我们的log机制已经足够的完善。但是，随着程序规模越来越大，一个程序所包含的模块也越来越多，有时你并不想要一个全局的配置，而是需要每一个模块可以独立的进行配置，有了前面的介绍，这个需求就变得很简单了：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 // There are too many components, I want different components
 // could be configured separately
 TraceLevel getLevel2(const char *cat);
@@ -275,7 +275,7 @@ printf5("Library1", TRACE_2, Normal, "I'm a normal message\n");
 
 我们定义了下面几个宏，专门用于Library1下的log输出，这里会取配置中Library1这个Category的配置，分别输出不同TraceLevel的log。
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 #define LIB1_OUT(MESSAGE)            LOG_OUT(Library1, DLL, Notice) << MESSAGE
 #define LIB1_WARN(MESSAGE)           LOG_OUT(Library1, DLL, Warn)   << MESSAGE
 #define LIB1_ERR(MESSAGE)            LOG_OUT(Library1, DLL, Error)  << MESSAGE
@@ -283,7 +283,7 @@ printf5("Library1", TRACE_2, Normal, "I'm a normal message\n");
 
 使用时像这样：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 LIB1_OUT("I'm a message.");
 LIB1_WARN("I'm a message, ID = " << 1234);
 LIB1_ERR("I'm a message.");

@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  如何处理iOS中照片的方向
-description: 对于在iOS设备中拍得的照片，导出到Windows上打开时，经常会发现照片是横的或者颠倒的，需要旋转才适合观看。而在Mac上则完全不需要，本文解释了造成这一现象的原因并给出了开发过程中的解决方案。
+title:  如何对一个大项目中的framework进行单元测试
+description: 苹果提供了
 tags:   iOS, UIImage，JPEG，EXIF，UIImagePickerController，orientation
 image:  orientation.png
 ---
@@ -15,6 +15,20 @@ image:  orientation.png
 
 * Table of Contents Placeholder
 {:toc}
+
+-----
+
+单元测试的意义
+几个单元测试的框架
+xcode集成的XCUnit
+问题：
+- 如何跑在device上
+http://stackoverflow.com/questions/5608671/how-do-i-create-application-tests-in-a-cocoa-touch-unit-testing-bundle-with-xcod
+- 如何与cocoapods结合
+- 如何对依赖其它的framework进行测试
+mach选bundle
+ldflags需要-ObjC
+framework都选optional，除了c++相关的
 
 -----
 
@@ -155,6 +169,12 @@ image:  orientation.png
 ### 直观的解决方案
 
 首先，为`UIImage`创建一个category，其中包含`fixOrientation`方法：
+
+{% highlight ruby %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
 
 UIImage+fixOrientation.h
 {% highlight objc %}

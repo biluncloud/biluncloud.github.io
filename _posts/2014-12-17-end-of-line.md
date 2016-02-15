@@ -67,7 +67,7 @@ Mac系统的选择就更加复杂一些。Apple在设计Mac OS时，他们采用
 
 为了避免在这些不同的实现中挣扎，高级语言给我们带来了福音，它们各自使用了[统一](http://en.wikipedia.org/wiki/Newline#In_programming_languages)的方式来处理`EOL`。在C语言中，你一定知道在字符串中如果要增加一个换行符的话，直接用`\n`即可，比如：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 printf("This is the first line! \nThis is a new line!");
 {% endhighlight %}
 
@@ -82,7 +82,7 @@ printf("This is the first line! \nThis is a new line!");
 
 但是，千万别简单的认为上面的`\n`最终写到文件中就一定是其ASCII码`0x0A`，或者文件中的`0x0A`被读到内存中就是其转义符`\n`。这取决于你打开文件的方式。在C语言中，在对文件进行读取操作之前，都需要先打开文件，可以使用下面的函数：
 
-{% highlight cpp linenos %}
+{% highlight cpp %}
 #inlcude <stdio.h>
 FILE *fopen(const char *path, const char *mode);
 {% endhighlight %}
