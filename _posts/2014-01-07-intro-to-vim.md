@@ -173,12 +173,12 @@ VIM的学习曲线非常陡，[这里][3]有一个主流编辑器的学习曲线
 在按照官方的[教程][11]安装好Vundle之后，要安装一个插件时，你只需要：
 
 1. 选好插件
-2. 在VIM的配置文件中加一句 `Bundle 'you/script/path'`
+2. 在VIM的配置文件中加一句 `Bundle 'your/script/path'`
 3. 在VIM中运行 `:BundleInstall`
 
 卸载时只需：
 
-1. 去除配置文件中的 `Bundle 'you/script/name'`
+1. 去除配置文件中的 `Bundle 'your/script/name'`
 2. 在VIM中运行 `:BundleClean`
 
 更新插件就更加简单，只需一句 `:BundleUpdate`。现在你已经完全从粗活累活中解放了出来，从此注意力只需放在挑选自己喜欢的插件上，还有比这更美好的么？下面介绍的所有的插件都以它来管理。

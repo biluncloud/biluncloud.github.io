@@ -138,7 +138,7 @@ code {
   padding: .25em .5em;
   font-size: 85%;
   color: #bf616a;
-  background-color: #f9f9f9;
+  background-color: #eee;
   border-radius: 3px;
 }
 pre {
@@ -153,7 +153,7 @@ pre {
  # white-space: pre-wrap;
  # word-break: break-all;
  # word-wrap: break-word;
-  background-color: #f9f9f9;
+  background-color: #eee;
 }
 pre code {
   padding: 0;
@@ -202,7 +202,7 @@ th {
 }
 tbody tr:nth-child(odd) td,
 tbody tr:nth-child(odd) th {
-  background-color: #f9f9f9;
+  background-color: #eee;
 }
 
 /* Header / Sidebar Top */
