@@ -139,7 +139,6 @@ code {
   font-size: 85%;
   color: #bf616a;
   background-color: #eee;
-  border-radius: 3px;
 }
 pre {
   display: block;
@@ -165,7 +164,6 @@ pre code {
   -webkit-margin-start: 0;
   -webkit-margin-end: 0;
   margin-bottom: 1rem;
-  border-radius: 4px;
 }
 .highlight pre {
   margin-bottom: 0;
