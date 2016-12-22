@@ -278,7 +278,7 @@ user@remote > export BASH_ENV=~/.bashrc
 在介绍完bash的这些模式之后，我们再回头来看文章开头的问题。`ssh user@remote ~/myscript.sh`属于哪一种模式？相信此时你可以非常轻松的回答出来：non-login + non-interactive。对于这种模式，bash会选择加载`$BASH_ENV`的值所对应的文件，所以为了让它加载`/etc/profile`，可以设定：
 
 {% highlight bash %}
-user@local > export BASH_ENV=/etc/profile
+user@remote > export BASH_ENV=/etc/profile
 {% endhighlight %}
 
 然后执行上面的命令，但是很遗憾，发现错误依旧存在。这是怎么回事？别着急，这并不是我们前面的介绍出错了。仔细查看之后才发现脚本`myscript.sh`的第一行为`#!/usr/bin/env sh`，注意看，它和前面提到的`#!/usr/bin/env bash`不一样，可能就是这里出了问题。我们先尝试把它改成`#!/usr/bin/env bash`，再次执行，错误果然消失了，这与我们前面的分析结果一致。
