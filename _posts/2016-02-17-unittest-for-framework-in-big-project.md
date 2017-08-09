@@ -330,6 +330,8 @@ end
 
 如果想对Xcode的测试有一个系统的了解，强烈建议大家去阅读文档[Testing with Xcode](https://developer.apple.com/library/ios/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/01-introduction.html#//apple_ref/doc/uid/TP40014132-CH1-SW1)，非常详细的介绍了用Xcode进行测试的方方面面。
 
+另外，推荐一个全面讲解单元测试的网站——[GURU](https://www.guru99.com/software-testing.html)，里面提供了免费的教程，除了单元测试以外，还有很多其它的内容。
+
 新的一年，以这篇简单的文章作为起始，祝大家新年快乐！
 
 (全文完)
