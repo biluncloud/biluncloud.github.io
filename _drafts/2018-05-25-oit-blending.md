@@ -35,9 +35,7 @@ OVER操作符是不可逆的->公式证明->图像举例
 
 ![red-green](/img/posts/oit-red-green.png)
 
-![green-red](/img/posts/oit-green-over-red.png)
-
-![red-green](/img/posts/oit-red-over-green.png)
+![blend-red-green](/img/posts/oit-blend-red-green.png)
 
 混合的问题
 背景，讲述半透明渲染存在的问题
