@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 追逐闪退的六个日与夜
+title: 追查闪退的六个日与夜
 description: 
 tags: PLCrashReporter、signal、SIGSEGV、SIGABRT、Mach
 image: 6days.png
