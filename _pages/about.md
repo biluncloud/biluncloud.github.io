@@ -24,4 +24,4 @@ Hi, 我是<a href="https://plus.google.com/110274901350159292510" rel="me">**fei
 ### Network
 
 关注我:  
-↪ [douban](http://www.douban.com/people/47964840/) | [weibo](http://weibo.com/u/2778164211)
+↪ [douban](https://www.douban.com/people/47964840/) | [weibo](https://weibo.com/u/2778164211)
