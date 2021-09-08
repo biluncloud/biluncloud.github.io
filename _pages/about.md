@@ -10,7 +10,7 @@ nobio:     true
 
 ![Me](http://www.gravatar.com/avatar/9ffd3273e6f33aaf9cfb1bdccb8f3010?s=200){: .profile .pull-right }
 
-Hi, 我是<a href="https://plus.google.com/110274901350159292510" rel="me">**feihu**</a>, 来自深圳的软件攻城狮。2010年武汉大学研士毕业之后加入迅雷做iOS开发，现在任职于支付宝
+Hi, 我是<a href="https://plus.google.com/110274901350159292510" rel="me">**feihu**</a>, 来自深圳的软件攻城狮。2010年武汉大学硕士毕业之后加入迅雷做iOS开发，现在任职于支付宝
 
 爱编程，充满热情，喜欢沉浸在0与1的世界<br>
 程序设计充满难以言喻的美，它不是拷贝粘贴，不喜欢自嘲为码农<br>
