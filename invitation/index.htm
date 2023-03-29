@@ -63,13 +63,22 @@
                 "title": "我们要结婚啦！袁飞虎 & 王婷",
                 "src": "2014-09-29，湖北省蕲春县赤东镇; 2014-10-01，安徽省宣城市水东镇。期待您的见证!" 
             };
-
-            // play the song for mobiles, autoplay would not work on iOS
-            document.addEventListener("touchstart", function ( event ) {
+            
+            function playAudio() {
                 var audio = document.getElementById("bgsound");
                 if (audio.paused) {
                     audio.play();
                 }
+            }
+
+            // play the song for mobiles, autoplay would not work on iOS
+            document.addEventListener("touchstart", function ( event ) {
+                playAudio();
+            }, false);
+            
+            // play song for desktop, autoplay is forbidden
+            document.addEventListener("keyup", function ( event ) {
+                playAudio();
             }, false);
 
             ready(function() {
