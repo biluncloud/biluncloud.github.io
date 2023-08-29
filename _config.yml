@@ -22,7 +22,7 @@ timezone: 'Asia/Shanghai'
 analytics:
     provider: google
     google:
-        tracking_id: 'UA-48817497-1'
+        tracking_id: '376527028'
 
 enable_disqus: true
 
